@@ -10,7 +10,9 @@
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "node scripts/test-e2e.js",
+    "audit": "node scripts/audit-master-07.js"
   },
   "dependencies": {
     "@astrojs/node": "9.4.6",
