@@ -47,7 +47,7 @@ export function validatePhone(phone: string): boolean {
 export function validateLeadSubmission(rawData: Record<string, unknown>): ValidationResult<LeadFormData> {
   // 1. Anti-Spam Honeypot Verification
   // If the hidden honeypot field is filled, reject silently / mark as spam
-  const honeypot = String(rawData._hp || rawData.website || rawData.url || '').trim();
+  const honeypot = String(rawData._hp || rawData.website || rawData.url || rawData.honeypot || '').trim();
   if (honeypot.length > 0) {
     return {
       success: false,
