@@ -1,11 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Terms of Use', url: '/terms-of-service' }
+];
 ---
 
 <Layout 
   title="Terms of Use"
   description="Terms of Use for accessing and browsing the Edgar Valle | Realtor website and property listings."
+  canonicalUrl="/terms-of-service"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <div class="section">
     <div class="container container-narrow">
       <div class="section-header" style="text-align: left; margin-bottom: 2.5rem;">

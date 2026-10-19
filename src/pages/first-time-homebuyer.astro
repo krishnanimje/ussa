@@ -1,12 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'First-Time Homebuyer Guide', url: '/first-time-homebuyer' }
+];
 ---
 
 <Layout 
   title="San Diego First-Time Homebuyer Guide — Grants, CalHFA & Roadmap"
   description="Comprehensive San Diego First-Time Homebuyer Guide by Edgar Valle. Explore down payment assistance, CalHFA grants, credit score tips, and low-down loans."
+  canonicalUrl="/first-time-homebuyer"
+  hreflangEn="/first-time-homebuyer"
+  hreflangEs="/es/primeros-compradores"
+  lang="en"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <!-- Hero -->
   <section class="section section-secondary">
     <div class="container container-narrow text-center">

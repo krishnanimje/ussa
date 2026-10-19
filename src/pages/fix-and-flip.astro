@@ -1,12 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Fix-and-Flip Advisory', url: '/fix-and-flip' }
+];
 ---
 
 <Layout 
   title="San Diego Fix-and-Flip & Investor Real Estate Services — Edgar Valle"
   description="Data-driven fix-and-flip sourcing, ARV valuation models, and contractor network access in San Diego County with Realtor Edgar Valle."
+  canonicalUrl="/fix-and-flip"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <!-- Hero -->
   <section class="section section-secondary">
     <div class="container container-narrow text-center">

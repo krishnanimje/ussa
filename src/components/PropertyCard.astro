@@ -14,10 +14,11 @@ const { property } = Astro.props;
   <a href={`/properties/${property.slug}`} class="card-media" aria-label={`View details for ${property.title}`}>
     <img 
       src={property.primary_image || '/images/properties/north-park-spanish.svg'} 
-      alt={property.title} 
+      alt={`${property.title} - ${property.bedrooms} Bed, ${property.bathrooms} Bath ${property.property_type} in ${property.neighborhood}, San Diego`} 
       width="400" 
       height="260"
       loading="lazy"
+      decoding="async"
       class="card-img"
     />
     

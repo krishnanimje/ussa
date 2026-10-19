@@ -1,6 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Frequently Asked Questions', url: '/faq' }
+];
 
 const faqs = [
   {
@@ -78,8 +84,11 @@ const faqJsonLd = JSON.stringify({
 <Layout 
   title="Frequently Asked Questions — San Diego Real Estate FAQ"
   description="Answers to common questions about buying, selling, VA loans, closing costs, and fix-and-flip investing in San Diego with Realtor Edgar Valle."
+  canonicalUrl="/faq"
+  breadcrumbs={breadcrumbItems}
   jsonLd={faqJsonLd}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <section class="section section-secondary">
     <div class="container container-narrow text-center">
       <span class="section-eyebrow">COMMON QUESTIONS</span>

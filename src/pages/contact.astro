@@ -1,13 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
 import { SITE_SETTINGS } from '../lib/store';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Contact Edgar Valle', url: '/contact' }
+];
 ---
 
 <Layout 
   title="Contact Edgar Valle — San Diego Realtor®"
   description="Get in touch with Edgar Valle | Realtor (DRE #02375273) with Full Circle Group. Call (619) 555-0198 or schedule your private real estate consultation online."
+  canonicalUrl="/contact"
+  hreflangEn="/contact"
+  hreflangEs="/es/contacto"
+  lang="en"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <!-- Hero -->
   <section class="section section-secondary">
     <div class="container container-narrow text-center">

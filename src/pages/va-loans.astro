@@ -1,12 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'VA Home Loans', url: '/va-loans' }
+];
 ---
 
 <Layout 
   title="San Diego VA Home Loans — 0% Down Military Guide by Edgar Valle"
   description="Master your VA home loan benefit in San Diego. 0% down payment, no PMI, and maximum BAH purchasing power for service members at Camp Pendleton, 32nd St, Coronado, and Miramar."
+  canonicalUrl="/va-loans"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <!-- Hero -->
   <section class="section section-secondary">
     <div class="container container-narrow text-center">

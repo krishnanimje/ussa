@@ -73,14 +73,21 @@ export function generateAgentJsonLd() {
 }
 
 export function generatePropertyJsonLd(property: Property) {
-  return JSON.stringify({
+  const siteUrl = 'https://edgarvalle.com';
+  const imageUrl = property.primary_image 
+    ? (property.primary_image.startsWith('http') ? property.primary_image : `${siteUrl}${property.primary_image}`)
+    : `${siteUrl}/images/branding/og-preview.png`;
+
+  const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
-    '@type': 'SingleFamilyResidence',
-    name: property.title,
-    description: property.description,
+    '@type': property.property_type === 'Condo' ? 'Apartment' : 'SingleFamilyResidence',
+    name: property.seo_title || property.title,
+    description: property.seo_description || property.description,
+    url: `${siteUrl}/properties/${property.slug}`,
+    image: imageUrl,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: property.address_street,
+      streetAddress: property.address_visibility === 'neighborhood_only' ? property.neighborhood : property.address_street,
       addressLocality: property.address_city,
       addressRegion: property.address_state,
       postalCode: property.address_zip,
@@ -99,12 +106,50 @@ export function generatePropertyJsonLd(property: Property) {
       value: property.square_feet,
       unitCode: 'FTK'
     },
+    amenityFeature: property.features ? property.features.map(f => ({
+      '@type': 'LocationFeatureSpecification',
+      name: f,
+      value: true
+    })) : undefined,
     offers: {
       '@type': 'Offer',
       price: property.price,
-      priceCurrency: 'USD',
+      priceCurrency: property.currency || 'USD',
       availability: property.status === 'active' || property.status === 'open_house' ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut'
     }
+  };
+
+  if (property.video_url) {
+    schema.video = {
+      '@type': 'VideoObject',
+      name: `${property.title} - Virtual Walkthrough Tour`,
+      description: property.description,
+      thumbnailUrl: [imageUrl],
+      uploadDate: property.created_at,
+      embedUrl: property.video_url
+    };
+  }
+
+  return JSON.stringify(schema);
+}
+
+export function generateVideoJsonLd(video: {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  contentUrl?: string;
+  embedUrl?: string;
+}) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: video.name,
+    description: video.description,
+    thumbnailUrl: [video.thumbnailUrl],
+    uploadDate: video.uploadDate,
+    contentUrl: video.contentUrl,
+    embedUrl: video.embedUrl
   });
 }
 
@@ -137,24 +182,32 @@ export function generateFaqJsonLd(faqs: { question: string; answer: string }[]) 
 }
 
 export function generateArticleJsonLd(post: { title: string; excerpt: string; slug: string; published_at: string; cover_image: string; author_name: string }) {
+  const siteUrl = 'https://edgarvalle.com';
+  const coverUrl = post.cover_image.startsWith('http') ? post.cover_image : `${siteUrl}${post.cover_image}`;
   return JSON.stringify({
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    '@type': 'Article',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/blog/${post.slug}`
+    },
     headline: post.title,
     description: post.excerpt,
-    url: `https://edgarvalle.com/blog/${post.slug}`,
+    url: `${siteUrl}/blog/${post.slug}`,
     datePublished: post.published_at,
-    image: `https://edgarvalle.com${post.cover_image}`,
+    dateModified: post.published_at,
+    image: [coverUrl],
     author: {
       '@type': 'Person',
-      name: post.author_name || 'Edgar Valle'
+      name: post.author_name || 'Edgar Valle',
+      url: `${siteUrl}/about`
     },
     publisher: {
       '@type': 'Organization',
       name: 'Edgar Valle Real Estate',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://edgarvalle.com/images/branding/logo.svg'
+        url: `${siteUrl}/images/branding/logo.svg`
       }
     }
   });

@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import PropertyCard from '../../components/PropertyCard.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { getProperties, getNeighborhoods } from '../../lib/store';
 
 const allProperties = await getProperties();
@@ -13,12 +14,21 @@ const maxPriceParam = Astro.url.searchParams.get('maxPrice') || '';
 const vaParam = Astro.url.searchParams.get('va') === 'true';
 const fixerParam = Astro.url.searchParams.get('fixer') === 'true';
 const poolParam = Astro.url.searchParams.get('pool') === 'true';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Properties', url: '/properties' }
+];
 ---
 
 <Layout 
   title="San Diego Homes for Sale & Real Estate Listings"
   description="Browse verified San Diego real estate listings curated by Edgar Valle | Realtor. Filter by neighborhood, VA loan eligibility, swimming pools, garages, and fix-and-flip opportunities."
+  canonicalUrl="/properties"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
+
   <!-- Page Header -->
   <section class="section-sm section-secondary">
     <div class="container">

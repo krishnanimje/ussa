@@ -1,16 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
 import { getOpenHouses } from '../lib/store';
 import { formatCurrency } from '../lib/mortgage';
 
 const openHouses = await getOpenHouses();
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Weekend Open Houses', url: '/open-houses' }
+];
 ---
 
 <Layout 
   title="San Diego Weekend Open Houses — Hosted by Edgar Valle"
   description="Tour upcoming weekend open houses in North Park, Pacific Beach, and Chula Vista hosted by Realtor Edgar Valle. RSVP for private walkthroughs and refreshments."
+  canonicalUrl="/open-houses"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <!-- Hero -->
   <section class="section section-secondary">
     <div class="container container-narrow text-center">

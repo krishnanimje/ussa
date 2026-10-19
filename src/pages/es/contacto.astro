@@ -1,13 +1,25 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
 import { SITE_SETTINGS } from '../../lib/store';
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/es' },
+  { name: 'Contacto en Español', url: '/es/contacto' }
+];
 ---
 
 <Layout 
   title="Contacto en Español — Edgar Valle | Realtor en San Diego"
   description="Comunícate directamente con Edgar Valle | Realtor. Llama al (619) 555-0198 o envía un mensaje para tu consulta inmobiliaria en español."
+  canonicalUrl="/es/contacto"
+  hreflangEn="/contact"
+  hreflangEs="/es/contacto"
+  lang="es"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <section class="section section-secondary">
     <div class="container container-narrow text-center">
       <span class="section-eyebrow">ESTAMOS A TU DISPOSICIÓN</span>

@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import PropertyCard from '../../components/PropertyCard.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
 import { getNeighborhoodBySlug, getProperties } from '../../lib/store';
 import { formatCurrency } from '../../lib/mortgage';
@@ -17,13 +18,23 @@ const allProperties = await getProperties();
 const neighborhoodProperties = allProperties.filter(
   p => p.neighborhood.toLowerCase() === neighborhood.name.toLowerCase()
 );
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Neighborhoods', url: '/neighborhoods' },
+  { name: neighborhood.name, url: `/neighborhoods/${neighborhood.slug}` }
+];
 ---
 
 <Layout 
   title={`${neighborhood.name} San Diego — Real Estate & Community Guide`}
   description={`Comprehensive living and real estate guide to ${neighborhood.name}, San Diego. Median home price ${formatCurrency(neighborhood.median_home_price)}, neighborhood highlights, and active listings.`}
   image={neighborhood.hero_image}
+  canonicalUrl={`/neighborhoods/${neighborhood.slug}`}
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
+
   <!-- Hero Section -->
   <section class="section section-secondary">
     <div class="container">
@@ -51,7 +62,16 @@ const neighborhoodProperties = allProperties.filter(
         </div>
 
         <div class="hood-hero-img-box">
-          <img src={neighborhood.hero_image} alt={neighborhood.name} width="600" height="400" class="hood-banner-img" />
+          <img 
+            src={neighborhood.hero_image} 
+            alt={`${neighborhood.name} San Diego community highlights and architectural landscape`} 
+            width="600" 
+            height="400" 
+            loading="eager" 
+            fetchpriority="high" 
+            decoding="async" 
+            class="hood-banner-img" 
+          />
         </div>
       </div>
     </div>

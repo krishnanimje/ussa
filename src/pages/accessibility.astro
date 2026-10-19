@@ -1,12 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { SITE_SETTINGS } from '../lib/store';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Accessibility Statement', url: '/accessibility' }
+];
 ---
 
 <Layout 
   title="Accessibility Statement"
   description="Commitment to digital accessibility and WCAG 2.1 AA standards for all home seekers on the Edgar Valle Real Estate platform."
+  canonicalUrl="/accessibility"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <div class="section">
     <div class="container container-narrow">
       <div class="section-header" style="text-align: left; margin-bottom: 2.5rem;">

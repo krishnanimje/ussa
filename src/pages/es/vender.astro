@@ -1,12 +1,24 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/es' },
+  { name: 'Vender Casa', url: '/es/vender' }
+];
 ---
 
 <Layout 
   title="Vender Tu Casa en San Diego al Mejor Precio — Edgar Valle | Realtor"
   description="Mercadeo profesional en video 4K, redes sociales y negociación experta para vender tu propiedad en San Diego por el valor más alto posible."
+  canonicalUrl="/es/vender"
+  hreflangEn="/sell"
+  hreflangEs="/es/vender"
+  lang="es"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <section class="section section-secondary">
     <div class="container container-narrow text-center">
       <span class="section-eyebrow">REPRESENTACIÓN DE VENDEDORES</span>

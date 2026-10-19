@@ -1,7 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
 import { getBlogPostBySlug, getBlogPosts, SITE_SETTINGS } from '../../lib/store';
+import { generateArticleJsonLd } from '../../lib/seo';
 
 export const prerender = false;
 
@@ -14,41 +16,26 @@ if (!post) return Astro.redirect('/404');
 const allPosts = await getBlogPosts();
 const relatedPosts = allPosts.filter(p => p.id !== post.id).slice(0, 2);
 
-const articleJsonLd = JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: post.title,
-  description: post.excerpt,
-  image: `https://edgarvalle.com${post.cover_image}`,
-  author: {
-    '@type': 'Person',
-    name: 'Edgar Valle',
-    jobTitle: 'Realtor®',
-    worksFor: {
-      '@type': 'Organization',
-      name: 'Full Circle Group'
-    }
-  },
-  publisher: {
-    '@type': 'Organization',
-    name: 'Edgar Valle Real Estate',
-    logo: {
-      '@type': 'ImageObject',
-      url: 'https://edgarvalle.com/images/branding/logo.svg'
-    }
-  },
-  datePublished: post.published_at
-});
+const articleJsonLd = generateArticleJsonLd(post);
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Blog', url: '/blog' },
+  { name: post.title, url: `/blog/${post.slug}` }
+];
 ---
 
 <Layout 
   title={post.title}
   description={post.excerpt}
   image={post.cover_image}
+  canonicalUrl={`/blog/${post.slug}`}
   type="article"
   publishedTime={post.published_at}
+  breadcrumbs={breadcrumbItems}
   jsonLd={articleJsonLd}
 >
+  <Breadcrumbs items={breadcrumbItems} />
+
   <!-- Article Header -->
   <article class="article-wrapper">
     <header class="section-sm section-secondary article-header">
@@ -63,7 +50,7 @@ const articleJsonLd = JSON.stringify({
         <p class="article-lead">{post.excerpt}</p>
 
         <div class="author-strip">
-          <img src="/images/branding/edgar-valle.svg" alt="Edgar Valle" width="48" height="48" class="author-avatar" />
+          <img src="/images/branding/edgar-valle.svg" alt="Edgar Valle Realtor" width="48" height="48" class="author-avatar" />
           <div>
             <span class="author-name">{post.author_name}</span>
             <span class="author-role">Realtor® • Full Circle Group • DRE #{SITE_SETTINGS.dre_license}</span>
@@ -75,7 +62,16 @@ const articleJsonLd = JSON.stringify({
     <!-- Article Featured Image -->
     <div class="container container-narrow article-media-container">
       <div class="article-hero-img-box">
-        <img src={post.cover_image} alt={post.title} width="960" height="480" class="article-hero-img" />
+        <img 
+          src={post.cover_image} 
+          alt={`${post.title} - San Diego Real Estate Guide`} 
+          width="960" 
+          height="480" 
+          loading="eager" 
+          fetchpriority="high" 
+          decoding="async" 
+          class="article-hero-img" 
+        />
       </div>
     </div>
 

@@ -1,12 +1,24 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/es' },
+  { name: 'Comprar Casa', url: '/es/comprar' }
+];
 ---
 
 <Layout 
   title="Cómo Comprar Casa en San Diego — Asesoría Inmobiliaria con Edgar Valle"
   description="Proceso completo para comprar casa o departamento en San Diego. Búsqueda de propiedades, inspección y negociación bilingüe con Edgar Valle."
+  canonicalUrl="/es/comprar"
+  hreflangEn="/buy"
+  hreflangEs="/es/comprar"
+  lang="es"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <section class="section section-secondary">
     <div class="container container-narrow text-center">
       <span class="section-eyebrow">REPRESENTACIÓN DE COMPRADORES</span>

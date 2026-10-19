@@ -1,15 +1,25 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { getNeighborhoods } from '../../lib/store';
 import { formatCurrency } from '../../lib/mortgage';
 
 const neighborhoods = await getNeighborhoods();
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Neighborhoods', url: '/neighborhoods' }
+];
 ---
 
 <Layout 
   title="San Diego Neighborhoods Guide — Communities & Real Estate Overview"
   description="Explore San Diego's premier neighborhoods: North Park, Pacific Beach, Chula Vista, Oceanside, and La Jolla with local Realtor Edgar Valle."
+  canonicalUrl="/neighborhoods"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
+
   <section class="section section-secondary">
     <div class="container container-narrow text-center">
       <span class="section-eyebrow">SAN DIEGO COMMUNITIES</span>
@@ -26,7 +36,15 @@ const neighborhoods = await getNeighborhoods();
         {neighborhoods.map((n, idx) => (
           <article class:list={['card hood-feature-card', { reverse: idx % 2 === 1 }]}>
             <div class="hood-feature-media">
-              <img src={n.hero_image} alt={n.name} width="600" height="380" class="hood-img" />
+              <img 
+                src={n.hero_image} 
+                alt={`${n.name} San Diego architectural and community overview`} 
+                width="600" 
+                height="380" 
+                loading="lazy" 
+                decoding="async" 
+                class="hood-img" 
+              />
               <div class="hood-stat-badge">
                 <span class="stat-kpi">{formatCurrency(n.median_home_price)}</span>
                 <span class="stat-sub">Median Home Price</span>

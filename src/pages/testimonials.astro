@@ -1,7 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
 import { SITE_SETTINGS } from '../lib/store';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Client Testimonials', url: '/testimonials' }
+];
 
 const testimonials = [
   {
@@ -38,7 +44,10 @@ const testimonials = [
 <Layout 
   title="Client Testimonials & Reviews — Edgar Valle | Realtor"
   description="Read firsthand experiences from first-time buyers, military families using VA loans, and real estate investors represented by Edgar Valle in San Diego."
+  canonicalUrl="/testimonials"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <section class="section section-secondary">
     <div class="container container-narrow text-center">
       <span class="section-eyebrow">VERIFIED CLIENT EXPERIENCES</span>

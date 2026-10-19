@@ -1,11 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Cookie Policy', url: '/cookie-policy' }
+];
 ---
 
 <Layout 
   title="Cookie Policy"
   description="Cookie Policy explaining essential and performance cookies used on the Edgar Valle Real Estate platform."
+  canonicalUrl="/cookie-policy"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <div class="section">
     <div class="container container-narrow">
       <div class="section-header" style="text-align: left; margin-bottom: 2.5rem;">

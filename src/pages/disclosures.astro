@@ -1,12 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { SITE_SETTINGS } from '../lib/store';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Real Estate Disclosures', url: '/disclosures' }
+];
 ---
 
 <Layout 
   title="Real Estate & Brokerage Disclosures"
   description="Mandatory California real estate, Equal Housing Opportunity, and Full Circle Group brokerage disclosures for Edgar Valle | Realtor."
+  canonicalUrl="/disclosures"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <div class="section">
     <div class="container container-narrow">
       <div class="section-header" style="text-align: left; margin-bottom: 2.5rem;">

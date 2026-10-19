@@ -1,12 +1,24 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/es' },
+  { name: 'Primeros Compradores', url: '/es/primeros-compradores' }
+];
 ---
 
 <Layout 
   title="Guía para Primeros Compradores de Casa en San Diego — Edgar Valle"
   description="Aprende a comprar tu primera casa en San Diego, California. Programas con bajo enganche (desde 3.5%), asistencia CalHFA y asesoría completa en español."
+  canonicalUrl="/es/primeros-compradores"
+  hreflangEn="/first-time-homebuyer"
+  hreflangEs="/es/primeros-compradores"
+  lang="es"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <section class="section section-secondary">
     <div class="container container-narrow text-center">
       <span class="section-eyebrow">RECURSO EDUCATIVO EN ESPAÑOL</span>

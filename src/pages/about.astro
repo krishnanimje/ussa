@@ -1,12 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { SITE_SETTINGS } from '../lib/store';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'About Edgar Valle', url: '/about' }
+];
 ---
 
 <Layout 
   title="About Edgar Valle — San Diego Realtor®"
   description="Meet Edgar Valle, a licensed California Realtor® with Full Circle Group (DRE #02375273) serving first-time homebuyers, VA military families, and real estate investors in San Diego. Hablamos Español."
+  canonicalUrl="/about"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <!-- Hero Section -->
   <section class="section section-secondary">
     <div class="container">

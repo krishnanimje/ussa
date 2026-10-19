@@ -1,12 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Sell a Home', url: '/sell' }
+];
 ---
 
 <Layout 
   title="Sell Your San Diego Home for Maximum Value — Edgar Valle | Realtor"
   description="Strategic home selling with Edgar Valle. Cinematic 4K property tours, targeted social media marketing, professional staging, and expert negotiation."
+  canonicalUrl="/sell"
+  hreflangEn="/sell"
+  hreflangEs="/es/vender"
+  lang="en"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <!-- Hero -->
   <section class="section section-secondary">
     <div class="container container-narrow text-center">

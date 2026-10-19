@@ -1,0 +1,10 @@
+# Canonical 301 Redirects for Edgar Valle Real Estate Platform
+/listings         /properties             301
+/listings/*       /properties             301
+/military         /va-loans               301
+/veterans         /va-loans               301
+/fthb             /first-time-homebuyer   301
+/flipping         /fix-and-flip           301
+/investing        /fix-and-flip           301
+/es/propiedades   /properties             301
+/es/casas         /properties             301

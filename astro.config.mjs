@@ -11,5 +11,15 @@ export default defineConfig({
   server: {
     port: 4321,
     host: true
+  },
+  redirects: {
+    '/listings': '/properties',
+    '/military': '/va-loans',
+    '/veterans': '/va-loans',
+    '/fthb': '/first-time-homebuyer',
+    '/flipping': '/fix-and-flip',
+    '/investing': '/fix-and-flip',
+    '/es/propiedades': '/properties',
+    '/es/casas': '/properties'
   }
 });

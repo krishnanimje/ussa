@@ -1,12 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Buy a Home', url: '/buy' }
+];
 ---
 
 <Layout 
   title="Buy a Home in San Diego — Complete Buyer's Guide & Representation"
   description="Navigate the San Diego real estate market with Edgar Valle | Realtor. Access off-market listings, winning offer strategies, and full buyer representation."
+  canonicalUrl="/buy"
+  hreflangEn="/buy"
+  hreflangEs="/es/comprar"
+  lang="en"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
   <!-- Hero -->
   <section class="section section-secondary">
     <div class="container container-narrow text-center">

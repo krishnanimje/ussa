@@ -1,14 +1,24 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { getBlogPosts } from '../../lib/store';
 
 const posts = await getBlogPosts();
+
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Market Insights Blog', url: '/blog' }
+];
 ---
 
 <Layout 
   title="San Diego Real Estate Insights & Market Reports — Edgar Valle"
   description="Expert San Diego real estate analysis, VA home loan guides, interest rate breakdowns, and fix-and-flip strategies by Realtor Edgar Valle."
+  canonicalUrl="/blog"
+  breadcrumbs={breadcrumbItems}
 >
+  <Breadcrumbs items={breadcrumbItems} />
+
   <section class="section section-secondary">
     <div class="container container-narrow text-center">
       <span class="section-eyebrow">MARKET INTELLIGENCE</span>
@@ -25,7 +35,15 @@ const posts = await getBlogPosts();
         {posts.map(post => (
           <article class="card blog-card">
             <a href={`/blog/${post.slug}`} class="blog-media-link" aria-label={`Read article: ${post.title}`}>
-              <img src={post.cover_image} alt={post.title} width="400" height="230" class="blog-img" />
+              <img 
+                src={post.cover_image} 
+                alt={`${post.title} - San Diego Real Estate Guide`} 
+                width="400" 
+                height="230" 
+                loading="lazy" 
+                decoding="async" 
+                class="blog-img" 
+              />
               <div class="blog-badge-tag">{post.category}</div>
             </a>
 
