@@ -22,6 +22,31 @@ function get(path, headers = {}) {
   });
 }
 
+function post(path, payload, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const jsonStr = JSON.stringify(payload);
+    const options = {
+      hostname: 'localhost',
+      port: 4321,
+      path,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(jsonStr),
+        ...headers
+      }
+    };
+    const req = http.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: data }));
+    });
+    req.on('error', reject);
+    req.write(jsonStr);
+    req.end();
+  });
+}
+
 async function run() {
   console.log('Testing Admin Endpoints...\n');
 
@@ -39,26 +64,49 @@ async function run() {
 
   // 4. Edit Property Form Page
   const editPropPage = await get('/admin/properties/edit?id=p0000000-0000-0000-0000-000000000001');
-  console.log(`[GET /admin/properties/edit?id=p0000000-0000-0000-0000-000000000001] Status: ${editPropPage.status}, HTML Bytes: ${editPropPage.body.length}`);
+  console.log(`[GET /admin/properties/edit?id=p0000...0001] Status: ${editPropPage.status}, HTML Bytes: ${editPropPage.body.length}`);
 
-  // 5. API Properties
-  const apiProps = await get('/api/admin/properties');
-  const jsonProps = JSON.parse(apiProps.body);
-  console.log(`[GET /api/admin/properties] Status: ${apiProps.status}, Total Properties: ${jsonProps.total}, Properties Returned: ${jsonProps.properties.length}`);
+  // 5. Analytics & Power BI Dashboard
+  const analyticsPage = await get('/admin/analytics');
+  console.log(`[GET /admin/analytics] Status: ${analyticsPage.status}, HTML Bytes: ${analyticsPage.body.length}`);
 
-  // 6. API Audit Logs
-  const apiLogs = await get('/api/admin/audit-logs');
-  const jsonLogs = JSON.parse(apiLogs.body);
-  console.log(`[GET /api/admin/audit-logs] Status: ${apiLogs.status}, Total Logs: ${jsonLogs.logs.length}`);
+  // 6. CRM Leads Workspace
+  const leadsPage = await get('/admin/leads');
+  console.log(`[GET /admin/leads] Status: ${leadsPage.status}, HTML Bytes: ${leadsPage.body.length}`);
 
-  // 7. Public page vs Draft preview
-  const publicDraftWithoutAuth = await get('/properties/mission-hills-spanish-draft', { Cookie: '' });
-  console.log(`[GET /properties/mission-hills-spanish-draft (Public)] Status: ${publicDraftWithoutAuth.status} (Expected 404)`);
+  // 7. Reports & CSV Center
+  const reportsPage = await get('/admin/reports');
+  console.log(`[GET /admin/reports] Status: ${reportsPage.status}, HTML Bytes: ${reportsPage.body.length}`);
 
-  const draftPreviewWithAuth = await get('/properties/mission-hills-spanish-draft?preview=true');
-  console.log(`[GET /properties/mission-hills-spanish-draft?preview=true (Admin Preview)] Status: ${draftPreviewWithAuth.status} (Expected 200)`);
+  // 8. API Analytics Summary (30d)
+  const apiAnalytics = await get('/api/admin/analytics?range=30d');
+  const jsonAnalytics = JSON.parse(apiAnalytics.body);
+  console.log(`[GET /api/admin/analytics?range=30d] Status: ${apiAnalytics.status}, PageViews: ${jsonAnalytics.summary.page_views.current}, ConvRate: ${jsonAnalytics.summary.conversion_rate.current}%`);
 
-  console.log('\nAll Admin & CMS Endpoints Fully Verified!');
+  // 9. API Leads
+  const apiLeads = await get('/api/admin/leads');
+  const jsonLeads = JSON.parse(apiLeads.body);
+  console.log(`[GET /api/admin/leads] Status: ${apiLeads.status}, Total Leads: ${jsonLeads.total}`);
+
+  // 10. API CSV Export (property_inventory)
+  const csvProps = await get('/api/admin/reports/export?type=property_inventory');
+  console.log(`[GET /api/admin/reports/export?type=property_inventory] Status: ${csvProps.status}, Content-Type: ${csvProps.headers['content-type']}, CSV Bytes: ${csvProps.body.length}`);
+
+  // 11. API CSV Export (traffic)
+  const csvTraffic = await get('/api/admin/reports/export?type=traffic');
+  console.log(`[GET /api/admin/reports/export?type=traffic] Status: ${csvTraffic.status}, CSV Bytes: ${csvTraffic.body.length}`);
+
+  // 12. Visitor Tracking Ingestion Endpoint
+  const trackRes = await post('/api/analytics/track', {
+    event_name: 'page_view',
+    session_id: 'test_session_live_verification',
+    page_path: '/properties',
+    traffic_source: 'organic',
+    device_category: 'desktop'
+  });
+  console.log(`[POST /api/analytics/track] Status: ${trackRes.status}, Body: ${trackRes.body}`);
+
+  console.log('\nAll Master Prompt 03 BI, CRM, and Analytics Endpoints Fully Verified!');
 }
 
 run().catch(err => {

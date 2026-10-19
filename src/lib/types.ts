@@ -18,7 +18,18 @@ export type LeadType =
   | 'tour_request' 
   | 'open_house_rsvp';
 
-export type LeadStatus = 'new' | 'contacted' | 'appointment_set' | 'closed' | 'archived';
+export type LeadStatus = 
+  | 'new' 
+  | 'contacted' 
+  | 'qualified' 
+  | 'appointment_scheduled' 
+  | 'appointment_set' 
+  | 'in_progress' 
+  | 'converted' 
+  | 'closed' 
+  | 'lost' 
+  | 'spam' 
+  | 'archived';
 export type ContactMethod = 'phone' | 'email' | 'text';
 export type Language = 'en' | 'es';
 
@@ -121,6 +132,14 @@ export interface OpenHouse {
   created_at?: string;
 }
 
+export interface LeadNote {
+  id: string;
+  lead_id: string;
+  author_email: string;
+  note: string;
+  created_at: string;
+}
+
 export interface Lead {
   id: string;
   full_name: string;
@@ -137,6 +156,13 @@ export interface Lead {
   language_preference?: Language;
   status: LeadStatus;
   admin_notes?: string;
+  follow_up_date?: string;
+  assigned_admin?: string;
+  source_page?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  notes?: LeadNote[];
   ip_address?: string;
   user_agent?: string;
   created_at: string;
@@ -218,3 +244,154 @@ export interface MortgageCalculationResult {
   monthlyHoa: number;
   totalMonthlyPayment: number;
 }
+
+// ==========================================
+// MASTER PROMPT 03: BUSINESS INTELLIGENCE & CRM TYPES
+// ==========================================
+
+export type AnalyticsEventName = 
+  | 'page_view'
+  | 'session_started'
+  | 'property_view'
+  | 'property_search'
+  | 'contact_click'
+  | 'inquiry_form_started'
+  | 'inquiry_submitted'
+  | 'consultation_requested'
+  | 'appointment_requested'
+  | 'open_house_view'
+  | 'outbound_link_click';
+
+export type TrafficSource = 'direct' | 'organic' | 'social' | 'referral' | 'paid';
+export type DeviceCategory = 'desktop' | 'mobile' | 'tablet';
+
+export interface AnalyticsEvent {
+  id: string;
+  event_name: AnalyticsEventName;
+  session_id: string;
+  page_path: string;
+  property_id?: string;
+  referrer?: string;
+  traffic_source: TrafficSource;
+  device_category: DeviceCategory;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  metadata?: Record<string, unknown>;
+  created_at: string;
+}
+
+export type DateRangeFilter = 'today' | 'yesterday' | '7d' | '30d' | '90d' | 'custom';
+
+export interface MetricDelta {
+  current: number;
+  previous: number;
+  deltaPercentage: number;
+  trend: 'up' | 'down' | 'neutral';
+}
+
+export interface DailyTrafficPoint {
+  date: string;
+  page_views: number;
+  sessions: number;
+  unique_visitors: number;
+  inquiries: number;
+}
+
+export interface TrafficSourceBreakdown {
+  source: TrafficSource;
+  label: string;
+  sessions: number;
+  percentage: number;
+}
+
+export interface DeviceBreakdown {
+  category: DeviceCategory;
+  label: string;
+  sessions: number;
+  percentage: number;
+}
+
+export interface PropertyRanking {
+  property_id: string;
+  title: string;
+  slug: string;
+  price: number;
+  status: string;
+  views: number;
+  inquiries: number;
+  conversion_rate: number;
+}
+
+export interface LandingPagePerformance {
+  path: string;
+  views: number;
+  inquiries: number;
+  conversion_rate: number;
+}
+
+export interface FunnelStage {
+  stage: string;
+  label: string;
+  count: number;
+  dropoffRate: number;
+  conversionRate: number;
+}
+
+export interface AnalyticsSummary {
+  range: DateRangeFilter;
+  startDate: string;
+  endDate: string;
+  previousStartDate: string;
+  previousEndDate: string;
+  hasPreviousData: boolean;
+  page_views: MetricDelta;
+  sessions: MetricDelta;
+  unique_visitors: MetricDelta;
+  property_views: MetricDelta;
+  inquiries: MetricDelta;
+  qualified_leads: MetricDelta;
+  consultations: MetricDelta;
+  appointments: MetricDelta;
+  conversion_rate: MetricDelta;
+  published_count: number;
+  organic_traffic: MetricDelta;
+  traffic_trend: DailyTrafficPoint[];
+  traffic_sources: TrafficSourceBreakdown[];
+  device_distribution: DeviceBreakdown[];
+  lead_status_distribution: Record<string, number>;
+  property_ranking: PropertyRanking[];
+  landing_pages: LandingPagePerformance[];
+  funnel: FunnelStage[];
+  inventory_status_breakdown: Record<string, number>;
+  open_house_inquiries_count: number;
+}
+
+export interface GSCQuery {
+  query: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
+export interface GSCMetrics {
+  connected: boolean;
+  statusMessage: string;
+  totalClicks: number;
+  totalImpressions: number;
+  averageCtr: number;
+  averagePosition: number;
+  topQueries: GSCQuery[];
+}
+
+export type ReportType = 
+  | 'property_inventory'
+  | 'traffic'
+  | 'property_views_inquiries'
+  | 'leads_by_date'
+  | 'conversion_funnel'
+  | 'traffic_sources'
+  | 'listing_performance'
+  | 'open_house_inquiries';
+

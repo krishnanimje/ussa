@@ -1,0 +1,691 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getAnalyticsSummary } from '../../lib/analytics';
+import { getGSCMetrics } from '../../lib/gsc';
+import { checkAdminAuth } from '../../lib/auth';
+import type { DateRangeFilter } from '../../lib/types';
+
+export const prerender = false;
+
+if (!checkAdminAuth(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+
+const url = new URL(Astro.request.url);
+const currentRange = (url.searchParams.get('range') || '30d') as DateRangeFilter;
+const customStart = url.searchParams.get('startDate') || undefined;
+const customEnd = url.searchParams.get('endDate') || undefined;
+
+const [summary, gsc] = await Promise.all([
+  getAnalyticsSummary(currentRange, customStart, customEnd),
+  getGSCMetrics()
+]);
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+const activeDateSpan = `${formatDate(summary.startDate)} – ${formatDate(summary.endDate)}`;
+const prevDateSpan = `${formatDate(summary.previousStartDate)} – ${formatDate(summary.previousEndDate)}`;
+---
+
+<AdminLayout title="Analytics & Business Intelligence" activeNav="analytics">
+  <!-- Top Control Bar -->
+  <div class="admin-header" style="flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+        <h1 style="font-size: 1.85rem; margin: 0; color: #ffffff;">Business Intelligence &amp; Analytics</h1>
+        <span class="badge badge-gold" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;">
+          Power BI Engine
+        </span>
+      </div>
+      <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.88rem;">
+        Real verified visitor tracking, lead conversion pipeline, and listing engagement.
+      </p>
+    </div>
+
+    <!-- Actions / Export -->
+    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+      <button id="toggleAccessibleTablesBtn" class="btn btn-outline-white btn-sm" aria-pressed="false" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"></path><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path></svg>
+        <span id="viewToggleLabel">Accessible Tables View</span>
+      </button>
+
+      <button id="openDefinitionsModalBtn" class="btn btn-outline-white btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Metric Definitions
+      </button>
+
+      <a href={`/api/admin/reports/export?type=traffic&range=${currentRange}`} class="btn btn-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Export CSV
+      </a>
+    </div>
+  </div>
+
+  <!-- Global Date Filter Bar -->
+  <div class="card" style="padding: 1rem 1.25rem; background: var(--admin-surface); border: 1px solid var(--admin-border); margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+        <span style="font-size: 0.82rem; font-weight: 600; color: #94a3b8; margin-right: 0.5rem;">Date Filter:</span>
+        <a href="?range=today" class:list={['btn btn-sm', currentRange === 'today' ? 'btn-gold' : 'btn-outline-white']}>Today</a>
+        <a href="?range=yesterday" class:list={['btn btn-sm', currentRange === 'yesterday' ? 'btn-gold' : 'btn-outline-white']}>Yesterday</a>
+        <a href="?range=7d" class:list={['btn btn-sm', currentRange === '7d' ? 'btn-gold' : 'btn-outline-white']}>Last 7 Days</a>
+        <a href="?range=30d" class:list={['btn btn-sm', currentRange === '30d' ? 'btn-gold' : 'btn-outline-white']}>Last 30 Days</a>
+        <a href="?range=90d" class:list={['btn btn-sm', currentRange === '90d' ? 'btn-gold' : 'btn-outline-white']}>Last 90 Days</a>
+        <button id="customRangeToggle" class:list={['btn btn-sm', currentRange === 'custom' ? 'btn-gold' : 'btn-outline-white']}>Custom Range</button>
+      </div>
+
+      <div style="font-size: 0.8rem; color: #94a3b8;">
+        <span>Active: <strong style="color: #ffffff;">{activeDateSpan}</strong></span>
+        {summary.hasPreviousData && (
+          <span style="margin-left: 0.75rem; border-left: 1px solid rgba(255,255,255,0.15); padding-left: 0.75rem;">
+            vs. Prior Period: <strong>{prevDateSpan}</strong>
+          </span>
+        )}
+      </div>
+    </div>
+
+    <!-- Custom Range Inputs (collapsible) -->
+    <div id="customRangePicker" style={`display: ${currentRange === 'custom' ? 'flex' : 'none'}; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08); gap: 1rem; align-items: flex-end; flex-wrap: wrap;`}>
+      <div>
+        <label style="display: block; font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.25rem;">Start Date</label>
+        <input type="date" id="customStartDate" value={summary.startDate.split('T')[0]} style="background: #090e14; border: 1px solid #1e2c3c; color: #ffffff; padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.85rem;" />
+      </div>
+      <div>
+        <label style="display: block; font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.25rem;">End Date</label>
+        <input type="date" id="customEndDate" value={summary.endDate.split('T')[0]} style="background: #090e14; border: 1px solid #1e2c3c; color: #ffffff; padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.85rem;" />
+      </div>
+      <button id="applyCustomDateBtn" class="btn btn-gold btn-sm">Apply Custom Range</button>
+    </div>
+  </div>
+
+  <!-- Executive KPI Grid (11 Power BI Metrics with Deltas) -->
+  <div class="admin-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 2rem;">
+    <!-- 1. Page Views -->
+    <div class="kpi-card" style="padding: 1.1rem;">
+      <div class="kpi-title">Page Views</div>
+      <div class="kpi-value">{summary.page_views.current.toLocaleString()}</div>
+      <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; margin-top: 0.35rem;">
+        <span class:list={['delta-badge', summary.page_views.trend]}>
+          {summary.page_views.deltaPercentage >= 0 ? '+' : ''}{summary.page_views.deltaPercentage}%
+        </span>
+        <span style="color: var(--admin-text-muted);">vs prev period ({summary.page_views.previous.toLocaleString()})</span>
+      </div>
+    </div>
+
+    <!-- 2. Sessions -->
+    <div class="kpi-card" style="padding: 1.1rem;">
+      <div class="kpi-title">Total Sessions</div>
+      <div class="kpi-value">{summary.sessions.current.toLocaleString()}</div>
+      <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; margin-top: 0.35rem;">
+        <span class:list={['delta-badge', summary.sessions.trend]}>
+          {summary.sessions.deltaPercentage >= 0 ? '+' : ''}{summary.sessions.deltaPercentage}%
+        </span>
+        <span style="color: var(--admin-text-muted);">vs prev ({summary.sessions.previous.toLocaleString()})</span>
+      </div>
+    </div>
+
+    <!-- 3. Unique Visitors -->
+    <div class="kpi-card" style="padding: 1.1rem;">
+      <div class="kpi-title">Est. Unique Visitors</div>
+      <div class="kpi-value">{summary.unique_visitors.current.toLocaleString()}</div>
+      <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; margin-top: 0.35rem;">
+        <span class:list={['delta-badge', summary.unique_visitors.trend]}>
+          {summary.unique_visitors.deltaPercentage >= 0 ? '+' : ''}{summary.unique_visitors.deltaPercentage}%
+        </span>
+        <span style="color: var(--admin-text-muted);">Privacy-safe</span>
+      </div>
+    </div>
+
+    <!-- 4. Property Detail Views -->
+    <div class="kpi-card" style="padding: 1.1rem;">
+      <div class="kpi-title">Property Detail Views</div>
+      <div class="kpi-value" style="color: #38bdf8;">{summary.property_views.current.toLocaleString()}</div>
+      <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; margin-top: 0.35rem;">
+        <span class:list={['delta-badge', summary.property_views.trend]}>
+          {summary.property_views.deltaPercentage >= 0 ? '+' : ''}{summary.property_views.deltaPercentage}%
+        </span>
+        <span style="color: var(--admin-text-muted);">Listing intent</span>
+      </div>
+    </div>
+
+    <!-- 5. Inquiry Submissions -->
+    <div class="kpi-card" style="padding: 1.1rem; border-top: 3px solid var(--color-gold-400);">
+      <div class="kpi-title">Inquiry Submissions</div>
+      <div class="kpi-value" style="color: var(--color-gold-400);">{summary.inquiries.current}</div>
+      <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; margin-top: 0.35rem;">
+        <span class:list={['delta-badge', summary.inquiries.trend]}>
+          {summary.inquiries.deltaPercentage >= 0 ? '+' : ''}{summary.inquiries.deltaPercentage}%
+        </span>
+        <span style="color: var(--admin-text-muted);">Buyer &amp; Seller forms</span>
+      </div>
+    </div>
+
+    <!-- 6. Qualified Leads -->
+    <div class="kpi-card" style="padding: 1.1rem; border-top: 3px solid #10b981;">
+      <div class="kpi-title">Qualified Leads</div>
+      <div class="kpi-value" style="color: #10b981;">{summary.qualified_leads.current}</div>
+      <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; margin-top: 0.35rem;">
+        <span class:list={['delta-badge', summary.qualified_leads.trend]}>
+          {summary.qualified_leads.deltaPercentage >= 0 ? '+' : ''}{summary.qualified_leads.deltaPercentage}%
+        </span>
+        <span style="color: var(--admin-text-muted);">Verified pre-approved</span>
+      </div>
+    </div>
+
+    <!-- 7. Consultation Requests -->
+    <div class="kpi-card" style="padding: 1.1rem;">
+      <div class="kpi-title">Consultations</div>
+      <div class="kpi-value">{summary.consultations.current}</div>
+      <div style="font-size: 0.75rem; color: var(--admin-text-muted); margin-top: 0.35rem;">
+        VA &amp; Buyer Strategy
+      </div>
+    </div>
+
+    <!-- 8. Appointment Requests -->
+    <div class="kpi-card" style="padding: 1.1rem;">
+      <div class="kpi-title">Appointments Set</div>
+      <div class="kpi-value">{summary.appointments.current}</div>
+      <div style="font-size: 0.75rem; color: var(--admin-text-muted); margin-top: 0.35rem;">
+        Tours &amp; CMA walkthroughs
+      </div>
+    </div>
+
+    <!-- 9. Visitor-to-Lead Conversion Rate -->
+    <div class="kpi-card" style="padding: 1.1rem; border-top: 3px solid #a855f7;">
+      <div class="kpi-title">Visitor-to-Lead Rate</div>
+      <div class="kpi-value" style="color: #c084fc;">{summary.conversion_rate.current}%</div>
+      <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; margin-top: 0.35rem;">
+        <span class:list={['delta-badge', summary.conversion_rate.trend]}>
+          {summary.conversion_rate.deltaPercentage >= 0 ? '+' : ''}{summary.conversion_rate.deltaPercentage}%
+        </span>
+        <span style="color: var(--admin-text-muted);">Industry avg: 1.8%</span>
+      </div>
+    </div>
+
+    <!-- 10. Published Properties -->
+    <div class="kpi-card" style="padding: 1.1rem;">
+      <div class="kpi-title">Published Listings</div>
+      <div class="kpi-value">{summary.published_count}</div>
+      <div style="font-size: 0.75rem; color: #10b981; margin-top: 0.35rem;">
+        Active Public MLS
+      </div>
+    </div>
+
+    <!-- 11. Organic Search Traffic -->
+    <div class="kpi-card" style="padding: 1.1rem;">
+      <div class="kpi-title">Organic Traffic</div>
+      <div class="kpi-value">{summary.organic_traffic.current}</div>
+      <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; margin-top: 0.35rem;">
+        <span class:list={['delta-badge', summary.organic_traffic.trend]}>
+          {summary.organic_traffic.deltaPercentage >= 0 ? '+' : ''}{summary.organic_traffic.deltaPercentage}%
+        </span>
+        <span style="color: var(--admin-text-muted);">Google search</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Charts Section -->
+  <div id="visualChartsContainer">
+    <!-- Row 1: Traffic Trend Line Chart & Traffic Sources -->
+    <div class="grid-2" style="gap: 1.5rem; margin-bottom: 2rem; grid-template-columns: 2fr 1fr;">
+      <!-- Traffic Trend Chart -->
+      <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <div>
+            <h3 style="font-size: 1.1rem; color: #ffffff; margin: 0 0 0.2rem 0;">Traffic Trend Over Time</h3>
+            <span style="font-size: 0.78rem; color: var(--admin-text-muted);">Daily Unique Visitors &amp; Sessions</span>
+          </div>
+          <div style="display: flex; gap: 1rem; font-size: 0.78rem;">
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--color-gold-400);">
+              <span style="width: 10px; height: 10px; background: var(--color-gold-400); border-radius: 50%;"></span>
+              Visitors
+            </span>
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem; color: #38bdf8;">
+              <span style="width: 10px; height: 10px; background: #38bdf8; border-radius: 50%;"></span>
+              Sessions
+            </span>
+          </div>
+        </div>
+
+        <!-- SVG Line Chart with Responsive Coordinates -->
+        <div style="width: 100%; height: 240px; position: relative;">
+          {(() => {
+            const points = summary.traffic_trend;
+            if (points.length === 0) return <div style="display:flex;height:100%;align-items:center;justify-content:center;color:#64748b;">No traffic recorded in this date range.</div>;
+            const maxVal = Math.max(1, ...points.map(p => Math.max(p.unique_visitors, p.sessions)));
+            const width = 800;
+            const height = 220;
+            const padding = 30;
+
+            const stepX = points.length > 1 ? (width - padding * 2) / (points.length - 1) : 0;
+            const visitorCoords = points.map((p, i) => {
+              const x = padding + i * stepX;
+              const y = height - padding - ((p.unique_visitors / maxVal) * (height - padding * 2));
+              return `${x.toFixed(1)},${y.toFixed(1)}`;
+            }).join(' ');
+
+            const sessionCoords = points.map((p, i) => {
+              const x = padding + i * stepX;
+              const y = height - padding - ((p.sessions / maxVal) * (height - padding * 2));
+              return `${x.toFixed(1)},${y.toFixed(1)}`;
+            }).join(' ');
+
+            return (
+              <svg viewBox={`0 0 ${width} ${height}`} style="width: 100%; height: 100%; overflow: visible;" aria-label="Traffic trend line chart">
+                <!-- Grid Lines -->
+                <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#1e2c3c" stroke-width="1" />
+                <line x1={padding} y1={(height - padding) / 2} x2={width - padding} y2={(height - padding) / 2} stroke="#1e2c3c" stroke-dasharray="4" stroke-width="1" />
+                <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="#1e2c3c" stroke-dasharray="4" stroke-width="1" />
+
+                <!-- Sessions Line -->
+                <polyline points={sessionCoords} fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
+                <!-- Visitors Line -->
+                <polyline points={visitorCoords} fill="none" stroke="var(--color-gold-400)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+                <!-- X Axis Labels (First, Middle, Last) -->
+                <text x={padding} y={height - 5} fill="#64748b" font-size="11" text-anchor="start">{points[0]?.date}</text>
+                {points.length > 2 && (
+                  <text x={width / 2} y={height - 5} fill="#64748b" font-size="11" text-anchor="middle">
+                    {points[Math.floor(points.length / 2)]?.date}
+                  </text>
+                )}
+                <text x={width - padding} y={height - 5} fill="#64748b" font-size="11" text-anchor="end">{points[points.length - 1]?.date}</text>
+              </svg>
+            );
+          })()}
+        </div>
+      </div>
+
+      <!-- Traffic Sources Breakdown -->
+      <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border);">
+        <h3 style="font-size: 1.1rem; color: #ffffff; margin: 0 0 0.2rem 0;">Traffic Channels</h3>
+        <span style="font-size: 0.78rem; color: var(--admin-text-muted); display: block; margin-bottom: 1.25rem;">
+          Channel Acquisition Attribution
+        </span>
+
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+          {summary.traffic_sources.map(src => (
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.35rem;">
+                <span style="color: #cbd5e1; font-weight: 500;">{src.label}</span>
+                <span style="color: #ffffff; font-weight: 600;">{src.sessions} sessions ({src.percentage}%)</span>
+              </div>
+              <div style="height: 8px; width: 100%; background: #090e14; border-radius: 4px; overflow: hidden;">
+                <div style={`height: 100%; width: ${src.percentage}%; background: ${src.source === 'social' ? 'var(--color-gold-400)' : src.source === 'organic' ? '#10b981' : src.source === 'direct' ? '#38bdf8' : '#a855f7'}; border-radius: 4px;`}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Conversion Funnel & Lead Status Distribution -->
+    <div class="grid-2" style="gap: 1.5rem; margin-bottom: 2rem;">
+      <!-- Lead Conversion Funnel -->
+      <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <div>
+            <h3 style="font-size: 1.1rem; color: #ffffff; margin: 0 0 0.2rem 0;">Lead Conversion Funnel</h3>
+            <span style="font-size: 0.78rem; color: var(--admin-text-muted);">Visitor to Escrow Closed Pipeline Drop-off</span>
+          </div>
+          <span class="badge badge-gold" style="font-size: 0.75rem;">
+            {summary.conversion_rate.current}% Overall Conversion
+          </span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          {summary.funnel.map((stage, idx) => {
+            const widthPct = Math.max(12, Math.min(100, (stage.count / Math.max(1, summary.funnel[0].count)) * 100));
+            return (
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 170px; font-size: 0.82rem; color: #cbd5e1; font-weight: 500;">
+                  {stage.label}
+                </div>
+                <div style="flex: 1; background: #090e14; height: 28px; border-radius: 4px; overflow: hidden; position: relative;">
+                  <div style={`height: 100%; width: ${widthPct}%; background: linear-gradient(90deg, #dfc26e 0%, #c5a059 100%); opacity: ${1 - idx * 0.12}; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 0.6rem;`}>
+                    <strong style="color: #090e14; font-size: 0.78rem;">{stage.count}</strong>
+                  </div>
+                </div>
+                <div style="width: 100px; text-align: right; font-size: 0.78rem; color: #94a3b8;">
+                  {idx > 0 && <span style="color: #f87171;">-{stage.dropoffRate}%</span>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <!-- Lead Status Distribution & Device Category Breakdown -->
+      <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <h3 style="font-size: 1.1rem; color: #ffffff; margin: 0 0 0.2rem 0;">CRM Lead Distribution</h3>
+          <span style="font-size: 0.78rem; color: var(--admin-text-muted); display: block; margin-bottom: 1.25rem;">
+            Active Client Pipeline by Status
+          </span>
+
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+            {Object.entries(summary.lead_status_distribution).map(([st, count]) => (
+              <div style="background: #090e14; border: 1px solid #1e2c3c; border-radius: 6px; padding: 0.65rem 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; color: #cbd5e1; text-transform: capitalize;">
+                  {st.replace('_', ' ')}
+                </span>
+                <span style="font-size: 0.95rem; font-weight: 700; color: #ffffff;">{count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Device Category Breakdown -->
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
+          <h4 style="font-size: 0.85rem; color: #94a3b8; margin: 0 0 0.75rem 0; text-transform: uppercase; letter-spacing: 0.05em;">
+            Device Category Distribution
+          </h4>
+          <div style="display: flex; gap: 1rem;">
+            {summary.device_distribution.map(d => (
+              <div style="flex: 1; background: #090e14; border: 1px solid #1e2c3c; border-radius: 6px; padding: 0.6rem; text-align: center;">
+                <div style="font-size: 0.72rem; color: #94a3b8; text-transform: uppercase;">{d.label}</div>
+                <div style="font-size: 1.1rem; font-weight: 700; color: #ffffff; margin: 0.2rem 0;">{d.percentage}%</div>
+                <div style="font-size: 0.72rem; color: #64748b;">{d.sessions} sessions</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: Most Viewed Properties Ranking & Top Landing Pages -->
+    <div class="grid-2" style="gap: 1.5rem; margin-bottom: 2rem;">
+      <!-- Most Viewed Properties Ranking -->
+      <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h3 style="font-size: 1.1rem; color: #ffffff; margin: 0 0 0.2rem 0;">Most Viewed Properties</h3>
+            <span style="font-size: 0.78rem; color: var(--admin-text-muted);">Views vs. Inquiries &amp; Conversion</span>
+          </div>
+          <a href="/admin/properties" class="btn btn-outline-white btn-sm" style="font-size: 0.75rem;">Manage All</a>
+        </div>
+
+        <div class="admin-table-container" style="border: none;">
+          <table class="admin-table" style="font-size: 0.85rem;">
+            <thead>
+              <tr>
+                <th>Property Title</th>
+                <th>Price</th>
+                <th style="text-align: right;">Views</th>
+                <th style="text-align: right;">Inquiries</th>
+                <th style="text-align: right;">Conv. %</th>
+              </tr>
+            </thead>
+            <tbody>
+              {summary.property_ranking.slice(0, 5).map(p => (
+                <tr>
+                  <td>
+                    <a href={`/properties/${p.slug}`} target="_blank" style="color: #ffffff; font-weight: 600; text-decoration: none;">
+                      {p.title}
+                    </a>
+                  </td>
+                  <td style="color: var(--color-gold-400); font-weight: 600;">
+                    ${p.price.toLocaleString()}
+                  </td>
+                  <td style="text-align: right; font-weight: 600; color: #38bdf8;">{p.views}</td>
+                  <td style="text-align: right; font-weight: 600; color: #10b981;">{p.inquiries}</td>
+                  <td style="text-align: right; font-weight: 600; color: #c084fc;">{p.conversion_rate}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Top Landing Pages Table -->
+      <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border);">
+        <h3 style="font-size: 1.1rem; color: #ffffff; margin: 0 0 0.2rem 0;">Top Landing Pages</h3>
+        <span style="font-size: 0.78rem; color: var(--admin-text-muted); display: block; margin-bottom: 1rem;">
+          Most Effective Pages Driving Lead Inquiries
+        </span>
+
+        <div class="admin-table-container" style="border: none;">
+          <table class="admin-table" style="font-size: 0.85rem;">
+            <thead>
+              <tr>
+                <th>Page Route</th>
+                <th style="text-align: right;">Views</th>
+                <th style="text-align: right;">Inquiries</th>
+                <th style="text-align: right;">Conv. Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {summary.landing_pages.map(lp => (
+                <tr>
+                  <td><code style="color: #38bdf8; background: #090e14; padding: 0.2rem 0.4rem; border-radius: 4px;">{lp.path}</code></td>
+                  <td style="text-align: right; color: #ffffff; font-weight: 600;">{lp.views}</td>
+                  <td style="text-align: right; color: var(--color-gold-400); font-weight: 600;">{lp.inquiries}</td>
+                  <td style="text-align: right; color: #10b981; font-weight: 600;">{lp.conversion_rate}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 4: Google Search Console Panel -->
+    <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border); margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h3 style="font-size: 1.1rem; color: #ffffff; margin: 0 0 0.2rem 0; display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Google Search Console Analytics
+          </h3>
+          <span style="font-size: 0.78rem; color: var(--admin-text-muted);">
+            Direct organic search performance from Google indexing
+          </span>
+        </div>
+
+        <span class:list={['badge', gsc.connected ? 'badge-published' : 'badge-draft']} style="font-size: 0.75rem;">
+          {gsc.connected ? 'Connected' : 'Not Connected'}
+        </span>
+      </div>
+
+      {!gsc.connected ? (
+        <div style="background: #090e14; border: 1px solid #1e2c3c; border-radius: 8px; padding: 1.25rem;">
+          <p style="color: #cbd5e1; font-size: 0.88rem; margin: 0 0 0.75rem 0; line-height: 1.5;">
+            {gsc.statusMessage}
+          </p>
+          <div style="font-size: 0.8rem; color: #8b9bb0;">
+            <strong>Setup Checklist:</strong> Create a Google Cloud Service Account &gt; Enable Search Console API &gt; Set <code style="color: #38bdf8;">GSC_CLIENT_EMAIL</code> and <code style="color: #38bdf8;">GSC_PRIVATE_KEY</code> in environment variables.
+          </div>
+        </div>
+      ) : (
+        <div class="grid-4" style="gap: 1rem;">
+          <div style="background: #090e14; padding: 1rem; border-radius: 6px;">
+            <div style="font-size: 0.75rem; color: #94a3b8;">Total Clicks</div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #ffffff;">{gsc.totalClicks}</div>
+          </div>
+          <div style="background: #090e14; padding: 1rem; border-radius: 6px;">
+            <div style="font-size: 0.75rem; color: #94a3b8;">Total Impressions</div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #ffffff;">{gsc.totalImpressions}</div>
+          </div>
+          <div style="background: #090e14; padding: 1rem; border-radius: 6px;">
+            <div style="font-size: 0.75rem; color: #94a3b8;">Average CTR</div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #ffffff;">{gsc.averageCtr}%</div>
+          </div>
+          <div style="background: #090e14; padding: 1rem; border-radius: 6px;">
+            <div style="font-size: 0.75rem; color: #94a3b8;">Average Position</div>
+            <div style="font-size: 1.4rem; font-weight: 700; color: #ffffff;">{gsc.averagePosition}</div>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Accessible Table Alternative View (Hidden by default, toggled via button) -->
+  <div id="accessibleTablesContainer" style="display: none; margin-bottom: 2rem;">
+    <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border); margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.15rem; color: #ffffff; margin: 0 0 1rem 0;">Accessible Data Table: Daily Traffic Trend</h3>
+      <div class="admin-table-container">
+        <table class="admin-table" aria-label="Daily traffic trend data">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col" style="text-align: right;">Unique Visitors</th>
+              <th scope="col" style="text-align: right;">Sessions</th>
+              <th scope="col" style="text-align: right;">Page Views</th>
+              <th scope="col" style="text-align: right;">Inquiries</th>
+            </tr>
+          </thead>
+          <tbody>
+            {summary.traffic_trend.map(row => (
+              <tr>
+                <td><strong>{row.date}</strong></td>
+                <td style="text-align: right;">{row.unique_visitors}</td>
+                <td style="text-align: right;">{row.sessions}</td>
+                <td style="text-align: right;">{row.page_views}</td>
+                <td style="text-align: right;">{row.inquiries}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border);">
+      <h3 style="font-size: 1.15rem; color: #ffffff; margin: 0 0 1rem 0;">Accessible Data Table: Conversion Funnel</h3>
+      <div class="admin-table-container">
+        <table class="admin-table" aria-label="Lead conversion funnel stages">
+          <thead>
+            <tr>
+              <th scope="col">Stage Name</th>
+              <th scope="col" style="text-align: right;">Count</th>
+              <th scope="col" style="text-align: right;">Stage Drop-off (%)</th>
+              <th scope="col" style="text-align: right;">Cumulative Conversion (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {summary.funnel.map(f => (
+              <tr>
+                <td><strong>{f.label}</strong></td>
+                <td style="text-align: right;">{f.count}</td>
+                <td style="text-align: right;">{f.dropoffRate}%</td>
+                <td style="text-align: right;">{f.conversionRate}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metric Definitions & Ad Blocker Disclaimer Modal -->
+  <dialog id="definitionsModal" style="background: #101923; border: 1px solid #1e2c3c; border-radius: 12px; color: #ffffff; max-width: 600px; width: 90%; padding: 2rem; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <h3 style="margin: 0; font-size: 1.3rem;">Analytics Metric Definitions &amp; Disclosures</h3>
+      <button id="closeDefinitionsModalBtn" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer;">&times;</button>
+    </div>
+
+    <div style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; display: flex; flex-direction: column; gap: 1rem;">
+      <div>
+        <strong style="color: #ffffff;">Estimated Unique Visitors:</strong>
+        <p style="margin: 0.25rem 0 0 0; color: #94a3b8;">
+          Calculated using privacy-preserving session hashes. Never stores PII, IP addresses, or cross-site tracking cookies.
+        </p>
+      </div>
+
+      <div>
+        <strong style="color: #ffffff;">Previous Period Comparisons:</strong>
+        <p style="margin: 0.25rem 0 0 0; color: #94a3b8;">
+          Percentage change is only rendered when verified historical baseline data exists for the exact preceding date duration.
+        </p>
+      </div>
+
+      <div style="background: #090e14; border: 1px solid #1e2c3c; border-radius: 6px; padding: 1rem;">
+        <strong style="color: var(--color-gold-400);">Ad Blocker &amp; Privacy Browser Variance Note:</strong>
+        <p style="margin: 0.25rem 0 0 0; font-size: 0.82rem; color: #94a3b8;">
+          Modern privacy-centric browsers (Brave, Safari with ITP) and ad-blocking extensions may block client telemetry beacons. Actual foot traffic and engagement may be 10–15% higher than logged client sessions.
+        </p>
+      </div>
+    </div>
+  </dialog>
+</AdminLayout>
+
+<style>
+  .delta-badge {
+    font-weight: 700;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+  }
+  .delta-badge.up {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+  }
+  .delta-badge.down {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.12);
+  }
+  .delta-badge.neutral {
+    color: #94a3b8;
+    background: rgba(148, 163, 184, 0.12);
+  }
+</style>
+
+<script is:inline>
+  // Custom Date Picker Handler
+  var customToggle = document.getElementById('customRangeToggle');
+  var customPicker = document.getElementById('customRangePicker');
+  var applyBtn = document.getElementById('applyCustomDateBtn');
+
+  if (customToggle && customPicker) {
+    customToggle.addEventListener('click', function() {
+      customPicker.style.display = customPicker.style.display === 'none' ? 'flex' : 'none';
+    });
+  }
+
+  if (applyBtn) {
+    applyBtn.addEventListener('click', function() {
+      var s = document.getElementById('customStartDate').value;
+      var e = document.getElementById('customEndDate').value;
+      if (s && e) {
+        window.location.href = '?range=custom&startDate=' + encodeURIComponent(s) + '&endDate=' + encodeURIComponent(e);
+      }
+    });
+  }
+
+  // Accessible Table Alternative View Toggle
+  var toggleBtn = document.getElementById('toggleAccessibleTablesBtn');
+  var visualContainer = document.getElementById('visualChartsContainer');
+  var tableContainer = document.getElementById('accessibleTablesContainer');
+  var viewLabel = document.getElementById('viewToggleLabel');
+
+  if (toggleBtn && visualContainer && tableContainer) {
+    toggleBtn.addEventListener('click', function() {
+      var isTable = tableContainer.style.display !== 'none';
+      if (isTable) {
+        tableContainer.style.display = 'none';
+        visualContainer.style.display = 'block';
+        viewLabel.textContent = 'Accessible Tables View';
+        toggleBtn.setAttribute('aria-pressed', 'false');
+      } else {
+        tableContainer.style.display = 'block';
+        visualContainer.style.display = 'none';
+        viewLabel.textContent = 'Visual Charts View';
+        toggleBtn.setAttribute('aria-pressed', 'true');
+      }
+    });
+  }
+
+  // Metric Definitions Modal
+  var defBtn = document.getElementById('openDefinitionsModalBtn');
+  var defModal = document.getElementById('definitionsModal');
+  var closeDefBtn = document.getElementById('closeDefinitionsModalBtn');
+
+  if (defBtn && defModal && closeDefBtn) {
+    defBtn.addEventListener('click', function() { defModal.showModal(); });
+    closeDefBtn.addEventListener('click', function() { defModal.close(); });
+    defModal.addEventListener('click', function(e) {
+      if (e.target === defModal) defModal.close();
+    });
+  }
+</script>

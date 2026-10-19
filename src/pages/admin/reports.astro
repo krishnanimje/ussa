@@ -1,0 +1,163 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { checkAdminAuth } from '../../lib/auth';
+
+export const prerender = false;
+
+if (!checkAdminAuth(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+
+const reports = [
+  {
+    type: 'property_inventory',
+    title: 'Property Inventory Catalog',
+    description: 'Complete listing inventory including MLS #, price, beds, baths, sqft, publication status, listing status, and current analytics.',
+    icon: 'home',
+    columns: ['Property ID', 'Title', 'MLS #', 'Property Type', 'Listing Status', 'Publication Status', 'Price', 'Beds/Baths', 'SqFt', 'Address', 'Views', 'Inquiries']
+  },
+  {
+    type: 'traffic',
+    title: 'Daily Website Traffic & Engagement',
+    description: 'Daily aggregated session metrics, privacy-safe unique visitor counts, page views, and total lead inquiries generated.',
+    icon: 'activity',
+    columns: ['Date', 'Page Views', 'Sessions', 'Unique Visitors', 'Inquiries']
+  },
+  {
+    type: 'property_views_inquiries',
+    title: 'Property Views vs. Inquiries Ranking',
+    description: 'Individual listing engagement comparison measuring client interest and inquiry conversion rates per property.',
+    icon: 'bar-chart',
+    columns: ['Property ID', 'Property Title', 'Price', 'Status', 'Views', 'Inquiries', 'Conversion Rate %']
+  },
+  {
+    type: 'leads_by_date',
+    title: 'CRM Client Inquiries & Leads',
+    description: 'Full CRM lead export with contact info, inquiry type, property association, follow-up dates, UTM campaign sources, and admin assignment.',
+    icon: 'users',
+    columns: ['Lead ID', 'Full Name', 'Email', 'Phone', 'Type', 'Status', 'Budget', 'Timeframe', 'Follow-up Date', 'UTM Source', 'Created At']
+  },
+  {
+    type: 'conversion_funnel',
+    title: 'Client Acquisition Conversion Funnel',
+    description: 'Stage-by-stage drop-off analytics from initial anonymous site visitor down to closed escrow transaction.',
+    icon: 'filter',
+    columns: ['Funnel Stage', 'Stage Label', 'Count', 'Drop-off Rate %', 'Cumulative Conversion %']
+  },
+  {
+    type: 'traffic_sources',
+    title: 'Traffic Channel & Referral Attribution',
+    description: 'Breakdown of visitor acquisition across Organic Google, Direct, Instagram Social (@yourrealtoredgar), and Referral links.',
+    icon: 'share-2',
+    columns: ['Traffic Channel', 'Display Label', 'Sessions Count', 'Share Percentage %']
+  },
+  {
+    type: 'listing_performance',
+    title: 'Comprehensive Listing Performance Matrix',
+    description: 'Days on market, listing status, neighborhood distribution, pricing, and client engagement for all active and historical properties.',
+    icon: 'trending-up',
+    columns: ['Property ID', 'Title', 'Price', 'Neighborhood', 'Status', 'Views', 'Inquiries', 'Days on Market']
+  },
+  {
+    type: 'open_house_inquiries',
+    title: 'Open House RSVP & Tour Inquiries',
+    description: 'Attendance list, contact details, property association, and follow-up status for open house attendees and tour requests.',
+    icon: 'calendar',
+    columns: ['Lead ID', 'Attendee Name', 'Email', 'Phone', 'Property / Address', 'Status', 'Notes', 'RSVP Date']
+  }
+];
+---
+
+<AdminLayout title="Reports & CSV Exports" activeNav="reports">
+  <div class="admin-header" style="flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+        <h1 style="font-size: 1.85rem; margin: 0; color: #ffffff;">Reports &amp; Data Exports</h1>
+        <span class="badge badge-gold" style="font-size: 0.72rem; text-transform: uppercase;">
+          RFC 4180 Protected
+        </span>
+      </div>
+      <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.9rem;">
+        Generate authorized CSV downloads with spreadsheet formula injection protection.
+      </p>
+    </div>
+
+    <!-- Security Badge -->
+    <div>
+      <span class="badge badge-published" style="font-size: 0.78rem; padding: 0.4rem 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        DDE / Formula Injection Defense Active
+      </span>
+    </div>
+  </div>
+
+  <!-- Global Date Range Selector for Exports -->
+  <div class="card" style="padding: 1.25rem; background: var(--admin-surface); border: 1px solid var(--admin-border); margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <label for="exportRangeSelect" style="font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">Export Date Range:</label>
+        <select id="exportRangeSelect" style="background: #090e14; color: #ffffff; border: 1px solid #1e2c3c; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.85rem;">
+          <option value="7d">Last 7 Days</option>
+          <option value="30d" selected>Last 30 Days</option>
+          <option value="90d">Last 90 Days</option>
+          <option value="today">Today Only</option>
+          <option value="yesterday">Yesterday</option>
+        </select>
+      </div>
+
+      <div style="font-size: 0.8rem; color: #94a3b8;">
+        All CSV exports sanitize special characters (`=, +, -, @`) to prevent automated spreadsheet macro execution.
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports Grid (8 Authorized Reports) -->
+  <div class="grid-2" style="gap: 1.5rem; margin-bottom: 2.5rem;">
+    {reports.map(rep => (
+      <div class="card" style="padding: 1.5rem; background: var(--admin-surface); border: 1px solid var(--admin-border); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+            <h3 style="margin: 0; font-size: 1.15rem; color: #ffffff;">{rep.title}</h3>
+            <span class="badge badge-dark" style="font-size: 0.68rem; text-transform: uppercase;">
+              {rep.type}
+            </span>
+          </div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin: 0 0 1rem 0;">
+            {rep.description}
+          </p>
+
+          <div style="margin-bottom: 1.25rem;">
+            <span style="font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.4rem;">
+              Included Columns
+            </span>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+              {rep.columns.map(col => (
+                <span style="background: #090e14; border: 1px solid #1e2c3c; border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.72rem; color: #94a3b8;">
+                  {col}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem; display: flex; justify-content: flex-end;">
+          <button class="btn btn-gold btn-sm download-report-btn" data-type={rep.type} style="display: inline-flex; align-items: center; gap: 0.4rem;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Download {rep.title}
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+</AdminLayout>
+
+<script is:inline>
+  var rangeSelect = document.getElementById('exportRangeSelect');
+  document.querySelectorAll('.download-report-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var repType = btn.getAttribute('data-type');
+      var range = rangeSelect ? rangeSelect.value : '30d';
+      window.location.href = '/api/admin/reports/export?type=' + encodeURIComponent(repType) + '&range=' + encodeURIComponent(range);
+    });
+  });
+</script>

@@ -7,6 +7,7 @@ import type {
   BlogPost, 
   SiteSettings, 
   Lead,
+  LeadNote,
   PropertyMedia,
   AuditLog
 } from './types';
@@ -1063,6 +1064,22 @@ let runtimeLeads: Lead[] = [
     is_preapproved: true,
     language_preference: 'en',
     status: 'new',
+    follow_up_date: new Date(Date.now() + 24 * 3600000).toISOString(),
+    assigned_admin: 'edgar@yourrealtoredgar.com',
+    source_page: '/va-loans',
+    utm_source: 'instagram',
+    utm_medium: 'bio_link',
+    utm_campaign: 'san_diego_va_buyer_guide',
+    admin_notes: 'Wants single-story if possible. COE certificate in hand.',
+    notes: [
+      {
+        id: 'n-001-1',
+        lead_id: 'lead-001',
+        author_email: 'edgar@yourrealtoredgar.com',
+        note: 'Initial inquiry via Instagram link. Verified active-duty military eligibility with Veterans United pre-approval.',
+        created_at: new Date(Date.now() - 2 * 3600000).toISOString()
+      }
+    ],
     created_at: new Date(Date.now() - 2 * 3600000).toISOString()
   },
   {
@@ -1077,7 +1094,22 @@ let runtimeLeads: Lead[] = [
     timeframe: 'Immediate',
     is_preapproved: false,
     language_preference: 'es',
-    status: 'new',
+    status: 'contacted',
+    follow_up_date: new Date(Date.now() + 2 * 86400000).toISOString(),
+    assigned_admin: 'edgar@yourrealtoredgar.com',
+    source_page: '/es/primeros-compradores',
+    utm_source: 'google',
+    utm_medium: 'organic',
+    admin_notes: 'Spoke with Alejandro on phone in Spanish. Scheduled introduction with bilingual CalHFA lender partner.',
+    notes: [
+      {
+        id: 'n-002-1',
+        lead_id: 'lead-002',
+        author_email: 'edgar@yourrealtoredgar.com',
+        note: 'Discussed Dream For All down payment assistance eligibility and credit score requirements.',
+        created_at: new Date(Date.now() - 3 * 3600000).toISOString()
+      }
+    ],
     created_at: new Date(Date.now() - 5 * 3600000).toISOString()
   },
   {
@@ -1094,8 +1126,142 @@ let runtimeLeads: Lead[] = [
     timeframe: 'Immediately',
     is_preapproved: true,
     language_preference: 'en',
-    status: 'contacted',
+    status: 'qualified',
+    follow_up_date: new Date(Date.now() + 86400000).toISOString(),
+    assigned_admin: 'edgar@yourrealtoredgar.com',
+    source_page: '/properties/clairemont-canyon-fixer',
+    utm_source: 'direct',
+    admin_notes: 'POF verified for $800k cash funds. Sent preliminary title report and contractor inspection estimate.',
+    notes: [
+      {
+        id: 'n-003-1',
+        lead_id: 'lead-003',
+        author_email: 'edgar@yourrealtoredgar.com',
+        note: 'Proof of Funds verified from First Republic/Chase. Target flip timeline 4 months.',
+        created_at: new Date(Date.now() - 20 * 3600000).toISOString()
+      }
+    ],
     created_at: new Date(Date.now() - 24 * 3600000).toISOString()
+  },
+  {
+    id: 'lead-004',
+    full_name: 'Sophia Sterling',
+    email: 'sophia.sterling@deloitte.com',
+    phone: '(858) 555-0922',
+    lead_type: 'tour_request',
+    message: 'Requesting private Saturday walkthrough for the La Jolla Village luxury townhome.',
+    property_id: 'p0000000-0000-0000-0000-000000000007',
+    property_address: '7435 Draper Ave #2, La Jolla, CA',
+    preferred_contact_method: 'email',
+    estimated_budget: '$1.8M - $2.0M',
+    timeframe: 'Within 30 days',
+    is_preapproved: true,
+    language_preference: 'en',
+    status: 'appointment_scheduled',
+    follow_up_date: new Date(Date.now() + 3 * 86400000).toISOString(),
+    assigned_admin: 'edgar@yourrealtoredgar.com',
+    source_page: '/properties/la-jolla-village-luxury-townhome',
+    utm_source: 'google',
+    utm_medium: 'cpc',
+    utm_campaign: 'la_jolla_luxury',
+    admin_notes: 'Saturday 11:00 AM private tour confirmed with listing concierge.',
+    notes: [
+      {
+        id: 'n-004-1',
+        lead_id: 'lead-004',
+        author_email: 'edgar@yourrealtoredgar.com',
+        note: 'Pre-approval letter received from Wells Fargo Private Bank for $2.2M.',
+        created_at: new Date(Date.now() - 36 * 3600000).toISOString()
+      }
+    ],
+    created_at: new Date(Date.now() - 48 * 3600000).toISOString()
+  },
+  {
+    id: 'lead-005',
+    full_name: 'Carlos & Brenda Gutierrez',
+    email: 'carlos.gutierrez@sdsu.edu',
+    phone: '(619) 555-0331',
+    lead_type: 'seller_valuation',
+    message: 'Considering listing our 4-bedroom Spanish home in Mission Hills. Want a comprehensive comparative market analysis and pre-listing prep consult.',
+    preferred_contact_method: 'phone',
+    estimated_budget: '$1.4M+',
+    timeframe: 'Spring 2026',
+    is_preapproved: true,
+    language_preference: 'en',
+    status: 'in_progress',
+    follow_up_date: new Date(Date.now() + 5 * 86400000).toISOString(),
+    assigned_admin: 'edgar@yourrealtoredgar.com',
+    source_page: '/sell',
+    utm_source: 'instagram',
+    utm_medium: 'stories',
+    admin_notes: 'Presented CMA showing $1.45M listing potential. Reviewing staging and photography checklist.',
+    notes: [
+      {
+        id: 'n-005-1',
+        lead_id: 'lead-005',
+        author_email: 'edgar@yourrealtoredgar.com',
+        note: 'In-person home walkthrough completed. Identified minor kitchen updates that could add $50k value.',
+        created_at: new Date(Date.now() - 5 * 86400000).toISOString()
+      }
+    ],
+    created_at: new Date(Date.now() - 7 * 86400000).toISOString()
+  },
+  {
+    id: 'lead-006',
+    full_name: 'Elena Rostova',
+    email: 'elena.rostova@biotechsd.com',
+    phone: '(858) 555-0455',
+    lead_type: 'tour_request',
+    message: 'Closed escrow on our Torrey Pines luxury condo. Excellent guidance throughout the escrow process.',
+    property_id: 'p0000000-0000-0000-0000-000000000004',
+    property_address: '4560 Ocean Blvd #401, San Diego, CA',
+    preferred_contact_method: 'email',
+    estimated_budget: '$1.25M',
+    timeframe: 'Completed',
+    is_preapproved: true,
+    language_preference: 'en',
+    status: 'converted',
+    assigned_admin: 'edgar@yourrealtoredgar.com',
+    source_page: '/properties/pacific-beach-modern-duplex',
+    admin_notes: 'Escrow closed on schedule with Chicago Title. 5-star Google review submitted.',
+    notes: [
+      {
+        id: 'n-006-1',
+        lead_id: 'lead-006',
+        author_email: 'edgar@yourrealtoredgar.com',
+        note: 'Keys handed over and housewarming gift delivered.',
+        created_at: new Date(Date.now() - 14 * 86400000).toISOString()
+      }
+    ],
+    created_at: new Date(Date.now() - 25 * 86400000).toISOString()
+  },
+  {
+    id: 'lead-007',
+    full_name: 'Robert Miller',
+    email: 'rmiller9912@yahoo.com',
+    phone: '(619) 555-0611',
+    lead_type: 'general_contact',
+    message: 'Decided to relocate out of state to Arizona. Pausing our San Diego home search indefinitely.',
+    preferred_contact_method: 'email',
+    timeframe: 'Cancelled',
+    status: 'lost',
+    assigned_admin: 'edgar@yourrealtoredgar.com',
+    source_page: '/contact',
+    admin_notes: 'Client relocated to Phoenix for job transfer. Archived in CRM with referral partner connection.',
+    created_at: new Date(Date.now() - 40 * 86400000).toISOString()
+  },
+  {
+    id: 'lead-008',
+    full_name: 'Crypto SEO Bot 3000',
+    email: 'bot@ranking-boost-fast.ru',
+    phone: '(000) 000-0000',
+    lead_type: 'general_contact',
+    message: 'We guarantee page 1 rankings for Edgar Valle in 48 hours for $500 Bitcoin transfer.',
+    status: 'spam',
+    assigned_admin: 'edgar@yourrealtoredgar.com',
+    source_page: '/contact',
+    admin_notes: 'Automated SEO spam submission. IP flagged.',
+    created_at: new Date(Date.now() - 12 * 86400000).toISOString()
   }
 ];
 let runtimeAuditLogs: AuditLog[] = [...INITIAL_AUDIT_LOGS];
@@ -1879,11 +2045,40 @@ export async function getAllLeads(): Promise<Lead[]> {
   return runtimeLeads;
 }
 
-export async function updateLeadStatus(leadId: string, status: Lead['status'], adminNotes?: string): Promise<boolean> {
+export async function getLeadById(id: string): Promise<Lead | undefined> {
   const adminClient = getSupabaseAdmin();
   if (adminClient) {
     try {
-      await adminClient.from('leads').update({ status, admin_notes: adminNotes }).eq('id', leadId);
+      const { data, error } = await adminClient.from('leads').select('*').eq('id', id).single();
+      if (!error && data) return data as Lead;
+    } catch (e) {
+      console.warn('Supabase getLeadById fallback:', e);
+    }
+  }
+  return runtimeLeads.find(l => l.id === id);
+}
+
+export async function updateLeadStatus(
+  leadId: string, 
+  status: Lead['status'], 
+  adminNotes?: string,
+  actorEmail: string = 'edgar@yourrealtoredgar.com'
+): Promise<boolean> {
+  return updateLead(leadId, { status, admin_notes: adminNotes }, actorEmail);
+}
+
+export async function updateLead(
+  leadId: string, 
+  updates: Partial<Lead>, 
+  actorEmail: string = 'edgar@yourrealtoredgar.com'
+): Promise<boolean> {
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      await adminClient.from('leads').update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      }).eq('id', leadId);
     } catch (e) {
       console.warn('Supabase lead update error:', e);
     }
@@ -1891,8 +2086,96 @@ export async function updateLeadStatus(leadId: string, status: Lead['status'], a
 
   const localLead = runtimeLeads.find(l => l.id === leadId);
   if (localLead) {
-    localLead.status = status;
-    if (adminNotes !== undefined) localLead.admin_notes = adminNotes;
+    Object.assign(localLead, updates, { updated_at: new Date().toISOString() });
+
+    await logAuditEvent({
+      actor_email: actorEmail,
+      action: 'update_lead',
+      entity_type: 'lead',
+      entity_id: leadId,
+      details: updates
+    });
+
+    return true;
+  }
+  return false;
+}
+
+export async function addLeadNote(
+  leadId: string, 
+  note: string, 
+  authorEmail: string = 'edgar@yourrealtoredgar.com'
+): Promise<{ success: boolean; note?: LeadNote }> {
+  const newNote: LeadNote = {
+    id: `note-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    lead_id: leadId,
+    author_email: authorEmail,
+    note: note.trim(),
+    created_at: new Date().toISOString()
+  };
+
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      await adminClient.from('lead_notes').insert(newNote);
+    } catch (e) {
+      console.warn('Supabase lead note insert error:', e);
+    }
+  }
+
+  const lead = runtimeLeads.find(l => l.id === leadId);
+  if (lead) {
+    if (!lead.notes) lead.notes = [];
+    lead.notes.unshift(newNote);
+
+    await logAuditEvent({
+      actor_email: authorEmail,
+      action: 'add_lead_note',
+      entity_type: 'lead',
+      entity_id: leadId,
+      details: { note_id: newNote.id }
+    });
+
+    return { success: true, note: newNote };
+  }
+
+  return { success: false };
+}
+
+export async function getLeadNotes(leadId: string): Promise<LeadNote[]> {
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      const { data, error } = await adminClient.from('lead_notes').select('*').eq('lead_id', leadId).order('created_at', { ascending: false });
+      if (!error && data) return data as LeadNote[];
+    } catch (e) {
+      console.warn('Supabase getLeadNotes fallback:', e);
+    }
+  }
+
+  const lead = runtimeLeads.find(l => l.id === leadId);
+  return lead?.notes || [];
+}
+
+export async function deleteLead(leadId: string, actorEmail: string = 'edgar@yourrealtoredgar.com'): Promise<boolean> {
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      await adminClient.from('leads').delete().eq('id', leadId);
+    } catch (e) {
+      console.warn('Supabase delete lead error:', e);
+    }
+  }
+
+  const idx = runtimeLeads.findIndex(l => l.id === leadId);
+  if (idx !== -1) {
+    runtimeLeads.splice(idx, 1);
+    await logAuditEvent({
+      actor_email: actorEmail,
+      action: 'delete_lead',
+      entity_type: 'lead',
+      entity_id: leadId
+    });
     return true;
   }
   return false;
