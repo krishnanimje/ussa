@@ -2,6 +2,13 @@
 
 export type PropertyType = 'Single Family' | 'Condo' | 'Townhome' | 'Multi-Family' | 'Fixer-Upper' | 'Commercial';
 export type PropertyStatus = 'active' | 'pending' | 'sold' | 'open_house' | 'draft';
+export type ListingStatus = 'for_sale' | 'for_rent' | 'pending' | 'sold' | 'coming_soon';
+export type PublicationStatus = 'draft' | 'published' | 'archived';
+export type AddressVisibility = 'full' | 'neighborhood_only';
+export type LotSizeUnit = 'sqft' | 'acres';
+export type RenovationStatus = 'turnkey' | 'updated' | 'original' | 'fixer_upper';
+export type HoaFrequency = 'monthly' | 'quarterly' | 'annually' | 'none';
+
 export type LeadType = 
   | 'first_time_buyer' 
   | 'va_buyer' 
@@ -15,6 +22,27 @@ export type LeadStatus = 'new' | 'contacted' | 'appointment_set' | 'closed' | 'a
 export type ContactMethod = 'phone' | 'email' | 'text';
 export type Language = 'en' | 'es';
 
+export interface PropertyMedia {
+  id: string;
+  property_id: string;
+  media_type: 'image' | 'video' | 'floorplan';
+  url: string;
+  storage_path?: string;
+  alt_text?: string;
+  caption?: string;
+  display_order: number;
+  is_primary: boolean;
+  file_size_bytes?: number;
+  mime_type?: string;
+  created_at: string;
+}
+
+export interface AdditionalCost {
+  name: string;
+  amount: number;
+  frequency?: 'monthly' | 'annually' | 'one_time';
+}
+
 export interface Property {
   id: string;
   slug: string;
@@ -22,34 +50,58 @@ export interface Property {
   tagline?: string;
   property_type: PropertyType;
   status: PropertyStatus;
+  listing_status?: ListingStatus;
+  publication_status?: PublicationStatus;
   price: number;
+  currency?: string;
   original_price?: number;
+  previous_price?: number;
   bedrooms: number;
   bathrooms: number;
   square_feet: number;
   lot_size_sqft?: number;
+  lot_size?: number;
+  lot_size_unit?: LotSizeUnit;
   year_built?: number;
   garage_spaces: number;
+  parking_spaces?: number;
   has_pool: boolean;
+  has_spa?: boolean;
   is_featured: boolean;
   is_va_eligible: boolean;
   is_fixer_upper: boolean;
+  renovation_status?: RenovationStatus;
   arv_estimate?: number;
   address_street: string;
+  address_unit?: string;
   address_city: string;
   address_state: string;
   address_zip: string;
+  address_country?: string;
+  address_visibility?: AddressVisibility;
   neighborhood: string;
   latitude?: number;
   longitude?: number;
   description: string;
   features: string[];
+  amenities?: string[];
   hoa_fee_monthly?: number;
+  hoa_fee_frequency?: HoaFrequency;
+  additional_costs?: AdditionalCost[];
   property_tax_rate?: number;
   virtual_tour_url?: string;
+  video_url?: string;
   mls_number?: string;
   primary_image?: string;
   gallery_images?: string[];
+  media?: PropertyMedia[];
+  view_count?: number;
+  inquiries_count?: number;
+  seo_title?: string;
+  seo_description?: string;
+  og_image?: string;
+  is_indexable?: boolean;
+  deleted_at?: string | null;
   created_at: string;
   updated_at?: string;
 }
@@ -60,10 +112,12 @@ export interface OpenHouse {
   property?: Property;
   start_time: string;
   end_time: string;
+  timezone?: string;
   host_name: string;
   refreshments_provided: boolean;
   special_instructions?: string;
   is_cancelled: boolean;
+  rsvp_link?: string;
   created_at?: string;
 }
 
@@ -129,6 +183,17 @@ export interface SiteSettings {
   instagram_url: string;
   service_area: string;
   languages: string[];
+}
+
+export interface AuditLog {
+  id: string;
+  actor_email?: string;
+  action: string;
+  entity_type: string;
+  entity_id?: string;
+  details?: Record<string, unknown>;
+  ip_address?: string;
+  created_at: string;
 }
 
 export interface MortgageCalculationInput {

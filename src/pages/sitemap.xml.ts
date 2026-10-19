@@ -52,12 +52,17 @@ export const GET: APIRoute = async () => {
   </url>`;
   }
 
-  // Properties
-  for (const prop of properties) {
+  // Properties (Only published, non-deleted, and indexable listings)
+  const eligibleProperties = properties.filter(p => 
+    p.publication_status === 'published' && 
+    !p.deleted_at && 
+    p.is_indexable !== false
+  );
+  for (const prop of eligibleProperties) {
     xml += `
   <url>
     <loc>${siteUrl}/properties/${prop.slug}</loc>
-    <lastmod>${prop.created_at}</lastmod>
+    <lastmod>${prop.updated_at || prop.created_at}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>`;

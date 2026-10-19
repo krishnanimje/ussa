@@ -1,0 +1,26 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PropertyForm from '../../../components/admin/PropertyForm.astro';
+import { getPropertyById } from '../../../lib/store';
+import { checkAdminAuth } from '../../../lib/auth';
+
+export const prerender = false;
+
+if (!checkAdminAuth(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+
+const id = Astro.url.searchParams.get('id');
+if (!id) {
+  return Astro.redirect('/admin/properties');
+}
+
+const property = await getPropertyById(id);
+if (!property) {
+  return Astro.redirect('/admin/properties');
+}
+---
+
+<AdminLayout title={`Edit ${property.title}`} activeNav="properties">
+  <PropertyForm property={property} mode="edit" />
+</AdminLayout>

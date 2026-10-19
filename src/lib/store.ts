@@ -6,8 +6,22 @@ import type {
   Neighborhood, 
   BlogPost, 
   SiteSettings, 
-  Lead
+  Lead,
+  PropertyMedia,
+  AuditLog
 } from './types';
+
+export function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+}
 
 // Seed data constants representing Edgar Valle's San Diego listings & specialties
 export const INITIAL_PROPERTIES: Property[] = [
@@ -18,22 +32,32 @@ export const INITIAL_PROPERTIES: Property[] = [
     tagline: 'Timeless San Diego character with modern bespoke renovations in vibrant North Park',
     property_type: 'Single Family',
     status: 'open_house',
+    listing_status: 'for_sale',
+    publication_status: 'published',
     price: 1185000,
+    currency: 'USD',
     original_price: 1225000,
+    previous_price: 1225000,
     bedrooms: 3,
     bathrooms: 2.0,
     square_feet: 1740,
     lot_size_sqft: 5200,
+    lot_size_unit: 'sqft',
     year_built: 1932,
     garage_spaces: 2,
+    parking_spaces: 2,
     has_pool: false,
+    has_spa: false,
     is_featured: true,
     is_va_eligible: true,
     is_fixer_upper: false,
+    renovation_status: 'turnkey',
     address_street: '3428 Herman Ave',
     address_city: 'San Diego',
     address_state: 'CA',
     address_zip: '92104',
+    address_country: 'USA',
+    address_visibility: 'full',
     neighborhood: 'North Park',
     latitude: 32.7483,
     longitude: -117.1328,
@@ -47,7 +71,9 @@ export const INITIAL_PROPERTIES: Property[] = [
       'Central HVAC',
       'Walk to 30th St Dining'
     ],
+    amenities: ['Central A/C', 'Quartz Countertops', 'Hardwood Floors', 'Courtyard Patio', 'ADU Pre-Plumbed'],
     hoa_fee_monthly: 0,
+    hoa_fee_frequency: 'none',
     property_tax_rate: 1.22,
     mls_number: 'SD26-90412',
     primary_image: '/images/properties/north-park-spanish.svg',
@@ -57,7 +83,56 @@ export const INITIAL_PROPERTIES: Property[] = [
       '/images/properties/kitchen-luxury.svg',
       '/images/properties/courtyard-patio.svg'
     ],
-    created_at: new Date(Date.now() - 3 * 86400000).toISOString()
+    media: [
+      {
+        id: 'm-np-01',
+        property_id: 'p0000000-0000-0000-0000-000000000001',
+        media_type: 'image',
+        url: '/images/properties/north-park-spanish.svg',
+        alt_text: 'Spanish revival facade with terracotta tiled roof and landscaping',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 3 * 86400000).toISOString()
+      },
+      {
+        id: 'm-np-02',
+        property_id: 'p0000000-0000-0000-0000-000000000001',
+        media_type: 'image',
+        url: '/images/properties/interior-living.svg',
+        alt_text: 'Open-concept living room with coved ceilings and hardwood flooring',
+        display_order: 2,
+        is_primary: false,
+        created_at: new Date(Date.now() - 3 * 86400000).toISOString()
+      },
+      {
+        id: 'm-np-03',
+        property_id: 'p0000000-0000-0000-0000-000000000001',
+        media_type: 'image',
+        url: '/images/properties/kitchen-luxury.svg',
+        alt_text: 'Designer chef kitchen with waterfall quartz island and custom pendant lighting',
+        display_order: 3,
+        is_primary: false,
+        created_at: new Date(Date.now() - 3 * 86400000).toISOString()
+      },
+      {
+        id: 'm-np-04',
+        property_id: 'p0000000-0000-0000-0000-000000000001',
+        media_type: 'image',
+        url: '/images/properties/courtyard-patio.svg',
+        alt_text: 'Private central terracotta courtyard with string lights and drought-tolerant succulents',
+        display_order: 4,
+        is_primary: false,
+        created_at: new Date(Date.now() - 3 * 86400000).toISOString()
+      }
+    ],
+    view_count: 248,
+    inquiries_count: 14,
+    seo_title: '3428 Herman Ave — Restored Spanish Revival in North Park',
+    seo_description: '3 Bed, 2 Bath Spanish Revival home in North Park, San Diego with private courtyard and permitted ADU potential. Offered at $1,185,000.',
+    is_indexable: true,
+    deleted_at: null,
+    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
+    updated_at: new Date(Date.now() - 1 * 86400000).toISOString()
   },
   {
     id: 'p0000000-0000-0000-0000-000000000002',
@@ -66,20 +141,29 @@ export const INITIAL_PROPERTIES: Property[] = [
     tagline: 'Blocks from Sail Bay and the Pacific surf with resort-style amenities',
     property_type: 'Condo',
     status: 'active',
+    listing_status: 'for_sale',
+    publication_status: 'published',
     price: 895000,
+    currency: 'USD',
     bedrooms: 2,
     bathrooms: 2.0,
     square_feet: 1150,
     year_built: 2018,
     garage_spaces: 2,
+    parking_spaces: 2,
     has_pool: true,
+    has_spa: true,
     is_featured: true,
     is_va_eligible: true,
     is_fixer_upper: false,
-    address_street: '1245 Pacific Beach Dr #3B',
+    renovation_status: 'turnkey',
+    address_street: '1245 Pacific Beach Dr',
+    address_unit: '#3B',
     address_city: 'San Diego',
     address_state: 'CA',
     address_zip: '92109',
+    address_country: 'USA',
+    address_visibility: 'full',
     neighborhood: 'Pacific Beach',
     latitude: 32.7932,
     longitude: -117.2415,
@@ -93,7 +177,9 @@ export const INITIAL_PROPERTIES: Property[] = [
       'In-Unit Washer/Dryer',
       'Secure Access Building'
     ],
+    amenities: ['Heated Pool', 'Spa', 'EV Charging Station', 'Elevator', 'In-Unit Laundry'],
     hoa_fee_monthly: 420,
+    hoa_fee_frequency: 'monthly',
     property_tax_rate: 1.18,
     mls_number: 'SD26-88104',
     primary_image: '/images/properties/pacific-beach-condo.svg',
@@ -102,212 +188,365 @@ export const INITIAL_PROPERTIES: Property[] = [
       '/images/properties/interior-living.svg',
       '/images/properties/pool-resort.svg'
     ],
+    media: [
+      {
+        id: 'm-pb-01',
+        property_id: 'p0000000-0000-0000-0000-000000000002',
+        media_type: 'image',
+        url: '/images/properties/pacific-beach-condo.svg',
+        alt_text: 'Pacific Beach modern condo exterior with glass balconies and coastal palms',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 5 * 86400000).toISOString()
+      },
+      {
+        id: 'm-pb-02',
+        property_id: 'p0000000-0000-0000-0000-000000000002',
+        media_type: 'image',
+        url: '/images/properties/pool-resort.svg',
+        alt_text: 'Community heated swimming pool with lounge cabanas',
+        display_order: 2,
+        is_primary: false,
+        created_at: new Date(Date.now() - 5 * 86400000).toISOString()
+      }
+    ],
+    view_count: 184,
+    inquiries_count: 9,
+    seo_title: '1245 Pacific Beach Dr #3B — Luxury Coastal Condo',
+    seo_description: '2 Bed, 2 Bath modern condo 3 blocks from Sail Bay in Pacific Beach, San Diego. Offered at $895,000.',
+    is_indexable: true,
+    deleted_at: null,
     created_at: new Date(Date.now() - 5 * 86400000).toISOString()
   },
   {
     id: 'p0000000-0000-0000-0000-000000000003',
-    slug: 'eastlake-greens-chula-vista-pool-home',
-    title: 'Luxury Chula Vista Estate with Heated Pool & 3-Car Garage',
-    tagline: 'Suburban paradise with resort backyard, custom rock waterfall pool, and owned solar',
+    slug: 'chula-vista-pool-home-eastlake',
+    title: 'Resort Living: Eastlake Family Home with Saltwater Pool & Solar',
+    tagline: 'Expansive 4-bedroom executive estate with panoramic mountain views and resort backyard',
     property_type: 'Single Family',
     status: 'active',
-    price: 975000,
+    listing_status: 'for_sale',
+    publication_status: 'published',
+    price: 949000,
+    currency: 'USD',
     bedrooms: 4,
     bathrooms: 3.0,
-    square_feet: 2580,
-    lot_size_sqft: 7850,
+    square_feet: 2650,
+    lot_size_sqft: 7800,
+    lot_size_unit: 'sqft',
     year_built: 2004,
     garage_spaces: 3,
+    parking_spaces: 3,
     has_pool: true,
+    has_spa: true,
     is_featured: true,
     is_va_eligible: true,
     is_fixer_upper: false,
-    address_street: '2184 Greensview Dr',
+    renovation_status: 'updated',
+    address_street: '2842 Eastlake Pkwy',
     address_city: 'Chula Vista',
     address_state: 'CA',
     address_zip: '91915',
+    address_country: 'USA',
+    address_visibility: 'full',
     neighborhood: 'Chula Vista',
-    latitude: 32.6394,
-    longitude: -116.9421,
-    description: 'A true entertainer paradise in Eastlake Greens! This spacious 4-bedroom executive home features an open concept floor plan, dramatic high vaulted ceilings, and a backyard oasis that rivals a five-star resort. Enjoy your pebble-finish heated pool with elevated spa and stone waterfall, covered outdoor kitchen with built-in BBQ, and full synthetic turf lawn. Fully owned 9.8kW solar system dramatically reduces electric bills.',
+    latitude: 32.6328,
+    longitude: -116.9745,
+    description: 'Welcome home to resort-style California living in Eastlake Greens. This stunning single-family home features an entertainer backyard with a heated pebble-finish saltwater pool, raised spa, covered patio with built-in BBQ kitchen, and fire pit. Inside features soaring vaulted ceilings, ground-floor bedroom with full bath, gourmet kitchen with granite countertops, owned 8.4kW solar system, and a 3-car garage.',
     features: [
-      'Custom Heated Pool & Spa',
-      '3-Car Tandem Garage',
-      'Owned 9.8kW Solar Panels',
-      'Outdoor Kitchen with Built-in Grill',
-      'Vaulted Ceilings',
-      'Top-Rated Eastlake Schools',
-      'Downstairs Bedroom & Full Bath'
+      'Heated Saltwater Pool & Raised Spa',
+      'Fully Owned 8.4kW Solar System',
+      'Main-Floor Bedroom & Full Bathroom',
+      '3-Car Direct-Entry Garage',
+      'Built-in Outdoor Kitchen & Fire Pit',
+      'Top-Ranked Eastlake Schools'
     ],
-    hoa_fee_monthly: 115,
+    amenities: ['Saltwater Pool', 'Spa', 'Owned Solar', 'Outdoor Kitchen', '3-Car Garage'],
+    hoa_fee_monthly: 95,
+    hoa_fee_frequency: 'monthly',
     property_tax_rate: 1.28,
-    mls_number: 'CV26-44219',
+    mls_number: 'CV26-77312',
     primary_image: '/images/properties/chula-vista-pool.svg',
     gallery_images: [
       '/images/properties/chula-vista-pool.svg',
       '/images/properties/pool-resort.svg',
-      '/images/properties/kitchen-luxury.svg'
+      '/images/properties/kitchen-luxury.svg',
+      '/images/properties/interior-living.svg'
     ],
+    media: [
+      {
+        id: 'm-cv-01',
+        property_id: 'p0000000-0000-0000-0000-000000000003',
+        media_type: 'image',
+        url: '/images/properties/chula-vista-pool.svg',
+        alt_text: 'Chula Vista Eastlake estate with pool and palm landscaping',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 7 * 86400000).toISOString()
+      }
+    ],
+    view_count: 312,
+    inquiries_count: 22,
+    seo_title: '2842 Eastlake Pkwy — Chula Vista Family Pool Estate',
+    seo_description: '4 Bed, 3 Bath home in Eastlake, Chula Vista with saltwater pool, owned solar, and 3-car garage. Offered at $949,000.',
+    is_indexable: true,
+    deleted_at: null,
     created_at: new Date(Date.now() - 7 * 86400000).toISOString()
   },
   {
     id: 'p0000000-0000-0000-0000-000000000004',
-    slug: 'oceanside-va-friendly-turnkey-ranch',
-    title: 'Turnkey Oceanside Single-Story Near Camp Pendleton',
-    tagline: 'Zero-down VA loan approved, spacious RV parking, and expansive private yard',
+    slug: 'oceanside-va-approved-ranch-home',
+    title: 'Turnkey Coastal Ranch Minutes to Camp Pendleton Main Gate',
+    tagline: 'Ideal for military buyers utilizing 0% down VA financing with private RV parking',
     property_type: 'Single Family',
     status: 'active',
-    price: 765000,
-    original_price: 780000,
+    listing_status: 'for_sale',
+    publication_status: 'published',
+    price: 789000,
+    currency: 'USD',
     bedrooms: 3,
     bathrooms: 2.0,
     square_feet: 1520,
-    lot_size_sqft: 6800,
-    year_built: 1986,
+    lot_size_sqft: 6500,
+    lot_size_unit: 'sqft',
+    year_built: 1978,
     garage_spaces: 2,
+    parking_spaces: 4,
     has_pool: false,
+    has_spa: false,
     is_featured: true,
     is_va_eligible: true,
     is_fixer_upper: false,
-    address_street: '4120 Calle Ariane',
+    renovation_status: 'turnkey',
+    address_street: '412 Canyon Dr',
     address_city: 'Oceanside',
     address_state: 'CA',
-    address_zip: '92057',
+    address_zip: '92054',
+    address_country: 'USA',
+    address_visibility: 'full',
     neighborhood: 'Oceanside',
-    latitude: 33.2281,
-    longitude: -117.3195,
-    description: 'Tailored for our active military families and first-time buyers! Located just 12 minutes to Camp Pendleton Main Gate and San Luis Rey bike trail to the beach. Completely remodeled with new dual-pane vinyl windows, energy-efficient HVAC with smart thermostat, fresh interior/exterior paint, and brand new shaker kitchen with stainless appliance package. Gated side yard provides dedicated RV/boat parking with no HOA or Mello-Roos.',
+    latitude: 33.1959,
+    longitude: -117.3795,
+    description: 'Perfect for military families! Located just 8 minutes from the Camp Pendleton San Luis Rey gate and 2 miles to Oceanside Harbor beaches. This single-level ranch has been meticulously renovated with dual-pane vinyl windows, new roof, luxury vinyl plank flooring, recessed LED lighting, and an upgraded electrical panel. Huge flat fenced backyard with gated side RV/boat parking and no HOA fees or Mello-Roos.',
     features: [
-      '100% VA Loan Approved',
-      '12 Min to Camp Pendleton',
-      'Dedicated RV / Boat Parking',
-      'No HOA & No Mello-Roos',
-      'Brand New Kitchen & Appliances',
-      'Large Fenced Backyard',
-      'Single Story Living'
+      '8 Mins to Camp Pendleton Main Gate',
+      '0% Down VA Loan Pre-Approved',
+      'Gated RV / Boat Parking',
+      'New Roof & Upgraded 200A Electrical',
+      'Zero HOA Fees & No Mello-Roos',
+      'Single-Story Accessibility'
     ],
+    amenities: ['RV Parking', 'Fenced Yard', 'Single Story', 'No HOA', 'Central Heat'],
     hoa_fee_monthly: 0,
+    hoa_fee_frequency: 'none',
     property_tax_rate: 1.15,
-    mls_number: 'OC26-31902',
+    mls_number: 'OC26-55409',
     primary_image: '/images/properties/oceanside-ranch.svg',
     gallery_images: [
       '/images/properties/oceanside-ranch.svg',
       '/images/properties/interior-living.svg',
       '/images/properties/courtyard-patio.svg'
     ],
-    created_at: new Date(Date.now() - 9 * 86400000).toISOString()
+    media: [
+      {
+        id: 'm-oc-01',
+        property_id: 'p0000000-0000-0000-0000-000000000004',
+        media_type: 'image',
+        url: '/images/properties/oceanside-ranch.svg',
+        alt_text: 'Oceanside single-story coastal ranch with RV driveway',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 10 * 86400000).toISOString()
+      }
+    ],
+    view_count: 279,
+    inquiries_count: 19,
+    seo_title: '412 Canyon Dr — Oceanside Single Story VA Ranch Home',
+    seo_description: '3 Bed, 2 Bath Oceanside home minutes to Camp Pendleton. 0% Down VA financing ready with RV parking. $789,000.',
+    is_indexable: true,
+    deleted_at: null,
+    created_at: new Date(Date.now() - 10 * 86400000).toISOString()
   },
   {
     id: 'p0000000-0000-0000-0000-000000000005',
-    slug: 'clairemont-mesa-fixer-investor-opportunity',
-    title: 'Prime Clairemont Fixer-Upper with Massive ARV Spread',
-    tagline: 'High-upside investment opportunity on a flat 8,500 sq ft canyon-adjacent lot',
+    slug: 'clairemont-fixer-investor-special',
+    title: 'High-Upside Fixer with Canyon Views & 8,400 Sq Ft Lot (SB 9 / ADU)',
+    tagline: '70% ARV Rule Investor Opportunity: Large lot primed for remodel and detached dual ADU build',
     property_type: 'Fixer-Upper',
-    status: 'active',
-    price: 699000,
+    status: 'pending',
+    listing_status: 'pending',
+    publication_status: 'published',
+    price: 765000,
+    currency: 'USD',
+    original_price: 799000,
+    previous_price: 799000,
     bedrooms: 3,
-    bathrooms: 1.5,
-    square_feet: 1380,
-    lot_size_sqft: 8500,
-    year_built: 1961,
+    bathrooms: 2.0,
+    square_feet: 1420,
+    lot_size_sqft: 8400,
+    lot_size_unit: 'sqft',
+    year_built: 1959,
     garage_spaces: 2,
+    parking_spaces: 2,
     has_pool: false,
+    has_spa: false,
     is_featured: false,
     is_va_eligible: false,
     is_fixer_upper: true,
-    arv_estimate: 985000,
-    address_street: '4912 Mount Alifan Dr',
+    renovation_status: 'fixer_upper',
+    arv_estimate: 1150000,
+    address_street: '4920 Mount Alifan Dr',
     address_city: 'San Diego',
     address_state: 'CA',
     address_zip: '92111',
+    address_country: 'USA',
+    address_visibility: 'full',
     neighborhood: 'Clairemont',
-    latitude: 32.8198,
+    latitude: 32.8256,
     longitude: -117.1852,
-    description: 'Investor special & fix-and-flip goldmine! Edgar Valle exclusive opportunity with solid bones and incredible upside. Property needs cosmetic rehab, kitchen/bath overhaul, and floor plan opening. Comps in the immediate half-mile radius for remodeled homes are commanding $975K - $1.05M. Expansive 8,500 sq ft flat lot allows for a simple 300 sq ft master suite expansion plus detached 1,000 sq ft ADU. Cash or hard money preferred.',
+    description: 'Contractor special and fix-and-flip investor dream in central Clairemont Mesa! Property backs up to serene canyon green space with no rear neighbors. Solid mid-century bones with copper plumbing and solid foundation, but requires full cosmetic overhaul: kitchen, baths, flooring, and roof. Massive 8,400 sq ft RS-1-7 zoned lot qualifies under City of San Diego ADU bonus programs for up to two detached rental units. Estimated ARV after full renovation: $1,150,000.',
     features: [
-      'Fix & Flip Potential',
-      'Estimated ARV $985,000+',
-      '8,500 Sq Ft Flat Lot',
-      'Canyon-Adjacent Setting',
-      'Zoned for SB9 / ADU Expansion',
-      'Original Mid-Century Hardwoods',
-      'High Investor Equity Spread'
+      'Huge 8,400 Sq Ft Canyon-Backing Lot',
+      'SB 9 / Multi-ADU Development Potential',
+      'Estimated After Repair Value: $1,150,000',
+      'Strong 70% ARV Acquisition Spread',
+      'Solid Mid-Century Foundation & Copper Plumbing',
+      'Convenient Central San Diego Location'
     ],
+    amenities: ['Canyon View', 'Large Lot', 'ADU Zoning', 'Fixer Spread'],
     hoa_fee_monthly: 0,
+    hoa_fee_frequency: 'none',
     property_tax_rate: 1.20,
-    mls_number: 'SD26-11984',
+    mls_number: 'CM26-44012',
     primary_image: '/images/properties/clairemont-fixer.svg',
     gallery_images: [
       '/images/properties/clairemont-fixer.svg',
-      '/images/properties/interior-living.svg'
+      '/images/properties/courtyard-patio.svg'
     ],
-    created_at: new Date(Date.now() - 11 * 86400000).toISOString()
+    media: [
+      {
+        id: 'm-cm-01',
+        property_id: 'p0000000-0000-0000-0000-000000000005',
+        media_type: 'image',
+        url: '/images/properties/clairemont-fixer.svg',
+        alt_text: 'Clairemont mid-century single-story fixer with canyon lot',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 12 * 86400000).toISOString()
+      }
+    ],
+    view_count: 421,
+    inquiries_count: 27,
+    seo_title: '4920 Mount Alifan Dr — Clairemont Fixer with Canyon View',
+    seo_description: 'Fix & flip opportunity in Clairemont San Diego. 8,400 sq ft lot with ADU potential. ARV $1.15M.',
+    is_indexable: true,
+    deleted_at: null,
+    created_at: new Date(Date.now() - 12 * 86400000).toISOString()
   },
   {
     id: 'p0000000-0000-0000-0000-000000000006',
-    slug: 'san-carlos-cowles-mountain-starter-home',
-    title: 'Sunlit San Carlos Starter Home with Mountain Views',
-    tagline: 'First-time homebuyer friendly with scenic trail access and mature fruit trees',
+    slug: 'san-carlos-lake-murray-view-home',
+    title: 'San Carlos Modernized Mid-Century Near Lake Murray & Cowles Mountain',
+    tagline: 'Ideal for first-time buyers wanting space, top schools, and mountain views',
     property_type: 'Single Family',
-    status: 'pending',
-    price: 749000,
+    status: 'active',
+    listing_status: 'for_sale',
+    publication_status: 'published',
+    price: 925000,
+    currency: 'USD',
     bedrooms: 3,
     bathrooms: 2.0,
-    square_feet: 1410,
-    lot_size_sqft: 6200,
-    year_built: 1974,
+    square_feet: 1680,
+    lot_size_sqft: 6800,
+    lot_size_unit: 'sqft',
+    year_built: 1968,
     garage_spaces: 2,
+    parking_spaces: 2,
     has_pool: false,
+    has_spa: false,
     is_featured: false,
     is_va_eligible: true,
     is_fixer_upper: false,
-    address_street: '7815 Lake Adlon Dr',
+    renovation_status: 'updated',
+    address_street: '7215 Navajo Rd',
     address_city: 'San Diego',
     address_state: 'CA',
     address_zip: '92119',
+    address_country: 'USA',
+    address_visibility: 'full',
     neighborhood: 'San Carlos',
-    latitude: 32.8021,
-    longitude: -117.0392,
-    description: 'Under contract in 6 days! This delightful single-level home offers panoramic morning views of Cowles Mountain. Featuring an updated kitchen with solid maple cabinets, remodeled guest bath, double-pane low-E windows, and a shaded pergola patio surrounded by producing Meyer lemon and Haas avocado trees. Ideal for first-time buyers looking for peaceful suburban stability with quick access to Mission Trails Regional Park.',
+    latitude: 32.8012,
+    longitude: -117.0345,
+    description: 'Breathtaking Cowles Mountain views from your private front patio! This light-filled San Carlos home has been tastefully updated with an open-concept kitchen, custom quartz counters, stainless appliances, and dual pane sliding doors leading out to a peaceful tiered backyard with mature fruit trees. Walking distance to Lake Murray community park, coffee shops, and top-rated Grossmont Unified schools.',
     features: [
-      'Cowles Mountain Views',
-      'Walk to Mission Trails Park',
-      'Under Contract in 6 Days',
-      'Producing Avocado & Citrus Trees',
-      'Dual Pane Windows',
-      'Quiet Cul-de-Sac Street'
+      'Cowles Mountain & Lake Murray Views',
+      'Open-Concept Quartz Chef Kitchen',
+      'Private Tiered Backyard with Fruit Trees',
+      'Attached 2-Car Garage with Epoxy Floor',
+      'Qualifies for CalHFA First-Time Buyer Programs',
+      'No HOA Fees'
     ],
+    amenities: ['Mountain View', 'Quartz Kitchen', 'Epoxy Garage', 'Fruit Trees'],
     hoa_fee_monthly: 0,
+    hoa_fee_frequency: 'none',
     property_tax_rate: 1.19,
-    mls_number: 'SD26-77312',
+    mls_number: 'SC26-33019',
     primary_image: '/images/properties/san-carlos-home.svg',
     gallery_images: [
       '/images/properties/san-carlos-home.svg',
-      '/images/properties/interior-living.svg'
+      '/images/properties/interior-living.svg',
+      '/images/properties/kitchen-luxury.svg'
     ],
-    created_at: new Date(Date.now() - 14 * 86400000).toISOString()
+    media: [
+      {
+        id: 'm-sc-01',
+        property_id: 'p0000000-0000-0000-0000-000000000006',
+        media_type: 'image',
+        url: '/images/properties/san-carlos-home.svg',
+        alt_text: 'San Carlos family home with Cowles mountain backdrop',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 15 * 86400000).toISOString()
+      }
+    ],
+    view_count: 198,
+    inquiries_count: 11,
+    seo_title: '7215 Navajo Rd — San Carlos Family Home Near Lake Murray',
+    seo_description: '3 Bed, 2 Bath modernized home in San Carlos, San Diego with mountain views and CalHFA eligibility. $925,000.',
+    is_indexable: true,
+    deleted_at: null,
+    created_at: new Date(Date.now() - 15 * 86400000).toISOString()
   },
   {
     id: 'p0000000-0000-0000-0000-000000000007',
-    slug: 'la-jolla-village-contemporary-townhome',
-    title: 'Architectural Contemporary Townhome Near Windansea',
-    tagline: 'Steps to the La Jolla shoreline with private rooftop deck and ocean breezes',
+    slug: 'la-jolla-village-luxury-townhome',
+    title: 'Architectural Townhome in the Village of La Jolla with Rooftop Ocean Peeks',
+    tagline: 'Sophisticated coastal living steps from Girard Avenue fine dining and beaches',
     property_type: 'Townhome',
     status: 'active',
-    price: 1650000,
+    listing_status: 'for_sale',
+    publication_status: 'published',
+    price: 1875000,
+    currency: 'USD',
     bedrooms: 3,
     bathrooms: 2.5,
     square_feet: 1980,
     year_built: 2016,
     garage_spaces: 2,
+    parking_spaces: 2,
     has_pool: false,
+    has_spa: false,
     is_featured: true,
     is_va_eligible: true,
     is_fixer_upper: false,
-    address_street: '7435 Draper Ave #2',
+    renovation_status: 'turnkey',
+    address_street: '7435 Draper Ave',
+    address_unit: '#2',
     address_city: 'La Jolla',
     address_state: 'CA',
     address_zip: '92037',
+    address_country: 'USA',
+    address_visibility: 'full',
     neighborhood: 'La Jolla',
     latitude: 32.8398,
     longitude: -117.2764,
@@ -320,7 +559,9 @@ export const INITIAL_PROPERTIES: Property[] = [
       'Attached 2-Car Garage',
       'Low HOA'
     ],
+    amenities: ['Rooftop Terrace', 'Ocean Views', 'Miele Appliances', 'Epoxy Garage'],
     hoa_fee_monthly: 310,
+    hoa_fee_frequency: 'monthly',
     property_tax_rate: 1.16,
     mls_number: 'LJ26-99214',
     primary_image: '/images/properties/la-jolla-townhome.svg',
@@ -329,6 +570,24 @@ export const INITIAL_PROPERTIES: Property[] = [
       '/images/properties/kitchen-luxury.svg',
       '/images/properties/courtyard-patio.svg'
     ],
+    media: [
+      {
+        id: 'm-lj-01',
+        property_id: 'p0000000-0000-0000-0000-000000000007',
+        media_type: 'image',
+        url: '/images/properties/la-jolla-townhome.svg',
+        alt_text: 'La Jolla architectural multi-level townhome with rooftop deck',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 18 * 86400000).toISOString()
+      }
+    ],
+    view_count: 512,
+    inquiries_count: 31,
+    seo_title: '7435 Draper Ave #2 — Luxury La Jolla Village Townhome',
+    seo_description: '3 Bed, 2.5 Bath architectural townhome in the Village of La Jolla with private rooftop deck. $1,875,000.',
+    is_indexable: true,
+    deleted_at: null,
     created_at: new Date(Date.now() - 18 * 86400000).toISOString()
   },
   {
@@ -338,21 +597,30 @@ export const INITIAL_PROPERTIES: Property[] = [
     tagline: 'Two detached residences on one lot with high cash-flow potential',
     property_type: 'Multi-Family',
     status: 'active',
+    listing_status: 'for_sale',
+    publication_status: 'published',
     price: 1350000,
+    currency: 'USD',
     bedrooms: 4,
     bathrooms: 3.0,
     square_feet: 2240,
     lot_size_sqft: 5500,
+    lot_size_unit: 'sqft',
     year_built: 1928,
     garage_spaces: 2,
+    parking_spaces: 2,
     has_pool: false,
+    has_spa: false,
     is_featured: false,
     is_va_eligible: true,
     is_fixer_upper: false,
+    renovation_status: 'updated',
     address_street: '2418 B Street',
     address_city: 'San Diego',
     address_state: 'CA',
     address_zip: '92102',
+    address_country: 'USA',
+    address_visibility: 'full',
     neighborhood: 'Golden Hill',
     latitude: 32.7214,
     longitude: -117.1396,
@@ -365,7 +633,9 @@ export const INITIAL_PROPERTIES: Property[] = [
       'Walk to Balboa Park',
       'Classic Craftsman Details'
     ],
+    amenities: ['Skyline Views', 'Dual Metered', 'Craftsman Fireplace', 'Private Yard'],
     hoa_fee_monthly: 0,
+    hoa_fee_frequency: 'none',
     property_tax_rate: 1.21,
     mls_number: 'SD26-62019',
     primary_image: '/images/properties/golden-hill-duplex.svg',
@@ -373,7 +643,155 @@ export const INITIAL_PROPERTIES: Property[] = [
       '/images/properties/golden-hill-duplex.svg',
       '/images/properties/interior-living.svg'
     ],
+    media: [
+      {
+        id: 'm-gh-01',
+        property_id: 'p0000000-0000-0000-0000-000000000008',
+        media_type: 'image',
+        url: '/images/properties/golden-hill-duplex.svg',
+        alt_text: 'Golden Hill Craftsman duplex exterior with downtown skyline peeks',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 20 * 86400000).toISOString()
+      }
+    ],
+    view_count: 367,
+    inquiries_count: 18,
+    seo_title: '2418 B Street — Golden Hill Multi-Family Income Duplex',
+    seo_description: '4 Bed, 3 Bath duplex in Golden Hill, San Diego with Downtown skyline views. High cash flow potential. $1,350,000.',
+    is_indexable: true,
+    deleted_at: null,
     created_at: new Date(Date.now() - 20 * 86400000).toISOString()
+  },
+  {
+    id: 'p0000000-0000-0000-0000-000000000009',
+    slug: 'mission-hills-spanish-draft',
+    title: 'Historic Mission Hills Spanish Colonial Revival (Coming Soon)',
+    tagline: 'Private canyon estate with original 1926 architectural tilework and views',
+    property_type: 'Single Family',
+    status: 'draft',
+    listing_status: 'coming_soon',
+    publication_status: 'draft',
+    price: 1650000,
+    currency: 'USD',
+    bedrooms: 4,
+    bathrooms: 3.5,
+    square_feet: 2850,
+    lot_size_sqft: 9200,
+    lot_size_unit: 'sqft',
+    year_built: 1926,
+    garage_spaces: 2,
+    parking_spaces: 2,
+    has_pool: false,
+    has_spa: false,
+    is_featured: false,
+    is_va_eligible: true,
+    is_fixer_upper: false,
+    renovation_status: 'turnkey',
+    address_street: '1824 Sunset Blvd',
+    address_city: 'San Diego',
+    address_state: 'CA',
+    address_zip: '92103',
+    address_country: 'USA',
+    address_visibility: 'neighborhood_only',
+    neighborhood: 'Mission Hills',
+    latitude: 32.7512,
+    longitude: -117.1784,
+    description: 'Upcoming listing in historic Mission Hills. Architect-designed Spanish colonial estate with hand-crafted batchelder fireplace, panoramic canyon views, and wine cellar. Currently undergoing final stage preparation before public launch.',
+    features: ['Original 1926 Spanish Architecture', 'Canyon Views', 'Wine Cellar', 'Preserved Architectural Tilework'],
+    amenities: ['Wine Cellar', 'Canyon Views', 'Hardwood Floors'],
+    hoa_fee_monthly: 0,
+    hoa_fee_frequency: 'none',
+    property_tax_rate: 1.18,
+    mls_number: 'MH26-DRAFT',
+    primary_image: '/images/properties/north-park-spanish.svg',
+    gallery_images: [
+      '/images/properties/north-park-spanish.svg',
+      '/images/properties/interior-living.svg'
+    ],
+    media: [
+      {
+        id: 'm-mh-01',
+        property_id: 'p0000000-0000-0000-0000-000000000009',
+        media_type: 'image',
+        url: '/images/properties/north-park-spanish.svg',
+        alt_text: 'Mission Hills Spanish colonial front exterior',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 2 * 86400000).toISOString()
+      }
+    ],
+    view_count: 12,
+    inquiries_count: 1,
+    seo_title: '1824 Sunset Blvd — Historic Mission Hills Spanish Estate',
+    seo_description: 'Coming soon in Mission Hills, San Diego. 4 Bed, 3.5 Bath Spanish revival with canyon views.',
+    is_indexable: false,
+    deleted_at: null,
+    created_at: new Date(Date.now() - 2 * 86400000).toISOString()
+  },
+  {
+    id: 'p0000000-0000-0000-0000-000000000010',
+    slug: 'south-park-craftsman-archived',
+    title: 'Historic South Park Craftsman with Detached Studio (Closed Escrow)',
+    tagline: 'Sold over asking price in 7 days by Edgar Valle & Full Circle Group',
+    property_type: 'Single Family',
+    status: 'sold',
+    listing_status: 'sold',
+    publication_status: 'archived',
+    price: 1120000,
+    currency: 'USD',
+    original_price: 1075000,
+    bedrooms: 3,
+    bathrooms: 2.0,
+    square_feet: 1610,
+    lot_size_sqft: 4800,
+    lot_size_unit: 'sqft',
+    year_built: 1922,
+    garage_spaces: 1,
+    parking_spaces: 2,
+    has_pool: false,
+    has_spa: false,
+    is_featured: false,
+    is_va_eligible: true,
+    is_fixer_upper: false,
+    renovation_status: 'turnkey',
+    address_street: '2930 Fern St',
+    address_city: 'San Diego',
+    address_state: 'CA',
+    address_zip: '92104',
+    address_country: 'USA',
+    address_visibility: 'full',
+    neighborhood: 'South Park',
+    latitude: 32.7291,
+    longitude: -117.1287,
+    description: 'Charming 1922 South Park craftsman sold with multiple competitive offers. Features restored Douglas fir trim, detached creative studio, and private brick patio.',
+    features: ['Restored Douglas Fir Trim', 'Detached Studio', 'Brick Entertaining Patio'],
+    amenities: ['Detached Studio', 'Historic Trim', 'Brick Patio'],
+    hoa_fee_monthly: 0,
+    hoa_fee_frequency: 'none',
+    property_tax_rate: 1.20,
+    mls_number: 'SP26-88120',
+    primary_image: '/images/properties/north-park-spanish.svg',
+    gallery_images: ['/images/properties/north-park-spanish.svg'],
+    media: [
+      {
+        id: 'm-sp-01',
+        property_id: 'p0000000-0000-0000-0000-000000000010',
+        media_type: 'image',
+        url: '/images/properties/north-park-spanish.svg',
+        alt_text: 'South Park Craftsman front elevation',
+        display_order: 1,
+        is_primary: true,
+        created_at: new Date(Date.now() - 40 * 86400000).toISOString()
+      }
+    ],
+    view_count: 520,
+    inquiries_count: 38,
+    seo_title: '2930 Fern St — Sold South Park Craftsman',
+    seo_description: 'Sold in 7 days by Edgar Valle. 3 Bed Craftsman in South Park, San Diego.',
+    is_indexable: false,
+    deleted_at: null,
+    created_at: new Date(Date.now() - 40 * 86400000).toISOString()
   }
 ];
 
@@ -384,10 +802,12 @@ export const INITIAL_OPEN_HOUSES: OpenHouse[] = [
     property: INITIAL_PROPERTIES[0],
     start_time: '2026-10-24T13:00:00-07:00',
     end_time: '2026-10-24T16:00:00-07:00',
+    timezone: 'PST',
     host_name: 'Edgar Valle',
     refreshments_provided: true,
     special_instructions: 'Saturday Open House: Hosted personally by Edgar Valle. Espresso bar and artisan pastries served in the courtyard. All buyers and brokers welcome!',
-    is_cancelled: false
+    is_cancelled: false,
+    rsvp_link: '/contact?type=open_house_rsvp&prop=p0000000-0000-0000-0000-000000000001'
   },
   {
     id: 'oh000000-0000-0000-0000-000000000002',
@@ -395,21 +815,12 @@ export const INITIAL_OPEN_HOUSES: OpenHouse[] = [
     property: INITIAL_PROPERTIES[0],
     start_time: '2026-10-25T13:00:00-07:00',
     end_time: '2026-10-25T16:00:00-07:00',
+    timezone: 'PST',
     host_name: 'Edgar Valle',
     refreshments_provided: true,
-    special_instructions: 'Sunday Twilight Tour: Sunset refreshments and property walkthrough. Ask Edgar about the pre-plumbed ADU plans & construction estimates.',
-    is_cancelled: false
-  },
-  {
-    id: 'oh000000-0000-0000-0000-000000000003',
-    property_id: 'p0000000-0000-0000-0000-000000000003',
-    property: INITIAL_PROPERTIES[2],
-    start_time: '2026-10-24T12:00:00-07:00',
-    end_time: '2026-10-24T15:00:00-07:00',
-    host_name: 'Edgar Valle',
-    refreshments_provided: true,
-    special_instructions: 'Eastlake Greens Pool Tour: Tour this immaculate backyard oasis. Cold drinks and poolside refreshments provided.',
-    is_cancelled: false
+    special_instructions: 'Sunday Open House: Afternoon showing with Edgar Valle. Wine & sparkling water with local gourmet charcuterie.',
+    is_cancelled: false,
+    rsvp_link: '/contact?type=open_house_rsvp&prop=p0000000-0000-0000-0000-000000000001'
   }
 ];
 
@@ -418,16 +829,16 @@ export const INITIAL_NEIGHBORHOODS: Neighborhood[] = [
     id: 'n0000000-0000-0000-0000-000000000001',
     slug: 'north-park',
     name: 'North Park',
-    tagline: 'Historic Charm Meets Urban Energy',
-    summary: 'Known for its tree-lined streets of 1920s Craftsman bungalows, craft breweries, art galleries, and vibrant dining along University Ave and 30th Street. A top choice for buyers seeking urban walkability and historic architecture.',
+    tagline: 'Historic Craftsman Charm & Thriving Culinary Scene',
+    summary: 'A vibrant, highly walkable cultural epicenter filled with California Craftsman bungalows, Spanish revival homes, award-winning craft breweries, third-wave coffee roasters, and Ray at Night art walks.',
     median_home_price: 1120000,
-    vibe: 'Eclectic, Walkable, Historic & Trendy',
+    vibe: 'Walkable, Historic, Artistic & Hip',
     commute_downtown_mins: 10,
     highlights: [
-      'Top Walk Score in San Diego',
-      'Historic Craftsman & Spanish Revival Architecture',
-      'World-Class Craft Beer & Coffee Culture',
-      'Bordering Balboa Park and Morley Field'
+      '30th Street Nationally Ranked Dining Corridor',
+      'Historic 1920s Craftsman & Spanish Architecture',
+      'Steps to Morley Field & Balboa Park Trails',
+      'High Appreciation & High ADU Rental Yields'
     ],
     hero_image: '/images/neighborhoods/north-park.svg'
   },
@@ -435,7 +846,7 @@ export const INITIAL_NEIGHBORHOODS: Neighborhood[] = [
     id: 'n0000000-0000-0000-0000-000000000002',
     slug: 'pacific-beach',
     name: 'Pacific Beach',
-    tagline: 'Iconic California Beach Lifestyle',
+    tagline: 'Sun-Drenched Coastal Energy & Oceanfront Living',
     summary: 'Miles of sandy Pacific coastline, the iconic Crystal Pier, lively beach boardwalks, and tranquil bayside living along Crown Point and Sail Bay. Perfect for ocean enthusiasts and active coastal lifestyles.',
     median_home_price: 1280000,
     vibe: 'Coastal, Active, Vibrant & Breezy',
@@ -599,33 +1010,85 @@ export const SITE_SETTINGS: SiteSettings = {
   instagram: '@yourrealtoredgar',
   instagram_url: 'https://www.instagram.com/yourrealtoredgar/',
   service_area: 'San Diego County, California',
-  languages: ['English', 'Spanish']
+  languages: ['English', 'Spanish (Hablamos Español)']
 };
 
-// In-memory runtime leads store (persists during process runtime; synced to Supabase when active)
-const runtimeLeads: Lead[] = [
+// Initial Audit Logs (Pre-populated for Audit Stream)
+export const INITIAL_AUDIT_LOGS: AuditLog[] = [
   {
-    id: 'l0000000-0000-0000-0000-000000000001',
-    full_name: 'Carlos & Sofia Mendez',
-    email: 'carlos.mendez@example.com',
-    phone: '(619) 555-7821',
-    lead_type: 'first_time_buyer',
-    message: 'We are looking for a 3-bedroom home in Chula Vista or Eastlake with a backyard. Pre-approved up to $950K.',
+    id: 'log-001',
+    actor_email: 'edgar@yourrealtoredgar.com',
+    action: 'publish_property',
+    entity_type: 'property',
+    entity_id: 'p0000000-0000-0000-0000-000000000001',
+    details: { title: 'Restored Spanish Revival with Courtyard & ADU Potential', status: 'published' },
+    ip_address: '127.0.0.1',
+    created_at: new Date(Date.now() - 3 * 86400000).toISOString()
+  },
+  {
+    id: 'log-002',
+    actor_email: 'edgar@yourrealtoredgar.com',
+    action: 'update_price',
+    entity_type: 'property',
+    entity_id: 'p0000000-0000-0000-0000-000000000001',
+    details: { old_price: 1225000, new_price: 1185000, title: 'Restored Spanish Revival' },
+    ip_address: '127.0.0.1',
+    created_at: new Date(Date.now() - 1 * 86400000).toISOString()
+  },
+  {
+    id: 'log-003',
+    actor_email: 'edgar@yourrealtoredgar.com',
+    action: 'create_property',
+    entity_type: 'property',
+    entity_id: 'p0000000-0000-0000-0000-000000000009',
+    details: { title: 'Historic Mission Hills Spanish Colonial Revival (Coming Soon)', status: 'draft' },
+    ip_address: '127.0.0.1',
+    created_at: new Date(Date.now() - 2 * 86400000).toISOString()
+  }
+];
+
+// In-memory runtime state for development and fallback
+let runtimeProperties: Property[] = [...INITIAL_PROPERTIES];
+let runtimeLeads: Lead[] = [
+  {
+    id: 'lead-001',
+    full_name: 'Marcus & Jessica Vance',
+    email: 'marcus.vance@gmail.com',
+    phone: '(619) 555-0142',
+    lead_type: 'va_buyer',
+    message: 'Active duty Navy stationed at 32nd St. Looking for a 3-4 bedroom home with yard in Chula Vista or Eastlake utilizing our VA loan with 0 down.',
     preferred_contact_method: 'phone',
     estimated_budget: '$850k - $950k',
     timeframe: '1-3 months',
     is_preapproved: true,
-    language_preference: 'es',
+    language_preference: 'en',
     status: 'new',
     created_at: new Date(Date.now() - 2 * 3600000).toISOString()
   },
   {
-    id: 'l0000000-0000-0000-0000-000000000002',
-    full_name: 'Sgt. Marcus Reynolds',
-    email: 'reynolds.marcus@example.com',
-    phone: '(760) 555-3419',
-    lead_type: 'va_buyer',
-    message: 'Stationed at Camp Pendleton. Relocating family and looking for a VA-eligible single family home in Oceanside.',
+    id: 'lead-002',
+    full_name: 'Alejandro Morales',
+    email: 'alejandro.morales@outlook.com',
+    phone: '(619) 555-0899',
+    lead_type: 'first_time_buyer',
+    message: 'Hola Edgar, queremos comprar nuestra primera casa en North Park o San Carlos. Queremos saber sobre los programas de ayuda para el enganche de CalHFA.',
+    preferred_contact_method: 'phone',
+    estimated_budget: '$700k - $800k',
+    timeframe: 'Immediate',
+    is_preapproved: false,
+    language_preference: 'es',
+    status: 'new',
+    created_at: new Date(Date.now() - 5 * 3600000).toISOString()
+  },
+  {
+    id: 'lead-003',
+    full_name: 'David Chen',
+    email: 'dchen.investments@gmail.com',
+    phone: '(858) 555-0176',
+    lead_type: 'investor_flip',
+    message: 'Interested in the Clairemont canyon fixer. Ready with all-cash offer and 10-day close. Want to verify SB9 ADU allowance.',
+    property_id: 'p0000000-0000-0000-0000-000000000005',
+    property_address: '4920 Mount Alifan Dr, San Diego, CA',
     preferred_contact_method: 'text',
     estimated_budget: '$750k - $800k',
     timeframe: 'Immediately',
@@ -635,12 +1098,19 @@ const runtimeLeads: Lead[] = [
     created_at: new Date(Date.now() - 24 * 3600000).toISOString()
   }
 ];
+let runtimeAuditLogs: AuditLog[] = [...INITIAL_AUDIT_LOGS];
 
-// Data access functions
-export async function getProperties(filters?: {
+// -------------------------------------------------------------
+// PROPERTIES QUERY METHODS
+// -------------------------------------------------------------
+
+export interface PropertyQueryFilters {
   neighborhood?: string;
   propertyType?: string;
   status?: string;
+  listingStatus?: string;
+  publicationStatus?: string;
+  search?: string;
   minPrice?: number;
   maxPrice?: number;
   minBedrooms?: number;
@@ -649,11 +1119,24 @@ export async function getProperties(filters?: {
   hasGarage?: boolean;
   isVaEligible?: boolean;
   isFixerUpper?: boolean;
-}): Promise<Property[]> {
+  includeUnpublished?: boolean;
+  includeDeleted?: boolean;
+}
+
+export async function getProperties(filters?: PropertyQueryFilters): Promise<Property[]> {
   const supabase = getSupabase();
   if (supabase) {
     try {
       let query = supabase.from('properties').select('*');
+
+      // Public filtering: by default, only published non-deleted properties
+      if (!filters?.includeUnpublished) {
+        query = query.eq('publication_status', 'published');
+      }
+      if (!filters?.includeDeleted) {
+        query = query.is('deleted_at', null);
+      }
+
       if (filters?.neighborhood && filters.neighborhood !== 'all') {
         query = query.eq('neighborhood', filters.neighborhood);
       }
@@ -662,6 +1145,12 @@ export async function getProperties(filters?: {
       }
       if (filters?.status && filters.status !== 'all') {
         query = query.eq('status', filters.status);
+      }
+      if (filters?.listingStatus && filters.listingStatus !== 'all') {
+        query = query.eq('listing_status', filters.listingStatus);
+      }
+      if (filters?.publicationStatus && filters.publicationStatus !== 'all') {
+        query = query.eq('publication_status', filters.publicationStatus);
       }
       if (filters?.minPrice) {
         query = query.gte('price', filters.minPrice);
@@ -678,6 +1167,7 @@ export async function getProperties(filters?: {
       if (filters?.isFixerUpper) {
         query = query.eq('is_fixer_upper', true);
       }
+
       const { data, error } = await query;
       if (!error && data && data.length > 0) {
         return data as Property[];
@@ -688,8 +1178,27 @@ export async function getProperties(filters?: {
   }
 
   // Local filtered fallback
-  let list = [...INITIAL_PROPERTIES];
+  let list = [...runtimeProperties];
+
+  // Default visibility rules
+  if (!filters?.includeUnpublished) {
+    list = list.filter(p => p.publication_status === 'published');
+  }
+  if (!filters?.includeDeleted) {
+    list = list.filter(p => !p.deleted_at);
+  }
+
   if (filters) {
+    if (filters.search) {
+      const q = filters.search.toLowerCase().trim();
+      list = list.filter(p => 
+        p.title.toLowerCase().includes(q) ||
+        p.address_street.toLowerCase().includes(q) ||
+        p.neighborhood.toLowerCase().includes(q) ||
+        p.address_city.toLowerCase().includes(q) ||
+        (p.mls_number && p.mls_number.toLowerCase().includes(q))
+      );
+    }
     if (filters.neighborhood && filters.neighborhood !== 'all') {
       list = list.filter(p => p.neighborhood.toLowerCase() === filters.neighborhood!.toLowerCase());
     }
@@ -698,6 +1207,12 @@ export async function getProperties(filters?: {
     }
     if (filters.status && filters.status !== 'all') {
       list = list.filter(p => p.status === filters.status);
+    }
+    if (filters.listingStatus && filters.listingStatus !== 'all') {
+      list = list.filter(p => p.listing_status === filters.listingStatus);
+    }
+    if (filters.publicationStatus && filters.publicationStatus !== 'all') {
+      list = list.filter(p => p.publication_status === filters.publicationStatus);
     }
     if (filters.minPrice) {
       list = list.filter(p => p.price >= filters.minPrice!);
@@ -727,23 +1242,545 @@ export async function getProperties(filters?: {
   return list;
 }
 
-export async function getPropertyBySlug(slug: string): Promise<Property | undefined> {
+export async function getPropertiesPaginated(options: PropertyQueryFilters & { page?: number; pageSize?: number }) {
+  const page = Math.max(1, options.page || 1);
+  const pageSize = Math.max(1, options.pageSize || 10);
+  const all = await getProperties(options);
+  const total = all.length;
+  const totalPages = Math.ceil(total / pageSize) || 1;
+  const startIndex = (page - 1) * pageSize;
+  const paginated = all.slice(startIndex, startIndex + pageSize);
+
+  return {
+    properties: paginated,
+    total,
+    page,
+    pageSize,
+    totalPages
+  };
+}
+
+export async function getPropertyById(id: string): Promise<Property | undefined> {
+  const supabase = getSupabaseAdmin() || getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from('properties').select('*').eq('id', id).single();
+      if (!error && data) return data as Property;
+    } catch (e) {
+      console.warn('Supabase query error for property ID:', e);
+    }
+  }
+  return runtimeProperties.find(p => p.id === id);
+}
+
+export async function getPropertyBySlug(slug: string, options?: { allowUnpublished?: boolean }): Promise<Property | undefined> {
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { data, error } = await supabase.from('properties').select('*').eq('slug', slug).single();
-      if (!error && data) return data as Property;
+      let query = supabase.from('properties').select('*').eq('slug', slug);
+      if (!options?.allowUnpublished) {
+        query = query.eq('publication_status', 'published').is('deleted_at', null);
+      }
+      const { data, error } = await query.single();
+      if (!error && data) {
+        // Increment view count asynchronously
+        void supabase.rpc('increment_property_views', { property_id: data.id });
+        return data as Property;
+      }
     } catch (e) {
       console.warn('Supabase query error:', e);
     }
   }
-  return INITIAL_PROPERTIES.find(p => p.slug === slug);
+
+  const prop = runtimeProperties.find(p => p.slug === slug);
+  if (!prop) return undefined;
+  if (!options?.allowUnpublished && (prop.publication_status !== 'published' || prop.deleted_at)) {
+    return undefined; // Public visitors cannot access draft, archived, or deleted properties
+  }
+
+  // Increment local view count
+  prop.view_count = (prop.view_count || 0) + 1;
+  return prop;
 }
 
 export async function getFeaturedProperties(): Promise<Property[]> {
-  const all = await getProperties();
+  const all = await getProperties({ includeUnpublished: false });
   return all.filter(p => p.is_featured);
 }
+
+// -------------------------------------------------------------
+// PROPERTY MANAGEMENT & MUTATION WORKFLOWS
+// -------------------------------------------------------------
+
+export async function createProperty(
+  data: Partial<Property>, 
+  actorEmail: string = 'edgar@yourrealtoredgar.com'
+): Promise<{ success: boolean; property: Property; error?: string }> {
+  if (!data.title || data.title.trim().length < 3) {
+    return { success: false, property: {} as Property, error: 'Property title must be at least 3 characters long.' };
+  }
+  if (!data.price || data.price <= 0) {
+    return { success: false, property: {} as Property, error: 'Asking price must be greater than zero.' };
+  }
+
+  const id = data.id || `p${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+  let baseSlug = slugify(data.slug || data.title);
+  let finalSlug = baseSlug;
+  let counter = 1;
+  while (runtimeProperties.some(p => p.slug === finalSlug && p.id !== id)) {
+    finalSlug = `${baseSlug}-${counter++}`;
+  }
+
+  const newProperty: Property = {
+    id,
+    slug: finalSlug,
+    title: data.title.trim(),
+    tagline: data.tagline?.trim() || '',
+    property_type: data.property_type || 'Single Family',
+    status: data.status || 'draft',
+    listing_status: data.listing_status || 'for_sale',
+    publication_status: data.publication_status || 'draft',
+    price: Number(data.price),
+    currency: data.currency || 'USD',
+    original_price: data.original_price ? Number(data.original_price) : undefined,
+    previous_price: data.previous_price ? Number(data.previous_price) : undefined,
+    bedrooms: Number(data.bedrooms ?? 3),
+    bathrooms: Number(data.bathrooms ?? 2.0),
+    square_feet: Number(data.square_feet ?? 1500),
+    lot_size_sqft: data.lot_size_sqft ? Number(data.lot_size_sqft) : undefined,
+    lot_size_unit: data.lot_size_unit || 'sqft',
+    year_built: data.year_built ? Number(data.year_built) : new Date().getFullYear(),
+    garage_spaces: Number(data.garage_spaces ?? 2),
+    parking_spaces: Number(data.parking_spaces ?? 2),
+    has_pool: Boolean(data.has_pool),
+    has_spa: Boolean(data.has_spa),
+    is_featured: Boolean(data.is_featured),
+    is_va_eligible: data.is_va_eligible !== undefined ? Boolean(data.is_va_eligible) : true,
+    is_fixer_upper: Boolean(data.is_fixer_upper),
+    renovation_status: data.renovation_status || 'updated',
+    arv_estimate: data.arv_estimate ? Number(data.arv_estimate) : undefined,
+    address_street: data.address_street?.trim() || '123 Main St',
+    address_unit: data.address_unit?.trim() || '',
+    address_city: data.address_city?.trim() || 'San Diego',
+    address_state: data.address_state?.trim() || 'CA',
+    address_zip: data.address_zip?.trim() || '92101',
+    address_country: data.address_country || 'USA',
+    address_visibility: data.address_visibility || 'full',
+    neighborhood: data.neighborhood?.trim() || 'Downtown',
+    latitude: data.latitude ? Number(data.latitude) : 32.7157,
+    longitude: data.longitude ? Number(data.longitude) : -117.1611,
+    description: data.description?.trim() || 'Stunning San Diego property.',
+    features: Array.isArray(data.features) ? data.features : [],
+    amenities: Array.isArray(data.amenities) ? data.amenities : [],
+    hoa_fee_monthly: Number(data.hoa_fee_monthly ?? 0),
+    hoa_fee_frequency: data.hoa_fee_frequency || 'monthly',
+    property_tax_rate: Number(data.property_tax_rate ?? 1.25),
+    virtual_tour_url: data.virtual_tour_url?.trim() || '',
+    video_url: data.video_url?.trim() || '',
+    mls_number: data.mls_number?.trim() || `SD26-${Math.floor(10000 + Math.random() * 90000)}`,
+    primary_image: data.primary_image || (data.gallery_images && data.gallery_images[0]) || '/images/properties/north-park-spanish.svg',
+    gallery_images: data.gallery_images && data.gallery_images.length > 0 ? data.gallery_images : ['/images/properties/north-park-spanish.svg'],
+    media: data.media || [],
+    view_count: 0,
+    inquiries_count: 0,
+    seo_title: data.seo_title || `${data.title} | Edgar Valle Realtor`,
+    seo_description: data.seo_description || `Offered at $${Number(data.price).toLocaleString()} in ${data.neighborhood || 'San Diego'}.`,
+    og_image: data.og_image || data.primary_image || '/images/branding/og-preview.png',
+    is_indexable: data.is_indexable !== undefined ? Boolean(data.is_indexable) : true,
+    deleted_at: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+
+  // 1. Try Supabase
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      const { data: dbData, error } = await adminClient.from('properties').insert(newProperty).select('*').single();
+      if (!error && dbData) {
+        runtimeProperties.unshift(dbData as Property);
+        await logAuditEvent({
+          actor_email: actorEmail,
+          action: 'create_property',
+          entity_type: 'property',
+          entity_id: dbData.id,
+          details: { title: newProperty.title, price: newProperty.price, status: newProperty.publication_status }
+        });
+        return { success: true, property: dbData as Property };
+      }
+    } catch (e) {
+      console.warn('Supabase create property error, fallback to runtime:', e);
+    }
+  }
+
+  // 2. Local fallback
+  runtimeProperties.unshift(newProperty);
+  await logAuditEvent({
+    actor_email: actorEmail,
+    action: 'create_property',
+    entity_type: 'property',
+    entity_id: newProperty.id,
+    details: { title: newProperty.title, price: newProperty.price, status: newProperty.publication_status }
+  });
+
+  return { success: true, property: newProperty };
+}
+
+export async function updateProperty(
+  id: string, 
+  updates: Partial<Property>, 
+  actorEmail: string = 'edgar@yourrealtoredgar.com'
+): Promise<{ success: boolean; property?: Property; error?: string }> {
+  const existing = runtimeProperties.find(p => p.id === id);
+  if (!existing) {
+    return { success: false, error: 'Property not found.' };
+  }
+
+  // Track price change for previous_price
+  let previousPrice = existing.previous_price;
+  if (updates.price && Number(updates.price) !== existing.price) {
+    previousPrice = existing.price;
+    await logAuditEvent({
+      actor_email: actorEmail,
+      action: 'update_price',
+      entity_type: 'property',
+      entity_id: id,
+      details: { old_price: existing.price, new_price: updates.price, title: existing.title }
+    });
+  }
+
+  // Handle unique slug updates
+  let newSlug = existing.slug;
+  if (updates.slug && updates.slug !== existing.slug) {
+    const candidateSlug = slugify(updates.slug);
+    if (!runtimeProperties.some(p => p.slug === candidateSlug && p.id !== id)) {
+      newSlug = candidateSlug;
+    }
+  }
+
+  const updatedProperty: Property = {
+    ...existing,
+    ...updates,
+    slug: newSlug,
+    previous_price: previousPrice,
+    updated_at: new Date().toISOString()
+  };
+
+  // 1. Try Supabase
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      const { data: dbData, error } = await adminClient.from('properties').update(updatedProperty).eq('id', id).select('*').single();
+      if (!error && dbData) {
+        const idx = runtimeProperties.findIndex(p => p.id === id);
+        if (idx !== -1) runtimeProperties[idx] = dbData as Property;
+        await logAuditEvent({
+          actor_email: actorEmail,
+          action: 'update_property',
+          entity_type: 'property',
+          entity_id: id,
+          details: { updates, title: updatedProperty.title }
+        });
+        return { success: true, property: dbData as Property };
+      }
+    } catch (e) {
+      console.warn('Supabase update property error, fallback to runtime:', e);
+    }
+  }
+
+  // 2. Local fallback
+  const idx = runtimeProperties.findIndex(p => p.id === id);
+  if (idx !== -1) runtimeProperties[idx] = updatedProperty;
+
+  await logAuditEvent({
+    actor_email: actorEmail,
+    action: 'update_property',
+    entity_type: 'property',
+    entity_id: id,
+    details: { title: updatedProperty.title, publication_status: updatedProperty.publication_status }
+  });
+
+  return { success: true, property: updatedProperty };
+}
+
+export async function duplicateProperty(
+  id: string, 
+  actorEmail: string = 'edgar@yourrealtoredgar.com'
+): Promise<{ success: boolean; property?: Property; error?: string }> {
+  const source = runtimeProperties.find(p => p.id === id);
+  if (!source) {
+    return { success: false, error: 'Source listing not found to duplicate.' };
+  }
+
+  const newId = `p${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const copySuffix = Math.random().toString(36).substring(2, 6);
+  const newTitle = `${source.title} (Draft Copy)`;
+  const newSlug = `${source.slug}-copy-${copySuffix}`;
+
+  const cloned: Property = {
+    ...source,
+    id: newId,
+    title: newTitle,
+    slug: newSlug,
+    publication_status: 'draft',
+    status: 'draft',
+    view_count: 0,
+    inquiries_count: 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+
+  runtimeProperties.unshift(cloned);
+
+  await logAuditEvent({
+    actor_email: actorEmail,
+    action: 'duplicate_property',
+    entity_type: 'property',
+    entity_id: newId,
+    details: { source_id: id, new_title: newTitle }
+  });
+
+  return { success: true, property: cloned };
+}
+
+export async function publishProperty(id: string, actorEmail: string = 'edgar@yourrealtoredgar.com'): Promise<boolean> {
+  const result = await updateProperty(id, { publication_status: 'published', status: 'active' }, actorEmail);
+  if (result.success) {
+    await logAuditEvent({
+      actor_email: actorEmail,
+      action: 'publish_property',
+      entity_type: 'property',
+      entity_id: id,
+      details: { status: 'published' }
+    });
+    return true;
+  }
+  return false;
+}
+
+export async function unpublishProperty(id: string, actorEmail: string = 'edgar@yourrealtoredgar.com'): Promise<boolean> {
+  const result = await updateProperty(id, { publication_status: 'draft', status: 'draft' }, actorEmail);
+  if (result.success) {
+    await logAuditEvent({
+      actor_email: actorEmail,
+      action: 'unpublish_property',
+      entity_type: 'property',
+      entity_id: id,
+      details: { status: 'draft' }
+    });
+    return true;
+  }
+  return false;
+}
+
+export async function archiveProperty(id: string, actorEmail: string = 'edgar@yourrealtoredgar.com'): Promise<boolean> {
+  const result = await updateProperty(id, { publication_status: 'archived' }, actorEmail);
+  if (result.success) {
+    await logAuditEvent({
+      actor_email: actorEmail,
+      action: 'archive_property',
+      entity_type: 'property',
+      entity_id: id,
+      details: { status: 'archived' }
+    });
+    return true;
+  }
+  return false;
+}
+
+export async function unarchiveProperty(id: string, actorEmail: string = 'edgar@yourrealtoredgar.com'): Promise<boolean> {
+  const result = await updateProperty(id, { publication_status: 'draft' }, actorEmail);
+  if (result.success) {
+    await logAuditEvent({
+      actor_email: actorEmail,
+      action: 'unarchive_property',
+      entity_type: 'property',
+      entity_id: id,
+      details: { status: 'draft' }
+    });
+    return true;
+  }
+  return false;
+}
+
+export async function deleteProperty(
+  id: string, 
+  softDelete: boolean = true, 
+  actorEmail: string = 'edgar@yourrealtoredgar.com'
+): Promise<boolean> {
+  const prop = runtimeProperties.find(p => p.id === id);
+  if (!prop) return false;
+
+  if (softDelete) {
+    // Preserve historical data for reporting as required!
+    prop.deleted_at = new Date().toISOString();
+    prop.publication_status = 'archived';
+  } else {
+    runtimeProperties = runtimeProperties.filter(p => p.id !== id);
+  }
+
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      if (softDelete) {
+        await adminClient.from('properties').update({ deleted_at: new Date().toISOString(), publication_status: 'archived' }).eq('id', id);
+      } else {
+        await adminClient.from('properties').delete().eq('id', id);
+      }
+    } catch (e) {
+      console.warn('Supabase delete error:', e);
+    }
+  }
+
+  await logAuditEvent({
+    actor_email: actorEmail,
+    action: 'delete_property',
+    entity_type: 'property',
+    entity_id: id,
+    details: { soft_delete: softDelete, title: prop.title }
+  });
+
+  return true;
+}
+
+// -------------------------------------------------------------
+// MEDIA MANAGEMENT WORKFLOWS
+// -------------------------------------------------------------
+
+export async function addPropertyMedia(
+  propertyId: string, 
+  mediaData: Omit<PropertyMedia, 'id' | 'property_id' | 'created_at'>
+): Promise<PropertyMedia> {
+  const prop = runtimeProperties.find(p => p.id === propertyId);
+  const mediaId = `media_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+  const newMedia: PropertyMedia = {
+    id: mediaId,
+    property_id: propertyId,
+    created_at: new Date().toISOString(),
+    ...mediaData
+  };
+
+  if (prop) {
+    if (!prop.media) prop.media = [];
+    if (newMedia.is_primary) {
+      prop.media.forEach(m => m.is_primary = false);
+      prop.primary_image = newMedia.url;
+    }
+    prop.media.push(newMedia);
+    if (!prop.gallery_images) prop.gallery_images = [];
+    prop.gallery_images.push(newMedia.url);
+  }
+
+  return newMedia;
+}
+
+export async function removePropertyMedia(propertyId: string, mediaId: string): Promise<boolean> {
+  const prop = runtimeProperties.find(p => p.id === propertyId);
+  if (!prop || !prop.media) return false;
+
+  prop.media = prop.media.filter(m => m.id !== mediaId);
+  prop.gallery_images = prop.media.map(m => m.url);
+  if (prop.media.length > 0 && !prop.media.some(m => m.is_primary)) {
+    prop.media[0].is_primary = true;
+    prop.primary_image = prop.media[0].url;
+  }
+  return true;
+}
+
+export async function setCoverMedia(propertyId: string, mediaId: string): Promise<boolean> {
+  const prop = runtimeProperties.find(p => p.id === propertyId);
+  if (!prop || !prop.media) return false;
+
+  const target = prop.media.find(m => m.id === mediaId);
+  if (!target) return false;
+
+  prop.media.forEach(m => m.is_primary = (m.id === mediaId));
+  prop.primary_image = target.url;
+  return true;
+}
+
+export async function reorderPropertyMedia(propertyId: string, mediaIdsInOrder: string[]): Promise<boolean> {
+  const prop = runtimeProperties.find(p => p.id === propertyId);
+  if (!prop || !prop.media) return false;
+
+  const reordered: PropertyMedia[] = [];
+  mediaIdsInOrder.forEach((id, index) => {
+    const item = prop.media!.find(m => m.id === id);
+    if (item) {
+      item.display_order = index + 1;
+      reordered.push(item);
+    }
+  });
+
+  prop.media = reordered;
+  prop.gallery_images = reordered.map(m => m.url);
+  return true;
+}
+
+// -------------------------------------------------------------
+// AUDIT LOGGING & ANALYTICS STATS
+// -------------------------------------------------------------
+
+export async function getAuditLogs(limit: number = 25): Promise<AuditLog[]> {
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      const { data, error } = await adminClient.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(limit);
+      if (!error && data) return data as AuditLog[];
+    } catch (e) {
+      console.warn('Supabase audit logs fetch error:', e);
+    }
+  }
+  return runtimeAuditLogs.slice(0, limit);
+}
+
+export async function logAuditEvent(event: Omit<AuditLog, 'id' | 'created_at'>): Promise<void> {
+  const entry: AuditLog = {
+    id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    created_at: new Date().toISOString(),
+    ...event
+  };
+
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      await adminClient.from('audit_logs').insert(entry);
+    } catch (e) {
+      console.warn('Supabase audit log insert error:', e);
+    }
+  }
+
+  runtimeAuditLogs.unshift(entry);
+}
+
+export async function getPropertyStats() {
+  const activeList = runtimeProperties.filter(p => !p.deleted_at);
+  const total = activeList.length;
+  const published = activeList.filter(p => p.publication_status === 'published').length;
+  const draft = activeList.filter(p => p.publication_status === 'draft').length;
+  const pending = activeList.filter(p => p.listing_status === 'pending').length;
+  const archived = activeList.filter(p => p.publication_status === 'archived').length;
+  const totalVolume = activeList
+    .filter(p => p.publication_status === 'published')
+    .reduce((sum, p) => sum + p.price, 0);
+  const totalViews = activeList.reduce((sum, p) => sum + (p.view_count || 0), 0);
+  const totalInquiries = activeList.reduce((sum, p) => sum + (p.inquiries_count || 0), 0);
+
+  return {
+    total,
+    published,
+    draft,
+    pending,
+    archived,
+    totalVolume,
+    totalViews,
+    totalInquiries
+  };
+}
+
+// -------------------------------------------------------------
+// OPEN HOUSES, NEIGHBORHOODS, BLOG & LEADS
+// -------------------------------------------------------------
 
 export async function getOpenHouses(): Promise<OpenHouse[]> {
   const supabase = getSupabase();
@@ -786,6 +1823,12 @@ export async function submitLead(leadInput: Omit<Lead, 'id' | 'created_at' | 'st
     status: 'new',
     created_at: new Date().toISOString()
   };
+
+  // If associated with a property, increment property inquiries_count
+  if (newLead.property_id) {
+    const prop = runtimeProperties.find(p => p.id === newLead.property_id);
+    if (prop) prop.inquiries_count = (prop.inquiries_count || 0) + 1;
+  }
 
   // 1. Try Supabase persistence first
   const supabase = getSupabase();

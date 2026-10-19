@@ -1,0 +1,15 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PropertyForm from '../../../components/admin/PropertyForm.astro';
+import { checkAdminAuth } from '../../../lib/auth';
+
+export const prerender = false;
+
+if (!checkAdminAuth(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<AdminLayout title="Add New Property" activeNav="properties">
+  <PropertyForm mode="create" />
+</AdminLayout>

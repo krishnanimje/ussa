@@ -6,13 +6,15 @@ import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
 import { getPropertyBySlug, getProperties, getOpenHouses, SITE_SETTINGS } from '../../lib/store';
 import { formatCurrency, formatNumber } from '../../lib/mortgage';
 import { generatePropertyJsonLd, generateBreadcrumbJsonLd } from '../../lib/seo';
+import { checkAdminAuth } from '../../lib/auth';
 
 export const prerender = false;
 
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect('/properties');
 
-const property = await getPropertyBySlug(slug);
+const isAdmin = checkAdminAuth(Astro.request);
+const property = await getPropertyBySlug(slug, { allowUnpublished: isAdmin });
 if (!property) return Astro.redirect('/404');
 
 const allProperties = await getProperties();
@@ -40,6 +42,24 @@ const pricePerSqFt = Math.round(property.price / property.square_feet);
   image={property.primary_image}
   jsonLd={combinedJsonLd}
 >
+  {property.publication_status !== 'published' && (
+    <aside class="admin-preview-banner" aria-label="Admin Preview Mode">
+      <div class="container preview-banner-inner">
+        <div class="preview-badge-group">
+          <span class="preview-dot"></span>
+          <strong>ADMIN PREVIEW MODE</strong>
+          <span class="badge badge-ruby" style="text-transform: uppercase; font-size: 0.72rem;">{property.publication_status}</span>
+        </div>
+        <p class="preview-note">
+          This listing is currently hidden from public visitors and search engine sitemaps.
+        </p>
+        <div class="preview-btn-row">
+          <a href={`/admin/properties/edit?id=${property.id}`} class="btn btn-outline-white btn-sm">Edit Listing</a>
+          <button type="button" id="previewPublishBtn" data-id={property.id} class="btn btn-gold btn-sm">Publish Now</button>
+        </div>
+      </div>
+    </aside>
+  )}
   <!-- Breadcrumb Navigation -->
   <div class="breadcrumb-bar">
     <div class="container breadcrumb-inner">
@@ -700,6 +720,48 @@ const pricePerSqFt = Math.round(property.price / property.square_feet);
     font-size: 2.5rem;
     cursor: pointer;
   }
+
+  .admin-preview-banner {
+    background: #1e1b4b;
+    border-bottom: 2px solid var(--color-gold-500);
+    color: #ffffff;
+    padding: 0.75rem 0;
+  }
+
+  .preview-banner-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .preview-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .preview-dot {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 8px #ef4444;
+  }
+
+  .preview-note {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #c7d2fe;
+  }
+
+  .preview-btn-row {
+    display: flex;
+    gap: 0.5rem;
+  }
 </style>
 
 <script>
@@ -710,6 +772,36 @@ const pricePerSqFt = Math.round(property.price / property.square_feet);
     const modal = document.getElementById('lightboxModal');
     const modalImg = document.getElementById('lightboxImg') as HTMLImageElement;
     const closeBtn = document.getElementById('closeLightboxBtn');
+    const publishBtn = document.getElementById('previewPublishBtn');
+
+    if (publishBtn) {
+      publishBtn.addEventListener('click', async () => {
+        const id = publishBtn.getAttribute('data-id');
+        if (!id) return;
+        publishBtn.textContent = 'Publishing...';
+        (publishBtn as HTMLButtonElement).disabled = true;
+
+        try {
+          const res = await fetch('/api/admin/properties/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, action: 'publish' })
+          });
+          const data = await res.json();
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert('Error publishing listing: ' + (data.error || 'Server error'));
+            publishBtn.textContent = 'Publish Now';
+            (publishBtn as HTMLButtonElement).disabled = false;
+          }
+        } catch (e: any) {
+          alert('Network error publishing listing: ' + e.message);
+          publishBtn.textContent = 'Publish Now';
+          (publishBtn as HTMLButtonElement).disabled = false;
+        }
+      });
+    }
 
     if (!mainImg) return;
 
