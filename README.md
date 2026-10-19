@@ -1,74 +1,157 @@
-# Edgar Valle | Realtor — San Diego Real Estate Platform
+# Edgar Valle | Realtor — San Diego Real Estate Platform, CMS & Business Intelligence
 
 [![Astro](https://img.shields.io/badge/Astro-5.18-BC52EE.svg?style=flat&logo=astro)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20RLS-3ECF8E.svg?style=flat&logo=supabase)](https://supabase.com)
-[![Vitest](https://img.shields.io/badge/Vitest-Unit%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
+[![Vitest](https://img.shields.io/badge/Vitest-44%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
+[![Power BI](https://img.shields.io/badge/Analytics-Power%20BI%20Engine-F2C811.svg?style=flat)](https://edgarvalle.com/admin/analytics)
 
-A complete, production-ready real estate web application built for **Edgar Valle | Realtor** ([Full Circle Group](https://edgarvalle.com), **California DRE #02375273**) serving the San Diego, California market.
+A complete, enterprise-grade real estate web application, property CMS, and Business Intelligence CRM built for **Edgar Valle | Realtor** ([Full Circle Group](https://edgarvalle.com), **California DRE #02375273**) serving the San Diego, California real estate market.
 
-Instagram: [@yourrealtoredgar](https://www.instagram.com/yourrealtoredgar/) • Direct: `(619) 555-0198`
+Instagram: [@yourrealtoredgar](https://www.instagram.com/yourrealtoredgar/) • Direct: `(619) 555-0198` • Email: `edgar@yourrealtoredgar.com`
 
 ---
 
-## 🌟 Core Brand Specialties
+## 🌟 Architecture & System Scope
 
-1. **First-Time Homebuyers** — Low-down-payment navigation (FHA 3.5%, Conventional 3%), CalHFA grant assistance, credit optimization, and a 6-step roadmap.
-2. **VA Military Home Loans** — Serving active duty service members and veterans stationed across **Camp Pendleton (Oceanside)**, **Naval Base San Diego (32nd Street)**, **Naval Base Coronado**, and **MCAS Miramar**. 0% down payment, $0 private mortgage insurance (PMI), and maximizing San Diego Basic Allowance for Housing (BAH).
-3. **Fix-and-Flip & Real Estate Investors** — Mathematical underwriting using the **70% rule** ($MAO = [ARV \times 70\%] - \text{Rehab}$), off-market deal sourcing, contractor estimates, and California SB9 / ADU lot-expansion opportunities.
-4. **Bilingual Advisory ("Hablamos Español")** — Complete native Spanish-language representation, contract translations, and family consultations.
+The platform integrates three comprehensive core tiers:
+
+### 1. Public Marketing & Client Advisory Website (Master Prompt 01)
+- **Verified Branding**: Edgar Valle, Full Circle Group, California DRE #02375273, San Diego County market.
+- **Niche Specialties**:
+  - **First-Time Homebuyers** (`/first-time-homebuyer` & `/es/primeros-compradores`): Low-down-payment navigation (FHA 3.5%, Conventional 3%), CalHFA grant assistance, credit repair, and 6-step roadmap.
+  - **VA Military Loans** (`/va-loans`): Stationed across Camp Pendleton, Naval Base San Diego (32nd St), Naval Base Coronado, and MCAS Miramar. 0% down, $0 PMI, and San Diego BAH optimization.
+  - **Fix-and-Flip & Investors** (`/fix-and-flip`): 70% underwriting rule ($MAO = [ARV \times 70\%] - \text{Rehab}$), off-market deal sourcing, and California SB9 ADU lot expansion.
+- **Bilingual Service**: Full Spanish-language mirror (`/es/`, `/es/comprar`, `/es/vender`, `/es/contacto`).
+- **Interactive Tools**: Real-time Mortgage Calculator (`/buy`) with VA funding fee calculations, property tax, HOA, and amortization schedules.
+- **Community Guides**: Deep-dive neighborhood spotlights for North Park, La Jolla, Chula Vista, Mission Hills, Pacific Beach, and Downtown San Diego.
+- **Regulatory Compliance**: Equal Housing Opportunity badge, DRE disclosures, Privacy Policy, Terms of Service, Cookie Policy, Accessibility Statement, and Brokerage Disclosures.
+
+### 2. Protected Admin Dashboard & Property CMS (Master Prompt 02)
+- **Inventory Management** (`/admin/properties`):
+  - Searchable and filterable table displaying thumbnails, property IDs, asking prices & currencies, city/neighborhood display visibility, beds/baths, square footage, lot size with explicit units, listing status, publication status, created/updated dates, and analytics.
+- **7-Tab Add/Edit Property Form** (`/admin/properties/new` & `/admin/properties/edit`):
+  1. *Identity*: Title, automatic slug generation, property ID, property type, description, listing status, publication status.
+  2. *Pricing*: Asking price, currency (`USD`, `MXN`, `EUR`), automated previous price comparison, verified HOA fees & frequency, and additional costs.
+  3. *Location*: Street address, unit, city, state, ZIP, country, neighborhood, latitude & longitude, public address visibility toggle (`full` vs `neighborhood_only`), and map preview.
+  4. *Property Details*: Beds, baths, sqft, lot size & unit, year built, parking spaces, garage, pool, spa, verified amenities checklist, and renovation status.
+  5. *Media Manager*: Multi-photo dropzone with upload progress bar, one-click **Set Cover Image**, inline **Alt Text** editor for SEO/accessibility, reordering controls, and video tour link.
+  6. *Open Houses*: Date, start time, end time, timezone, RSVP link, and automatic expiration of past events.
+  7. *SEO & Social*: SEO title, meta description, Open Graph social-sharing image, search indexability toggle (`is_indexable`), and live Google SERP preview.
+- **Workflows**:
+  - Create Drafts without public exposure.
+  - Authenticated **Admin Preview Mode** (`/properties/[slug]?preview=true`) with floating banner and 1-click **Publish Now** toggle.
+  - **Duplicate Listing**: Generates draft clone with unique slug and reset analytics.
+  - **Soft Deletion**: Preserves historical records for commission and reporting compliance while purging from active public search.
+  - **Automatic Sitemap Exclusion**: Excludes drafts, archived, soft-deleted, and `is_indexable: false` listings from `/sitemap.xml`.
+
+### 3. Business Intelligence, Power BI Analytics & CRM (Master Prompt 03)
+- **Power BI Executive Dashboard** (`/admin/analytics`):
+  - Global Date Range Filters: `Today`, `Yesterday`, `Last 7 Days`, `Last 30 Days`, `Last 90 Days`, and `Custom Range`.
+  - 11 Power BI Executive KPIs with previous-period delta percentage and trend indicators.
+  - Interactive SVG Charts: Traffic Trend Line Chart, Traffic-Source Breakdown, Lead Conversion Funnel (*Visitors &rarr; Views &rarr; Inquiries &rarr; Qualified &rarr; Appts &rarr; Closed*), CRM Status Distribution, and Device Categories (Mobile vs Desktop vs Tablet).
+  - Most Viewed Properties ranking table and Top Landing Pages matrix.
+  - **Accessible Table Alternative Toggle**: One-click toggle switching between visual charts and screen-reader accessible HTML data tables with full ARIA labeling.
+  - **Metric Definitions & Disclosures Modal**: Transparent explanation of telemetry variances caused by ad blockers, Safari ITP, and DNT.
+- **Privacy-Conscious Visitor Tracking** (`<AnalyticsTracker />` & `/api/analytics/track`):
+  - Zero PII: strict server-side scrubbing of emails, phone numbers, and auth tokens.
+  - Respects Do-Not-Track (`navigator.doNotTrack === '1'`).
+  - High-performance non-blocking beacon dispatch via `navigator.sendBeacon()`.
+- **CRM Workspace** (`/admin/leads`):
+  - 8 Lifecycle Statuses: `New`, `Contacted`, `Qualified`, `Appointment Scheduled`, `In Progress`, `Converted`, `Lost`, and `Spam`.
+  - Follow-up date reminders (*Overdue*, *Due Today*, *Upcoming*).
+  - Direct Property Association links.
+  - Slide-Over Lead Drawer with contact profile, UTM campaign tags, inline status changer, and **Confidential Internal Notes Thread** with author and timestamp audit trail.
+- **Reports & CSV Export Center** (`/admin/reports` & `/api/admin/reports/export`):
+  - **Spreadsheet Formula Injection Defense**: Sanitizes cells starting with formula triggers (`=`, `+`, `-`, `@`, `\t`, `\r`) by prepending an apostrophe `'`, preventing macro/DDE attacks in Excel and Google Sheets.
+  - 8 Authorized Reports: Property Inventory, Daily Traffic, Property Views vs. Inquiries, CRM Leads by Date, Conversion Funnel, Traffic Sources, Listing Performance, and Open House Inquiries.
+- **Google Search Console Integration** (`src/lib/gsc.ts`):
+  - Real configuration check; transparent status card with zero hallucinated ranking metrics when not configured.
 
 ---
 
 ## 🛠️ Technology Stack
 
 - **Framework**: [Astro 5](https://astro.build) with **TypeScript strict mode** (`astro/tsconfigs/strict`).
-- **Rendering & Server**: Modern hybrid SSR with `@astrojs/node` standalone adapter for server-side endpoints and protected admin routing.
-- **Styling**: Modern, responsive **Vanilla CSS design system** utilizing design tokens (`tokens.css`, `global.css`, `admin.css`), CSS grid, flexbox, native animations, and responsive breakpoints. **Zero bloated UI frameworks or Next.js dependencies.**
-- **Database & Security**: [Supabase](https://supabase.com) PostgreSQL with **Row Level Security (RLS)**, automated audit logs, and strict input validation/sanitization (`validation.ts`). Includes a zero-downtime persistent mock repository for development when remote keys are pending.
-- **Testing**: [Vitest](https://vitest.dev) for unit testing of financial calculations, lead validation, and search filtering.
+- **Rendering & Server**: Modern hybrid SSR with `@astrojs/node` standalone adapter.
+- **Styling**: Curated **Vanilla CSS design system** using design tokens (`tokens.css`, `global.css`, `admin.css`), CSS grid, flexbox, micro-animations, and responsive breakpoints. **Zero bloated UI frameworks or Next.js dependencies.**
+- **Database & Storage**: [Supabase](https://supabase.com) PostgreSQL with **Row Level Security (RLS)**, storage bucket policies, automated audit triggers, and input sanitization (`validation.ts`). Includes a zero-downtime runtime repository fallback for development.
+- **Testing**: [Vitest](https://vitest.dev) (44 automated tests across 7 test suites).
 
 ---
 
 ## 📁 Directory Structure
 
 ```text
-├── .env.example                       # Environment variables template
-├── astro.config.mjs                   # Astro configuration with Node adapter
-├── package.json                       # Dependencies & scripts
-├── tsconfig.json                      # Strict TypeScript compiler options
-├── vitest.config.ts                   # Vitest unit test runner config
+├── .env.example                               # Environment variables template
+├── astro.config.mjs                           # Astro configuration with Node adapter
+├── package.json                               # Dependencies & scripts
+├── tsconfig.json                              # Strict TypeScript compiler options
+├── vitest.config.ts                           # Vitest test configuration
 ├── supabase/
 │   └── migrations/
-│       ├── 20261018000001_initial_schema.sql  # Tables, constraints, and indexes
+│       ├── 20261018000001_initial_schema.sql  # Properties, media, leads, open houses
 │       ├── 20261018000002_rls_policies.sql    # Row Level Security policies
-│       └── 20261018000003_seed_data.sql       # 12+ San Diego listings, neighborhoods, and posts
+│       ├── 20261018000003_seed_data.sql       # Initial San Diego listings and articles
+│       ├── 20261019000004_property_cms_extensions.sql # CMS extensions, storage, audit logs
+│       └── 20261019000005_analytics_and_crm_bi.sql    # Analytics events, CRM statuses, rollups
 ├── public/
-│   ├── favicon.svg                    # Vector monogram favicon
-│   ├── site.webmanifest               # PWA web manifest
-│   ├── robots.txt                     # SEO robots configuration
-│   └── images/
-│       ├── branding/                  # Logo, wordmark, portrait vectors
-│       ├── properties/                # Architectural property illustrations
-│       ├── neighborhoods/             # Community hero graphics
-│       └── blog/                      # Editorial blog covers
+│   ├── favicon.svg                            # Monogram vector favicon
+│   ├── site.webmanifest                       # PWA manifest
+│   ├── robots.txt                             # SEO crawler instructions
+│   ├── images/                                # Vector branding, properties, and hero graphics
+│   └── uploads/                               # Local media upload fallback directory
+├── scripts/
+│   └── test-admin.cjs                         # End-to-end admin HTTP verification script
 └── src/
-    ├── components/                    # Header, Footer, PropertyCard, MortgageCalculator, etc.
-    ├── layouts/                       # Layout.astro (Public), AdminLayout.astro (Protected)
-    ├── lib/                           # Store, Supabase client, Validation, Mortgage, SEO helpers
-    ├── pages/                         # All public pages, Spanish routes, Admin portal, API endpoints
-    └── tests/                         # Vitest unit test suites
+    ├── components/
+    │   ├── Header.astro, Footer.astro, SeoHead.astro
+    │   ├── PropertyCard.astro, MortgageCalculator.astro
+    │   ├── AnalyticsTracker.astro             # Visitor telemetry beacon
+    │   └── admin/
+    │       └── PropertyForm.astro             # 7-tab Add/Edit listing form
+    ├── layouts/
+    │   ├── Layout.astro                       # Public base layout
+    │   └── AdminLayout.astro                  # Protected admin layout with sidebar
+    ├── lib/
+    │   ├── store.ts                           # Domain repository with Supabase fallback
+    │   ├── types.ts                           # Strict TypeScript interfaces
+    │   ├── analytics.ts                       # Privacy tracker & Power BI engine
+    │   ├── csv.ts                             # RFC 4180 CSV builder with formula defense
+    │   ├── gsc.ts                             # Google Search Console integration
+    │   ├── mortgage.ts                        # Financial calculation algorithms
+    │   ├── validation.ts                      # Input sanitization and schema validators
+    │   └── auth.ts                            # Session token verification
+    ├── pages/
+    │   ├── index.astro, buy.astro, sell.astro, about.astro, contact.astro
+    │   ├── first-time-homebuyer.astro, va-loans.astro, fix-and-flip.astro
+    │   ├── open-houses.astro, testimonials.astro, faq.astro
+    │   ├── es/                                # Native Spanish routes
+    │   ├── properties/                        # Catalog & dynamic [slug].astro with preview
+    │   ├── neighborhoods/                     # San Diego community guides
+    │   ├── admin/
+    │   │   ├── index.astro                    # Executive Dashboard
+    │   │   ├── login.astro                    # Session authentication
+    │   │   ├── analytics.astro                # Power BI BI & Analytics
+    │   │   ├── leads.astro                    # Full CRM Workspace
+    │   │   ├── properties.astro               # Property inventory table
+    │   │   ├── reports.astro                  # Reports & CSV export center
+    │   │   ├── settings.astro                 # Brokerage configuration
+    │   │   └── properties/                    # new.astro and edit.astro
+    │   └── api/
+    │       ├── leads.ts, valuation.ts
+    │       ├── analytics/track.ts             # Visitor beacon receiver
+    │       └── admin/                         # Properties, duplicate, status, media, audit, leads, export
+    └── tests/
+        ├── validation.test.ts, auth.test.ts, mortgage.test.ts
+        ├── filter.test.ts, seo.test.ts, cms.test.ts, bi-crm.test.ts
 ```
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Prerequisites
-- Node.js `v20.x` or higher
-- npm `v10.x` or higher
-
-### 2. Installation
+### 1. Installation
 ```bash
 # Clone the repository
 git clone https://github.com/your-username/edgar-valle-real-estate.git
@@ -78,54 +161,92 @@ cd edgar-valle-real-estate
 npm install
 ```
 
-### 3. Environment Configuration
-Copy the template and configure your secrets:
+### 2. Environment Configuration
+Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
-Populate your environment variables in `.env`:
+Populate your environment variables:
 ```env
 PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
-ADMIN_SECRET_KEY=your-secure-admin-passphrase-here
+ADMIN_SECRET_KEY=edgar-valle-admin-session-secure-key-2026
 SITE_URL=http://localhost:4321
+
+# Optional: Google Search Console API
+GSC_CLIENT_EMAIL=your-service-account@project.iam.gserviceaccount.com
+GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+GSC_SITE_URL=https://edgarvalle.com
 ```
 
-### 4. Database Setup (Supabase)
-Run the SQL migrations located in `supabase/migrations/` sequentially in your Supabase SQL Editor:
-1. `20261018000001_initial_schema.sql` (Profiles, properties, media, leads, open houses, settings)
-2. `20261018000002_rls_policies.sql` (Enables RLS on all tables; secures leads from public access)
-3. `20261018000003_seed_data.sql` (Populates authentic San Diego properties and initial articles)
+### 3. Database Migrations (Supabase)
+Execute the migrations sequentially in your Supabase SQL Editor:
+1. `supabase/migrations/20261018000001_initial_schema.sql`
+2. `supabase/migrations/20261018000002_rls_policies.sql`
+3. `supabase/migrations/20261018000003_seed_data.sql`
+4. `supabase/migrations/20261019000004_property_cms_extensions.sql`
+5. `supabase/migrations/20261019000005_analytics_and_crm_bi.sql`
 
-### 5. Running Locally
+### 4. Running the Development Server
 ```bash
-# Start local development server
 npm run dev
 ```
 Open [http://localhost:4321](http://localhost:4321) in your browser.
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing & Verification
 
-Execute automated unit tests for mortgage calculations, lead validation, and search filters:
+### Run the Vitest Test Suite (44 Tests)
 ```bash
-npm run test
+npm test
+```
+```bash
+✓ src/tests/validation.test.ts (4 tests)
+✓ src/tests/auth.test.ts (5 tests)
+✓ src/tests/mortgage.test.ts (4 tests)
+✓ src/tests/filter.test.ts (5 tests)
+✓ src/tests/seo.test.ts (4 tests)
+✓ src/tests/cms.test.ts (9 tests)
+✓ src/tests/bi-crm.test.ts (13 tests)
+
+Test Files  7 passed (7)
+     Tests  44 passed (44)
+```
+
+### Run Astro Diagnostic Check
+```bash
+npx astro check
+# Result (85 files): 0 errors, 0 warnings, 0 hints
+```
+
+### Run Production Build
+```bash
+npm run build
+# Compiles complete server bundle in ~5.1s
+```
+
+### End-to-End Live HTTP Route Verification
+With the dev server running, verify all admin routes, APIs, CSV exports, and telemetry:
+```bash
+node scripts/test-admin.cjs
 ```
 
 ---
 
-## 🔒 Security & Data Privacy (RLS)
+## 🔒 Security & Data Privacy
 
-- **Leads Confidentiality**: The `leads` table has strict Row Level Security. Public anonymous users can **only insert** new inquiries. Public users **cannot read, update, or delete** any lead data.
-- **Admin Authentication**: All `/admin` routes verify the session cookie on the server before rendering. Secret keys remain strictly server-side and are never bundled into client scripts.
-- **Input Sanitization**: All incoming form payloads are sanitized to prevent script injection and XSS attacks.
+1. **Row Level Security (RLS)**: Public visitors can only view properties where `publication_status = 'published' AND deleted_at IS NULL`. Leads and audit logs can only be read by authenticated administrators.
+2. **Spreadsheet Formula Injection Defense**: All CSV cells starting with formula operators (`=`, `+`, `-`, `@`, `\t`, `\r`) are automatically escaped with a leading single quote `'` in [`src/lib/csv.ts`](file:///c:/ussa/src/lib/csv.ts).
+3. **No Service-Role Key Leaks**: The Supabase service-role key is never imported into client-side components; all administrative actions route through authenticated server-side endpoints.
+4. **Privacy-Conscious Telemetry**: Analytics events exclude names, emails, phone numbers, and authentication tokens via `scrubPII()`. Respects browser Do-Not-Track settings.
+5. **Soft Deletions**: Historical sales and performance data remain preserved for brokerage and commission reporting compliance.
 
 ---
 
-## 📜 Legal & Regulatory Disclosures
+## 📜 Regulatory Disclosures
 
 - **DRE License**: California Department of Real Estate License **#02375273**.
 - **Brokerage**: Affiliated with **Full Circle Group**.
-- **Fair Housing**: Adheres to the federal Fair Housing Act and California Fair Employment and Housing Act (FEHA). **Equal Housing Opportunity**.
+- **Equal Housing Opportunity**: Pledged to the letter and spirit of U.S. policy for the achievement of equal housing opportunity throughout the nation.
