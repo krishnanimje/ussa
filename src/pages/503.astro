@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = false;
+Astro.response.status = 503;
+---
+
+<Layout 
+  title="503 — Service Temporarily Unavailable"
+  description="The real estate portal is undergoing scheduled maintenance or database optimization."
+>
+  <div class="section" style="min-height: 65vh; display: flex; align-items: center; text-align: center;">
+    <div class="container" style="max-width: 680px; margin: 0 auto;">
+      <div class="badge badge-emerald" style="margin-bottom: 1.5rem; font-size: 0.85rem; padding: 0.4rem 1rem;">HTTP 503 • SCHEDULED MAINTENANCE</div>
+      <h1>System Maintenance in Progress</h1>
+      <p class="lead" style="margin: 0 auto 2.5rem auto;">
+        We are conducting routine performance upgrades to our San Diego MLS synchronization services. Normal operations will resume in a few minutes.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <button onclick="window.location.reload()" class="btn btn-gold btn-lg">Check Status</button>
+        <a href="tel:6195550198" class="btn btn-outline btn-lg">Call Edgar Valle: (619) 555-0198</a>
+      </div>
+    </div>
+  </div>
+</Layout>

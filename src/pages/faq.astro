@@ -1,0 +1,195 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+
+const faqs = [
+  {
+    category: "Home Buying in San Diego",
+    items: [
+      {
+        q: "How much money do I actually need saved to buy a home in San Diego?",
+        a: "Many buyers mistakenly believe 20% down is mandatory. In reality, conventional loans start at 3% down, FHA loans require 3.5%, and VA loans for eligible military service members require 0% down. In addition to your down payment, plan for approximately 1.5% to 2.5% of the purchase price for California escrow closing costs, property taxes, and title insurance."
+      },
+      {
+        q: "What is earnest money (EMD) and when is it due?",
+        a: "Earnest Money Deposit (EMD) is your initial good-faith deposit showing the seller you are serious. In San Diego, it is typically 1% to 3% of the purchase price and is wired into an independent escrow account within 3 business days of mutual offer acceptance. Your deposit is protected by standard contractual contingencies (inspection, appraisal, loan) during the contingency period."
+      },
+      {
+        q: "How long does the escrow closing process take in California?",
+        a: "Standard escrow in California typically spans 21 to 30 calendar days for buyers using conventional or VA financing. Cash purchases can close in as little as 7 to 10 days."
+      }
+    ]
+  },
+  {
+    category: "VA Loans & Military Relocation",
+    items: [
+      {
+        q: "Can I buy a home in San Diego with zero down payment using a VA loan?",
+        a: "Yes. Following the elimination of statutory VA loan limits for veterans with full entitlement, qualified military buyers can purchase homes priced at $900,000, $1,200,000, or more with 0% down payment, provided their BAH and debt-to-income ratios qualify for the monthly mortgage payment."
+      },
+      {
+        q: "Do VA loans require monthly private mortgage insurance (PMI)?",
+        a: "No. Unlike conventional or FHA loans with low down payments, VA loans do not charge monthly PMI. This saves military service members between $300 and $650 every single month."
+      },
+      {
+        q: "Can Edgar Valle conduct virtual showings if I am deployed or stationed out of state?",
+        a: "Absolutely. Edgar routinely conducts high-definition FaceTime and recorded 4K video walkthroughs for service members stationed at Camp Pendleton, 32nd St, Coronado, or overseas preparing for their PCS relocation to San Diego."
+      }
+    ]
+  },
+  {
+    category: "Fix-and-Flip & Real Estate Investors",
+    items: [
+      {
+        q: "What is the 70% rule in fix-and-flip investing?",
+        a: "The 70% rule states that an investor should pay no more than 70% of the After Repair Value (ARV) minus estimated repair costs: Maximum Allowable Offer (MAO) = (ARV × 70%) – Rehab Costs. This 30% margin cushions against holding costs, financing interest, closing commissions, and unforeseen construction delays."
+      },
+      {
+        q: "How does California's ADU law affect investment returns?",
+        a: "Under California SB9 and ADU mandates, many single-family lots in San Diego County allow for the construction of detached Accessory Dwelling Units (ADUs). This allows investors to add substantial square footage and recurring rental income, significantly increasing resale valuation and cap rates."
+      }
+    ]
+  },
+  {
+    category: "Bilingual Service & Spanish Assistance",
+    items: [
+      {
+        q: "¿Edgar Valle ofrece asesoría completa en español?",
+        a: "Sí, Edgar Valle es 100% bilingüe (inglés y español). Explicamos cada contrato, contingencia legal, inspección de propiedad y detalle de financiamiento en su idioma nativo para que su familia tome decisiones con total seguridad y confianza."
+      }
+    ]
+  }
+];
+
+const faqJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.flatMap(cat => cat.items.map(item => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a
+    }
+  })))
+});
+---
+
+<Layout 
+  title="Frequently Asked Questions — San Diego Real Estate FAQ"
+  description="Answers to common questions about buying, selling, VA loans, closing costs, and fix-and-flip investing in San Diego with Realtor Edgar Valle."
+  jsonLd={faqJsonLd}
+>
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">COMMON QUESTIONS</span>
+      <h1>San Diego Real Estate FAQ</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Clear, transparent answers to help you navigate San Diego home buying, selling, VA financing, and investments.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-narrow">
+      <div class="faq-categories-stack">
+        {faqs.map(cat => (
+          <div class="faq-cat-group">
+            <h2 class="faq-cat-title">{cat.category}</h2>
+            <div class="faq-accordion-list">
+              {cat.items.map(item => (
+                <details class="card faq-item">
+                  <summary class="faq-summary">
+                    <span class="faq-question">{item.q}</span>
+                    <span class="faq-icon">+</span>
+                  </summary>
+                  <div class="faq-answer">
+                    <p>{item.a}</p>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style="margin-top: 4rem;">
+        <LeadCaptureForm 
+          leadType="general_contact"
+          formTitle="Still Have a Question?"
+          buttonText="Ask Edgar Directly"
+        />
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .faq-categories-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .faq-cat-title {
+    font-size: 1.65rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-gold-400);
+    display: inline-block;
+  }
+
+  .faq-accordion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .faq-item {
+    background: #ffffff;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .faq-summary {
+    padding: 1.25rem 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-icon {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--color-gold-600);
+    transition: transform var(--transition-fast);
+  }
+
+  details[open] .faq-icon {
+    transform: rotate(45deg);
+  }
+
+  .faq-answer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.98rem;
+    line-height: 1.7;
+    border-top: 1px solid var(--border-subtle);
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+  }
+
+  .faq-answer p {
+    margin: 0;
+  }
+</style>

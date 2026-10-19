@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="sunsetGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E76F51" />
+      <stop offset="40%" stop-color="#F4A261" />
+      <stop offset="70%" stop-color="#E9C46A" />
+      <stop offset="100%" stop-color="#2A9D8F" />
+    </linearGradient>
+    <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2A9D8F" />
+      <stop offset="100%" stop-color="#1D3557" />
+    </linearGradient>
+    <linearGradient id="glassBalcony" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E0FBFC" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#98C1D9" stop-opacity="0.4" />
+    </linearGradient>
+  </defs>
+
+  <!-- Pacific Sunset Sky -->
+  <rect width="800" height="340" fill="url(#sunsetGrad)" />
+  <!-- Ocean & Sail Bay Waters -->
+  <rect y="340" width="800" height="160" fill="url(#oceanGrad)" />
+  
+  <!-- Ocean reflection shimmer -->
+  <line x1="200" y1="360" x2="350" y2="360" stroke="#F4A261" stroke-width="2" opacity="0.6" />
+  <line x1="180" y1="380" x2="420" y2="380" stroke="#F4A261" stroke-width="2" opacity="0.4" />
+  <line x1="220" y1="400" x2="380" y2="400" stroke="#E9C46A" stroke-width="1.5" opacity="0.5" />
+
+  <!-- Modern Luxury Coastal Building Structure -->
+  <rect x="360" y="80" width="380" height="340" fill="#F8F9FA" />
+  <rect x="380" y="80" width="340" height="10" fill="#264653" />
+
+  <!-- Condominium Glass Balconies (PB Luxury) -->
+  <!-- Floor 3 -->
+  <rect x="380" y="110" width="340" height="60" fill="#1D2A44" />
+  <rect x="390" y="120" width="140" height="45" fill="#FFF" opacity="0.85" />
+  <rect x="550" y="120" width="160" height="45" fill="#FFF" opacity="0.85" />
+  <rect x="380" y="150" width="340" height="25" fill="url(#glassBalcony)" stroke="#98C1D9" stroke-width="1.5" />
+
+  <!-- Floor 2 -->
+  <rect x="380" y="190" width="340" height="60" fill="#1D2A44" />
+  <rect x="390" y="200" width="140" height="45" fill="#FFF" opacity="0.85" />
+  <rect x="550" y="200" width="160" height="45" fill="#FFF" opacity="0.85" />
+  <rect x="380" y="230" width="340" height="25" fill="url(#glassBalcony)" stroke="#98C1D9" stroke-width="1.5" />
+
+  <!-- Floor 1 Ground Level Lounge -->
+  <rect x="380" y="270" width="340" height="70" fill="#141E28" />
+  <rect x="400" y="280" width="130" height="60" fill="#FFD166" opacity="0.4" />
+  <rect x="560" y="280" width="140" height="60" fill="#FFD166" opacity="0.4" />
+
+  <!-- Coastal Palm Tree Silhouettes -->
+  <path d="M 120 420 Q 140 240 100 130" stroke="#1D2A44" stroke-width="6" fill="none" />
+  <g transform="translate(100, 130)">
+    <path d="M 0 0 Q -50 -40 -110 -20 Q -60 -10 0 0" fill="#1D2A44" />
+    <path d="M 0 0 Q -20 -60 -30 -120 Q 0 -60 0 0" fill="#1D2A44" />
+    <path d="M 0 0 Q 30 -60 80 -100 Q 40 -40 0 0" fill="#1D2A44" />
+    <path d="M 0 0 Q 60 -20 120 -10 Q 60 10 0 0" fill="#1D2A44" />
+    <path d="M 0 0 Q 30 40 70 80 Q 20 40 0 0" fill="#1D2A44" />
+  </g>
+
+  <!-- Badge Overlay -->
+  <g transform="translate(30, 30)">
+    <rect width="180" height="36" rx="18" fill="#141E28" fill-opacity="0.85" />
+    <circle cx="20" cy="18" r="6" fill="#2A9D8F" />
+    <text x="35" y="23" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">PACIFIC BEACH • $895K</text>
+  </g>
+</svg>

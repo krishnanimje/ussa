@@ -1,0 +1,325 @@
+---
+import type { LeadType, Language } from '../lib/types';
+
+interface Props {
+  leadType?: LeadType;
+  propertyId?: string;
+  propertyTitle?: string;
+  formTitle?: string;
+  buttonText?: string;
+  language?: Language;
+}
+
+const {
+  leadType = 'general_contact',
+  propertyId,
+  propertyTitle,
+  formTitle = 'Request More Information',
+  buttonText = 'Send Inquiry to Edgar',
+  language = 'en'
+} = Astro.props;
+
+const formId = `leadForm_${Math.random().toString(36).substring(2, 8)}`;
+---
+
+<div class="lead-form-container card" id={formId}>
+  <div class="form-header">
+    <h3 class="form-title">{formTitle}</h3>
+    <p class="form-subtext">
+      {propertyTitle ? `Direct inquiry regarding ${propertyTitle}.` : 'Edgar Valle will personally review your goals and reply within 24 hours.'}
+    </p>
+  </div>
+
+  <!-- Success Notification Box (Initially Hidden) -->
+  <div class="form-success-alert" style="display: none;" role="alert">
+    <div class="success-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <div class="success-text">
+      <h4>Inquiry Received Successfully!</h4>
+      <p>Thank you for reaching out. Edgar Valle has received your information and will be in touch shortly via your preferred contact method.</p>
+    </div>
+  </div>
+
+  <!-- Form Error Alert (Initially Hidden) -->
+  <div class="form-error-alert" style="display: none;" role="alert">
+    <span class="error-msg"></span>
+  </div>
+
+  <!-- Form Body -->
+  <form class="lead-form-element" novalidate>
+    <input type="hidden" name="leadType" value={leadType} />
+    {propertyId && <input type="hidden" name="propertyId" value={propertyId} />}
+    <input type="hidden" name="languagePreference" value={language} />
+
+    <div class="form-group">
+      <label class="form-label" for={`${formId}_name`}>Full Name <span class="required">*</span></label>
+      <input 
+        type="text" 
+        id={`${formId}_name`} 
+        name="fullName" 
+        class="form-input" 
+        placeholder="e.g. Elena Rodriguez" 
+        required 
+      />
+      <div class="field-error" id={`${formId}_name_err`}></div>
+    </div>
+
+    <div class="grid-2" style="gap: 1rem;">
+      <div class="form-group">
+        <label class="form-label" for={`${formId}_email`}>Email Address <span class="required">*</span></label>
+        <input 
+          type="email" 
+          id={`${formId}_email`} 
+          name="email" 
+          class="form-input" 
+          placeholder="elena@example.com" 
+          required 
+        />
+        <div class="field-error" id={`${formId}_email_err`}></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for={`${formId}_phone`}>Phone Number <span class="required">*</span></label>
+        <input 
+          type="tel" 
+          id={`${formId}_phone`} 
+          name="phone" 
+          class="form-input" 
+          placeholder="(619) 555-0123" 
+          required 
+        />
+        <div class="field-error" id={`${formId}_phone_err`}></div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="gap: 1rem;">
+      <div class="form-group">
+        <label class="form-label" for={`${formId}_method`}>Preferred Contact</label>
+        <select id={`${formId}_method`} name="preferredContactMethod" class="form-select">
+          <option value="phone">Phone Call</option>
+          <option value="text" selected>Text Message</option>
+          <option value="email">Email</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for={`${formId}_timeframe`}>Timeframe</label>
+        <select id={`${formId}_timeframe`} name="timeframe" class="form-select">
+          <option value="immediately">Immediately</option>
+          <option value="1-3 months" selected>1 – 3 Months</option>
+          <option value="3-6 months">3 – 6 Months</option>
+          <option value="exploring">Just Exploring</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for={`${formId}_message`}>Message or Questions</label>
+      <textarea 
+        id={`${formId}_message`} 
+        name="message" 
+        class="form-textarea" 
+        placeholder="Tell Edgar about your desired San Diego neighborhood, budget, or questions..."
+        rows="3"
+      ></textarea>
+    </div>
+
+    <div class="form-disclaimer">
+      <small>By clicking below, you consent to receive calls or text messages from Edgar Valle regarding San Diego real estate. Your information is never sold or shared.</small>
+    </div>
+
+    <button type="submit" class="btn btn-gold btn-lg submit-btn" style="width: 100%; margin-top: 1rem;">
+      <span class="btn-text">{buttonText}</span>
+      <span class="btn-spinner" style="display: none;">Saving to Database...</span>
+    </button>
+  </form>
+</div>
+
+<style>
+  .lead-form-container {
+    padding: 2.25rem;
+    background: #ffffff;
+    box-shadow: var(--shadow-md);
+  }
+
+  .form-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .form-subtext {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .required {
+    color: var(--color-error);
+  }
+
+  .field-error {
+    color: var(--color-error);
+    font-size: 0.78rem;
+    margin-top: 0.25rem;
+    min-height: 1rem;
+  }
+
+  .form-disclaimer {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .form-success-alert {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+    padding: 1.5rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .success-icon {
+    background: #10b981;
+    color: #ffffff;
+    border-radius: 50%;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .form-success-alert h4 {
+    margin: 0 0 0.35rem 0;
+    font-size: 1.15rem;
+    color: #065f46;
+  }
+
+  .form-success-alert p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #047857;
+  }
+
+  .form-error-alert {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    font-size: 0.88rem;
+  }
+</style>
+
+<script>
+  function setupLeadForms() {
+    document.querySelectorAll('.lead-form-container').forEach((root) => {
+      if (root.getAttribute('data-initialized')) return;
+      root.setAttribute('data-initialized', 'true');
+
+      const form = root.querySelector('form');
+      const submitBtn = root.querySelector<HTMLButtonElement>('.submit-btn');
+      const btnText = root.querySelector<HTMLElement>('.btn-text');
+      const btnSpinner = root.querySelector<HTMLElement>('.btn-spinner');
+      const successBox = root.querySelector<HTMLElement>('.form-success-alert');
+      const errorBox = root.querySelector<HTMLElement>('.form-error-alert');
+      const errorMsg = root.querySelector<HTMLElement>('.error-msg');
+
+      if (!form || !submitBtn) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Reset errors
+        root.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+        if (errorBox) errorBox.style.display = 'none';
+
+        const formData = new FormData(form);
+        const payload = {
+          fullName: formData.get('fullName') as string,
+          email: formData.get('email') as string,
+          phone: formData.get('phone') as string,
+          leadType: formData.get('leadType') as string,
+          propertyId: (formData.get('propertyId') as string) || undefined,
+          preferredContactMethod: formData.get('preferredContactMethod') as string,
+          timeframe: formData.get('timeframe') as string,
+          message: formData.get('message') as string,
+          languagePreference: (formData.get('languagePreference') as string) || 'en'
+        };
+
+        // Client-side pre-validation
+        let hasError = false;
+        const nameErr = root.querySelector('.field-error[id$="_name_err"]');
+        const emailErr = root.querySelector('.field-error[id$="_email_err"]');
+        const phoneErr = root.querySelector('.field-error[id$="_phone_err"]');
+
+        if (!payload.fullName || payload.fullName.trim().length < 2) {
+          if (nameErr) nameErr.textContent = 'Please enter your full name.';
+          hasError = true;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!payload.email || !emailRegex.test(payload.email.trim())) {
+          if (emailErr) emailErr.textContent = 'Please enter a valid email address.';
+          hasError = true;
+        }
+
+        const digits = (payload.phone || '').replace(/\D/g, '');
+        if (!digits || digits.length < 10) {
+          if (phoneErr) phoneErr.textContent = 'Please enter a valid 10-digit phone number.';
+          hasError = true;
+        }
+
+        if (hasError) return;
+
+        // Disable button and show spinner
+        submitBtn.disabled = true;
+        if (btnText) btnText.style.display = 'none';
+        if (btnSpinner) btnSpinner.style.display = 'inline-block';
+
+        try {
+          const response = await fetch('/api/leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+            // Hide form and reveal verified success only after persistence
+            form.style.display = 'none';
+            if (successBox) successBox.style.display = 'flex';
+          } else {
+            throw new Error(result.error || 'Failed to submit inquiry. Please try again or call Edgar directly.');
+          }
+        } catch (err: any) {
+          if (errorBox && errorMsg) {
+            errorMsg.textContent = err.message || 'An error occurred. Please call (619) 555-0198.';
+            errorBox.style.display = 'block';
+          }
+        } finally {
+          submitBtn.disabled = false;
+          if (btnText) btnText.style.display = 'inline-block';
+          if (btnSpinner) btnSpinner.style.display = 'none';
+        }
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupLeadForms);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setupLeadForms();
+  }
+</script>

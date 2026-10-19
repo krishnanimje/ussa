@@ -1,0 +1,195 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getNeighborhoods } from '../../lib/store';
+import { formatCurrency } from '../../lib/mortgage';
+
+const neighborhoods = await getNeighborhoods();
+---
+
+<Layout 
+  title="San Diego Neighborhoods Guide — Communities & Real Estate Overview"
+  description="Explore San Diego's premier neighborhoods: North Park, Pacific Beach, Chula Vista, Oceanside, and La Jolla with local Realtor Edgar Valle."
+>
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">SAN DIEGO COMMUNITIES</span>
+      <h1>Explore San Diego Neighborhoods</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        From historic Craftsman enclaves in North Park to coastal surf havens in Pacific Beach and family resort master-planned estates in Eastlake, find the community that matches your lifestyle.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="neighborhoods-stack">
+        {neighborhoods.map((n, idx) => (
+          <article class:list={['card hood-feature-card', { reverse: idx % 2 === 1 }]}>
+            <div class="hood-feature-media">
+              <img src={n.hero_image} alt={n.name} width="600" height="380" class="hood-img" />
+              <div class="hood-stat-badge">
+                <span class="stat-kpi">{formatCurrency(n.median_home_price)}</span>
+                <span class="stat-sub">Median Home Price</span>
+              </div>
+            </div>
+
+            <div class="hood-feature-body">
+              <span class="section-eyebrow" style="color: var(--color-gold-600);">{n.vibe}</span>
+              <h2 class="hood-feature-title"><a href={`/neighborhoods/${n.slug}`}>{n.name}</a></h2>
+              <p class="hood-feature-tagline">{n.tagline}</p>
+              <p class="hood-feature-desc">{n.summary}</p>
+
+              <div class="hood-highlights-box">
+                <h4>Neighborhood Highlights:</h4>
+                <ul>
+                  {n.highlights.map(h => <li>{h}</li>)}
+                </ul>
+              </div>
+
+              <div class="hood-actions">
+                <a href={`/neighborhoods/${n.slug}`} class="btn btn-gold">Explore {n.name} Guide</a>
+                <a href={`/properties?neighborhood=${encodeURIComponent(n.name)}`} class="btn btn-outline">View Homes in {n.name}</a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .neighborhoods-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .hood-feature-card {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .hood-feature-card.reverse {
+    grid-template-columns: 1.15fr 1fr;
+  }
+
+  .hood-feature-card.reverse .hood-feature-media {
+    order: 2;
+  }
+
+  @media (max-width: 900px) {
+    .hood-feature-card, .hood-feature-card.reverse {
+      grid-template-columns: 1fr;
+    }
+    .hood-feature-card.reverse .hood-feature-media {
+      order: 1;
+    }
+  }
+
+  .hood-feature-media {
+    position: relative;
+    background: var(--color-navy-950);
+  }
+
+  .hood-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hood-stat-badge {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(15, 24, 34, 0.9);
+    border: 1px solid var(--color-gold-400);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-sm);
+    color: #ffffff;
+  }
+
+  .stat-kpi {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--color-gold-400);
+  }
+
+  .stat-sub {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  .hood-feature-body {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hood-feature-title {
+    font-size: 2rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .hood-feature-title a {
+    color: var(--text-primary);
+  }
+
+  .hood-feature-title a:hover {
+    color: var(--color-gold-700);
+  }
+
+  .hood-feature-tagline {
+    font-size: 1.05rem;
+    color: var(--color-gold-700);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .hood-feature-desc {
+    font-size: 0.98rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .hood-highlights-box {
+    background: #fdfbf7;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .hood-highlights-box h4 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-navy-950);
+    margin-bottom: 0.5rem;
+  }
+
+  .hood-highlights-box ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .hood-highlights-box li {
+    margin-bottom: 0.35rem;
+  }
+
+  .hood-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+    flex-wrap: wrap;
+  }
+</style>

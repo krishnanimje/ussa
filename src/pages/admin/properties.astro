@@ -1,0 +1,97 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getProperties } from '../../lib/store';
+import { formatCurrency } from '../../lib/mortgage';
+import { checkAdminAuth } from '../../lib/auth';
+
+export const prerender = false;
+
+if (!checkAdminAuth(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+
+const properties = await getProperties();
+---
+
+<AdminLayout title="Properties Manager" activeNav="properties">
+  <div class="admin-header">
+    <div>
+      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: #ffffff;">Listing Inventory Management</h1>
+      <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.9rem;">
+        View and manage San Diego active listings, pending escrows, and open houses.
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="/properties" target="_blank" class="btn btn-outline-white btn-sm">Preview Public Gallery</a>
+    </div>
+  </div>
+
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Photo</th>
+          <th>Property Title &amp; Address</th>
+          <th>Type</th>
+          <th>Price</th>
+          <th>Beds / Baths / Sq Ft</th>
+          <th>Amenities</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {properties.map(p => (
+          <tr>
+            <td style="width: 70px;">
+              <img src={p.primary_image} alt={p.title} width="60" height="40" style="border-radius: 4px; object-fit: cover;" />
+            </td>
+            <td>
+              <strong style="color: #ffffff;">{p.title}</strong>
+              <div style="font-size: 0.78rem; color: #8b9bb0;">
+                {p.address_street}, {p.neighborhood} (MLS #{p.mls_number || 'N/A'})
+              </div>
+            </td>
+            <td>
+              <span class="badge badge-dark" style="font-size: 0.7rem;">{p.property_type}</span>
+            </td>
+            <td>
+              <strong style="color: var(--color-gold-400);">{formatCurrency(p.price)}</strong>
+              {p.original_price && (
+                <div style="font-size: 0.72rem; color: #64748b; text-decoration: line-through;">
+                  {formatCurrency(p.original_price)}
+                </div>
+              )}
+            </td>
+            <td style="font-size: 0.82rem;">
+              {p.bedrooms}b / {p.bathrooms}ba • {p.square_feet.toLocaleString()} sqft
+            </td>
+            <td>
+              <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                {p.is_va_eligible && <span class="badge badge-blue" style="font-size: 0.65rem;">VA</span>}
+                {p.has_pool && <span class="badge badge-emerald" style="font-size: 0.65rem;">Pool</span>}
+                {p.is_fixer_upper && <span class="badge badge-ruby" style="font-size: 0.65rem;">Fixer</span>}
+                {p.garage_spaces > 0 && <span class="badge badge-dark" style="font-size: 0.65rem;">{p.garage_spaces} Garage</span>}
+              </div>
+            </td>
+            <td>
+              <span class:list={[
+                'badge',
+                p.status === 'open_house' ? 'badge-emerald' :
+                p.status === 'active' ? 'badge-blue' :
+                p.status === 'pending' ? 'badge-ruby' : 'badge-dark'
+              ]}>
+                {p.status.replace('_', ' ')}
+              </span>
+            </td>
+            <td>
+              <a href={`/properties/${p.slug}`} target="_blank" class="btn btn-outline-white btn-sm" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
+                View Live
+              </a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

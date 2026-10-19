@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = false;
+Astro.response.status = 502;
+---
+
+<Layout 
+  title="502 — Bad Gateway"
+  description="The edge server received an invalid response from upstream servers."
+>
+  <div class="section" style="min-height: 65vh; display: flex; align-items: center; text-align: center;">
+    <div class="container" style="max-width: 680px; margin: 0 auto;">
+      <div class="badge badge-gold" style="margin-bottom: 1.5rem; font-size: 0.85rem; padding: 0.4rem 1rem;">HTTP 502 • BAD GATEWAY</div>
+      <h1>Upstream Gateway Response Error</h1>
+      <p class="lead" style="margin: 0 auto 2.5rem auto;">
+        Our gateway server received an invalid response from our database cluster. The connection is being re-established automatically.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <button onclick="window.location.reload()" class="btn btn-gold btn-lg">Retry Connection</button>
+        <a href="/" class="btn btn-outline btn-lg">Homepage</a>
+      </div>
+    </div>
+  </div>
+</Layout>

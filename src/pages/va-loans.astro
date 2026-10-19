@@ -1,0 +1,157 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+---
+
+<Layout 
+  title="San Diego VA Home Loans — 0% Down Military Guide by Edgar Valle"
+  description="Master your VA home loan benefit in San Diego. 0% down payment, no PMI, and maximum BAH purchasing power for service members at Camp Pendleton, 32nd St, Coronado, and Miramar."
+>
+  <!-- Hero -->
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+        <span class="badge badge-blue">MILITARY RELOCATION SPECIALIST</span>
+        <span class="badge badge-gold">0% DOWN PAYMENT</span>
+      </div>
+      <h1>San Diego VA Home Loan Guide</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Dedicated representation for active duty service members, reservists, and veterans stationed across San Diego County. Turn your monthly housing allowance into lasting family equity.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="#vaBenefits" class="btn btn-navy btn-lg">Explore Your VA Privileges</a>
+        <a href="/properties?va=true" class="btn btn-gold btn-lg">Browse VA-Ready Homes</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key VA Benefits Grid -->
+  <section class="section" id="vaBenefits">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">YOUR EARNED BENEFIT</span>
+        <h2>Why the VA Loan is the Most Powerful Mortgage in California</h2>
+        <p class="lead">Established by the U.S. government to honor military service, the VA loan provides unmatched financial advantages.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card va-card">
+          <div class="va-icon">🎖️</div>
+          <h3>0% Down Payment</h3>
+          <p>Qualified veterans with full entitlement can purchase a home in San Diego up to $1,000,000+ with literally zero down payment required.</p>
+        </div>
+
+        <div class="card va-card">
+          <div class="va-icon">🛡️</div>
+          <h3>$0 Private Mortgage Insurance</h3>
+          <p>Unlike conventional or FHA loans with low down payments, the VA loan has NO monthly mortgage insurance (PMI). This saves you $300 to $600 every single month.</p>
+        </div>
+
+        <div class="card va-card">
+          <div class="va-icon">⚓</div>
+          <h3>Competitive Interest Rates</h3>
+          <p>Because VA loans are backed by the federal government, lenders offer lower interest rates than comparable conventional loan products.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- San Diego Military Base Proximity -->
+  <section class="section section-secondary">
+    <div class="container container-narrow">
+      <div class="card" style="padding: 3rem; background: #ffffff;">
+        <h2 style="font-size: 1.85rem; margin-bottom: 1.25rem;">San Diego Military Bases We Serve</h2>
+        <p>
+          Edgar Valle helps military families locate homes with realistic, manageable commutes to all major San Diego installations:
+        </p>
+
+        <div class="base-list">
+          <div class="base-item">
+            <h4>Marine Corps Base Camp Pendleton (Oceanside)</h4>
+            <p>Ideal neighborhoods: Oceanside, Carlsbad, Vista, San Marcos. Close proximity to Main Gate and San Luis Rey gate.</p>
+          </div>
+
+          <div class="base-item">
+            <h4>Naval Base San Diego (32nd Street Naval Station)</h4>
+            <p>Ideal neighborhoods: Chula Vista, Eastlake, Bonita, Golden Hill, North Park. Quick highway access to wet and dry sides.</p>
+          </div>
+
+          <div class="base-item">
+            <h4>Naval Base Coronado (North Island NAS &amp; Amphibious Base)</h4>
+            <p>Ideal neighborhoods: Coronado, Imperial Beach, South Bay, Point Loma.</p>
+          </div>
+
+          <div class="base-item">
+            <h4>Marine Corps Air Station Miramar (MCAS Miramar)</h4>
+            <p>Ideal neighborhoods: Clairemont, Mira Mesa, Tierrasanta, Scripps Ranch.</p>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.5rem; margin: 2.5rem 0 1rem 0;">Debunking Common VA Loan Myths</h3>
+        <p><strong>Myth 1: "Sellers won't accept VA offers in San Diego."</strong><br />
+        Reality: When presented by a skilled agent who explains the buyer's strong pre-approval and financing certainty, VA offers win regularly. Edgar works closely with listing agents to demonstrate total transaction reliability.</p>
+
+        <p style="margin-top: 1rem;"><strong>Myth 2: "VA appraisals take months and kill deals."</strong><br />
+        Reality: VA appraisals in San Diego average 10 business days, completely in line with conventional appraisal turnarounds. Minor MPR (Minimum Property Requirement) inspection items can easily be addressed through seller credits.</p>
+      </div>
+
+      <!-- Military Consultation Form -->
+      <div style="margin-top: 3rem;">
+        <LeadCaptureForm 
+          leadType="va_buyer"
+          formTitle="Connect with Edgar Valle — VA Loan Consultation"
+          buttonText="Request Military VA Relocation Guide"
+        />
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .va-card {
+    padding: 2.25rem;
+    background: #ffffff;
+    height: 100%;
+  }
+
+  .va-icon {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .va-card h3 {
+    font-size: 1.35rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .va-card p {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .base-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .base-item {
+    background: #fdfbf7;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+  }
+
+  .base-item h4 {
+    color: var(--color-navy-900);
+    margin: 0 0 0.35rem 0;
+  }
+
+  .base-item p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+</style>

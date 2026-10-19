@@ -1,0 +1,255 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+import { getBlogPostBySlug, getBlogPosts, SITE_SETTINGS } from '../../lib/store';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/blog');
+
+const post = await getBlogPostBySlug(slug);
+if (!post) return Astro.redirect('/404');
+
+const allPosts = await getBlogPosts();
+const relatedPosts = allPosts.filter(p => p.id !== post.id).slice(0, 2);
+
+const articleJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.title,
+  description: post.excerpt,
+  image: `https://edgarvalle.com${post.cover_image}`,
+  author: {
+    '@type': 'Person',
+    name: 'Edgar Valle',
+    jobTitle: 'Realtor®',
+    worksFor: {
+      '@type': 'Organization',
+      name: 'Full Circle Group'
+    }
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Edgar Valle Real Estate',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://edgarvalle.com/images/branding/logo.svg'
+    }
+  },
+  datePublished: post.published_at
+});
+---
+
+<Layout 
+  title={post.title}
+  description={post.excerpt}
+  image={post.cover_image}
+  type="article"
+  publishedTime={post.published_at}
+  jsonLd={articleJsonLd}
+>
+  <!-- Article Header -->
+  <article class="article-wrapper">
+    <header class="section-sm section-secondary article-header">
+      <div class="container container-narrow">
+        <div class="article-meta-row">
+          <span class="badge badge-gold">{post.category}</span>
+          <span class="meta-date">{new Date(post.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+          <span class="meta-read">{post.read_time_mins} Min Read</span>
+        </div>
+
+        <h1 class="article-title">{post.title}</h1>
+        <p class="article-lead">{post.excerpt}</p>
+
+        <div class="author-strip">
+          <img src="/images/branding/edgar-valle.svg" alt="Edgar Valle" width="48" height="48" class="author-avatar" />
+          <div>
+            <span class="author-name">{post.author_name}</span>
+            <span class="author-role">Realtor® • Full Circle Group • DRE #{SITE_SETTINGS.dre_license}</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Article Featured Image -->
+    <div class="container container-narrow article-media-container">
+      <div class="article-hero-img-box">
+        <img src={post.cover_image} alt={post.title} width="960" height="480" class="article-hero-img" />
+      </div>
+    </div>
+
+    <!-- Article Content -->
+    <div class="section" style="padding-top: 2rem;">
+      <div class="container container-narrow">
+        <div class="card article-body-card">
+          <div class="prose-content">
+            {post.content.split('\n\n').map(paragraph => {
+              if (paragraph.startsWith('### ')) {
+                return <h3>{paragraph.replace('### ', '')}</h3>;
+              }
+              if (paragraph.startsWith('1. ') || paragraph.startsWith('- ')) {
+                return <p class="list-paragraph">{paragraph}</p>;
+              }
+              return <p>{paragraph}</p>;
+            })}
+          </div>
+
+          <!-- Author Bio Box -->
+          <div class="author-bio-box">
+            <img src="/images/branding/edgar-valle.svg" alt="Edgar Valle" width="70" height="70" class="bio-avatar" />
+            <div>
+              <h4>About Edgar Valle</h4>
+              <p>
+                Edgar Valle is a licensed San Diego Realtor® with Full Circle Group (DRE #{SITE_SETTINGS.dre_license}) specializing in first-time homebuyers, VA military financing, and fix-and-flip investments throughout San Diego County. Hablamos Español.
+              </p>
+              <a href="tel:6195550198" style="font-weight: 700; color: var(--color-gold-700);">Direct: (619) 555-0198</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consultation Box -->
+        <div style="margin-top: 3rem;">
+          <LeadCaptureForm 
+            leadType="general_contact"
+            formTitle="Have Questions About This Article?"
+            buttonText="Ask Edgar a Question"
+          />
+        </div>
+
+        {relatedPosts.length > 0 && (
+          <div class="related-posts-section" style="margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--border-light);">
+            <h3 style="margin-bottom: 1.5rem;">Related Market Insights</h3>
+            <div class="grid-2" style="gap: 1.5rem;">
+              {relatedPosts.map(rp => (
+                <div class="card" style="padding: 1.25rem;">
+                  <span class="badge badge-gold" style="font-size: 0.72rem; margin-bottom: 0.5rem; display: inline-block;">{rp.category}</span>
+                  <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;"><a href={`/blog/${rp.slug}`}>{rp.title}</a></h4>
+                  <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.75rem;">{rp.excerpt.slice(0, 100)}...</p>
+                  <a href={`/blog/${rp.slug}`} class="link-arrow" style="font-weight: 600; font-size: 0.85rem; color: var(--color-gold-700);">Read Article &rarr;</a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .article-header {
+    padding-bottom: 3rem;
+  }
+
+  .article-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .article-title {
+    font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .article-lead {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+  }
+
+  .author-strip {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-light);
+  }
+
+  .author-avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-gold-400);
+  }
+
+  .author-name {
+    display: block;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .author-role {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .article-media-container {
+    margin-top: -2rem;
+  }
+
+  .article-hero-img-box {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    background: var(--color-navy-950);
+  }
+
+  .article-hero-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .article-body-card {
+    padding: 3rem;
+    background: #ffffff;
+  }
+
+  .prose-content {
+    font-size: 1.08rem;
+    line-height: 1.85;
+    color: var(--text-secondary);
+  }
+
+  .prose-content h3 {
+    font-size: 1.6rem;
+    color: var(--text-primary);
+    margin: 2.25rem 0 1rem 0;
+  }
+
+  .prose-content p {
+    margin-bottom: 1.5rem;
+  }
+
+  .author-bio-box {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .bio-avatar {
+    border-radius: 50%;
+    border: 2px solid var(--color-gold-400);
+    flex-shrink: 0;
+  }
+
+  .author-bio-box h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.15rem;
+  }
+
+  .author-bio-box p {
+    font-size: 0.92rem;
+    line-height: 1.65;
+    margin-bottom: 0.5rem;
+  }
+</style>

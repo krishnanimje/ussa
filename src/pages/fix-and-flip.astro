@@ -1,0 +1,137 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+---
+
+<Layout 
+  title="San Diego Fix-and-Flip & Investor Real Estate Services — Edgar Valle"
+  description="Data-driven fix-and-flip sourcing, ARV valuation models, and contractor network access in San Diego County with Realtor Edgar Valle."
+>
+  <!-- Hero -->
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+        <span class="badge badge-ruby">INVESTOR SERVICES</span>
+        <span class="badge badge-gold">70% ARV FORMULA</span>
+      </div>
+      <h1>San Diego Fix-and-Flip Advisory</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Sourcing high-equity distressed properties, underwriting realistic rehab budgets, and capitalizing on California SB9 and ADU zoning expansions with Edgar Valle.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="#formulaSection" class="btn btn-navy btn-lg">Review the 70% Playbook</a>
+        <a href="/properties?fixer=true" class="btn btn-gold btn-lg">Browse Current Fixers</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- The 70% Formula Breakdown -->
+  <section class="section" id="formulaSection">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">MATHEMATICAL DISCIPLINE</span>
+        <h2>The Core Fix-and-Flip Underwriting Formula</h2>
+        <p class="lead">Successful real estate investing in high-cost California markets requires uncompromising mathematical rigor.</p>
+      </div>
+
+      <div class="card formula-card">
+        <div class="formula-banner">
+          <span class="formula-text">MAX ALLOWABLE OFFER (MAO) = (ARV × 70%) – REHAB COSTS</span>
+        </div>
+        <div class="grid-3" style="gap: 2rem; margin-top: 2rem;">
+          <div>
+            <h4 style="color: var(--color-gold-700);">1. After Repair Value (ARV)</h4>
+            <p style="font-size: 0.92rem;">Derived strictly from fully remodeled comparable sales within a 0.5-mile radius closed within the last 90 to 180 days, adjusted for lot topography and square footage.</p>
+          </div>
+          <div>
+            <h4 style="color: var(--color-gold-700);">2. 70% - 75% Equity Margin</h4>
+            <p style="font-size: 0.92rem;">Protects your capital against carrying costs (hard money interest, taxes, insurance), escrow closing fees (5% to 6%), and potential market price fluctuations.</p>
+          </div>
+          <div>
+            <h4 style="color: var(--color-gold-700);">3. Itemized Rehab Budget</h4>
+            <p style="font-size: 0.92rem;">Cosmetic overhaul vs major structural renovation. We factor in San Diego permitting timelines, Title 24 energy requirements, and material costs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Top San Diego Value-Add Submarkets -->
+  <section class="section section-secondary">
+    <div class="container container-narrow">
+      <div class="card" style="padding: 3rem; background: #ffffff;">
+        <h2 style="font-size: 1.85rem; margin-bottom: 1.25rem;">Prime San Diego Target Markets for Value-Add</h2>
+        
+        <div class="market-item">
+          <h4>Clairemont &amp; Linda Vista (Central San Diego)</h4>
+          <p>Features 1950s/1960s single-story ranch homes on flat 7,000+ sq ft lots. Huge demand from biotech professionals seeking remodeled open-concept floor plans moments from UTC and Mission Valley.</p>
+        </div>
+
+        <div class="market-item">
+          <h4>Chula Vista &amp; South Bay</h4>
+          <p>High demand for contemporary interior renovations, pool resurfacing, and multi-generational detached ADUs. Substantial spread between distressed condition and turnkey finishes.</p>
+        </div>
+
+        <div class="market-item">
+          <h4>El Cajon &amp; East County</h4>
+          <p>Large usable lots suitable for SB9 lot splits, RV parking additions, and secondary unit additions with expansive mountain views.</p>
+        </div>
+
+        <h3 style="font-size: 1.5rem; margin: 2.5rem 0 1rem 0;">ADU &amp; SB9 Expansion Potential</h3>
+        <p>
+          Under California state law (SB9 and ADU mandates), single-family residential parcels throughout San Diego County can frequently accommodate detached Accessory Dwelling Units (up to 1,200 sq ft) and Junior ADUs. Adding an ADU can turn a standard flip into a long-term cash-flowing multi-family asset or significantly boost final resale appraisal valuation.
+        </p>
+      </div>
+
+      <!-- Investor Intake Form -->
+      <div style="margin-top: 3rem;">
+        <LeadCaptureForm 
+          leadType="investor_flip"
+          formTitle="Join Edgar's Private Investor Deal Network"
+          buttonText="Get Notified of Off-Market Flips"
+        />
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .formula-card {
+    padding: 2.5rem;
+    background: #ffffff;
+  }
+
+  .formula-banner {
+    background: #0f1822;
+    color: #ffffff;
+    padding: 1.5rem 2rem;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    border: 1px solid var(--color-gold-400);
+  }
+
+  .formula-text {
+    font-size: clamp(1rem, 2.5vw, 1.45rem);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--color-gold-400);
+    font-family: var(--font-sans);
+  }
+
+  .market-item {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .market-item h4 {
+    color: var(--color-navy-950);
+    margin-bottom: 0.35rem;
+  }
+
+  .market-item p {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin: 0;
+  }
+</style>

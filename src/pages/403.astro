@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = false;
+Astro.response.status = 403;
+---
+
+<Layout 
+  title="403 — Access Forbidden"
+  description="Access to this restricted administrative area is prohibited without authorized credentials."
+>
+  <div class="section" style="min-height: 65vh; display: flex; align-items: center; text-align: center;">
+    <div class="container" style="max-width: 680px; margin: 0 auto;">
+      <div class="badge badge-ruby" style="margin-bottom: 1.5rem; font-size: 0.85rem; padding: 0.4rem 1rem;">HTTP 403 • FORBIDDEN</div>
+      <h1>Restricted Access Area</h1>
+      <p class="lead" style="margin: 0 auto 2.5rem auto;">
+        You do not have permission to access this administrative resource. Confidential lead data and private brokerage settings are strictly protected.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="/" class="btn btn-gold btn-lg">Return to Public Site</a>
+        <a href="/admin/login" class="btn btn-outline btn-lg">Agent Portal Login</a>
+      </div>
+    </div>
+  </div>
+</Layout>

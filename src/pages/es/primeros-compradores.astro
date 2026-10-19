@@ -1,0 +1,50 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+---
+
+<Layout 
+  title="Guía para Primeros Compradores de Casa en San Diego — Edgar Valle"
+  description="Aprende a comprar tu primera casa en San Diego, California. Programas con bajo enganche (desde 3.5%), asistencia CalHFA y asesoría completa en español."
+>
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">RECURSO EDUCATIVO EN ESPAÑOL</span>
+      <h1>Guía para Primeros Compradores</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Comprar tu primera casa en California no tiene por qué ser complicado. Conoce las opciones reales para comprar con poco enganche y el respaldo de Edgar Valle.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-narrow">
+      <div class="card" style="padding: 2.75rem; background: #ffffff;">
+        <h2 style="font-size: 1.75rem; margin-bottom: 1.25rem;">El Mito del 20% de Enganche</h2>
+        <p>
+          Muchas familias latinas posponen la compra de su hogar creyendo que necesitan ahorrar cientos de miles de dólares en efectivo. La realidad es que la gran mayoría de compradores adquieren su casa utilizando préstamos con pagos iniciales accesibles:
+        </p>
+
+        <ul style="margin: 1.25rem 0 1.75rem 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+          <li><strong>Préstamos FHA (3.5% de enganche):</strong> Diseñados para familias que compran por primera vez, permitiendo puntajes de crédito desde 580.</li>
+          <li><strong>Convencional 97 (3% de enganche):</strong> Para compradores con buen historial crediticio que desean cuotas mensuales optimizadas.</li>
+          <li><strong>Asistencia CalHFA:</strong> Subsidios y segundos préstamos otorgados por el estado de California para cubrir parte del enganche y los costos de cierre.</li>
+        </ul>
+
+        <h3 style="font-size: 1.4rem; margin: 2rem 0 0.75rem 0;">Pasos Iniciales para Prepararte</h3>
+        <p>1. <strong>Revisar tu Crédito:</strong> Te ayudamos a identificar cómo subir tu puntaje en pocas semanas.<br />
+        2. <strong>Juntar Documentos:</strong> W-2s de los últimos dos años, estados de cuenta y comprobantes de ingresos.<br />
+        3. <strong>Pre-Aprobación Bancaria:</strong> Conectamos a tu familia con prestamistas locales de confianza que también hablan español.</p>
+      </div>
+
+      <div style="margin-top: 3rem;">
+        <LeadCaptureForm 
+          language="es"
+          leadType="first_time_buyer"
+          formTitle="Agenda Tu Consulta Gratuita para Primeros Compradores"
+          buttonText="Hablar con Edgar Valle"
+        />
+      </div>
+    </div>
+  </section>
+</Layout>

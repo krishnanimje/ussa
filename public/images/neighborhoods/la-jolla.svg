@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="ljHero" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="40%" stop-color="#1E3A8A" />
+      <stop offset="70%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+    <linearGradient id="coveCliff" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350F" />
+      <stop offset="100%" stop-color="#451A03" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#ljHero)" />
+
+  <!-- Dramatic La Jolla Sea Cliffs -->
+  <path d="M 0 320 Q 200 280 350 350 Q 550 250 800 380 L 800 450 L 0 450 Z" fill="url(#coveCliff)" />
+  <path d="M 300 360 Q 450 320 600 380 Q 720 340 800 420 L 800 450 L 300 450 Z" fill="#292524" />
+
+  <!-- Pacific Ocean Water -->
+  <path d="M 0 410 Q 200 380 500 420 L 500 450 L 0 450 Z" fill="#0284C7" opacity="0.6" />
+
+  <text x="60" y="80" font-family="'Plus Jakarta Sans', sans-serif" font-size="34" font-weight="900" fill="#FFFFFF" letter-spacing="2">LA JOLLA</text>
+  <text x="60" y="110" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#E5C07B" letter-spacing="3">THE JEWEL OF SOUTHERN CALIFORNIA</text>
+</svg>

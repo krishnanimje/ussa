@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="sdSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3A86FF" />
+      <stop offset="100%" stop-color="#CBE3FB" />
+    </linearGradient>
+    <linearGradient id="poolWater" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00B4D8" />
+      <stop offset="50%" stop-color="#0096C7" />
+      <stop offset="100%" stop-color="#03045E" />
+    </linearGradient>
+    <linearGradient id="stoneCoping" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D6CCC2" />
+      <stop offset="100%" stop-color="#B7B7A4" />
+    </linearGradient>
+  </defs>
+
+  <!-- Clear Blue San Diego Sky -->
+  <rect width="800" height="260" fill="url(#sdSky)" />
+
+  <!-- Two-Story Executive Estate (Eastlake Greens) -->
+  <rect x="80" y="80" width="640" height="190" fill="#E9ECEF" />
+  <!-- Second Story Pitched Roof -->
+  <polygon points="60,80 280,15 500,80" fill="#495057" />
+  <polygon points="460,80 600,30 740,80" fill="#343A40" />
+
+  <!-- Architectural Windows with Warm Glow -->
+  <rect x="120" y="100" width="70" height="60" fill="#FFF" stroke="#212529" stroke-width="2" />
+  <line x1="155" y1="100" x2="155" y2="160" stroke="#212529" stroke-width="2" />
+  <line x1="120" y1="130" x2="190" y2="130" stroke="#212529" stroke-width="2" />
+
+  <rect x="230" y="100" width="70" height="60" fill="#FFF" stroke="#212529" stroke-width="2" />
+  <line x1="265" y1="100" x2="265" y2="160" stroke="#212529" stroke-width="2" />
+  <line x1="230" y1="130" x2="300" y2="130" stroke="#212529" stroke-width="2" />
+
+  <!-- 3-Car Garage Doors -->
+  <rect x="520" y="180" width="90" height="85" fill="#CED4DA" stroke="#6C757D" stroke-width="2" rx="3" />
+  <line x1="520" y1="205" x2="610" y2="205" stroke="#6C757D" />
+  <line x1="520" y1="230" x2="610" y2="230" stroke="#6C757D" />
+  <line x1="520" y1="250" x2="610" y2="250" stroke="#6C757D" />
+
+  <rect x="620" y="180" width="90" height="85" fill="#CED4DA" stroke="#6C757D" stroke-width="2" rx="3" />
+  <line x1="620" y1="205" x2="710" y2="205" stroke="#6C757D" />
+  <line x1="620" y1="230" x2="710" y2="230" stroke="#6C757D" />
+  <line x1="620" y1="250" x2="710" y2="250" stroke="#6C757D" />
+
+  <!-- Resort Backyard Deck Patio -->
+  <rect y="260" width="800" height="240" fill="#E8E8E4" />
+
+  <!-- Custom Heated Pool with Stone Coping -->
+  <!-- Pool Coping Outer Border -->
+  <ellipse cx="340" cy="390" rx="260" ry="95" fill="url(#stoneCoping)" />
+  <!-- Swimming Pool Water -->
+  <ellipse cx="340" cy="390" rx="245" ry="85" fill="url(#poolWater)" />
+
+  <!-- Water Ripples & Caustics -->
+  <path d="M 180 370 Q 250 385 320 370 Q 420 360 480 375" stroke="#90E0EF" stroke-width="2.5" fill="none" opacity="0.6" />
+  <path d="M 220 410 Q 300 425 380 410 Q 450 400 500 415" stroke="#90E0EF" stroke-width="2" fill="none" opacity="0.5" />
+
+  <!-- Elevated Spillover Jacuzzi Spa with Waterfall -->
+  <ellipse cx="540" cy="330" rx="60" ry="32" fill="url(#stoneCoping)" />
+  <ellipse cx="540" cy="330" rx="52" ry="26" fill="#00B4D8" />
+  <!-- Waterfall spill into pool -->
+  <rect x="500" y="340" width="25" height="40" fill="#CAF0F8" opacity="0.8" />
+
+  <!-- Outdoor Lounger Chairs with Umbrellas -->
+  <g transform="translate(640, 360)">
+    <rect width="60" height="18" rx="4" fill="#D4AF37" />
+    <polygon points="50,18 60,18 55,5" fill="#C5A059" />
+  </g>
+
+  <!-- Badge Overlay -->
+  <g transform="translate(30, 30)">
+    <rect width="215" height="36" rx="18" fill="#141E28" fill-opacity="0.85" />
+    <circle cx="20" cy="18" r="6" fill="#00B4D8" />
+    <text x="35" y="23" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">CHULA VISTA POOL • $975K</text>
+  </g>
+</svg>

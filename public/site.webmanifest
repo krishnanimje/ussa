@@ -1,0 +1,17 @@
+{
+  "name": "Edgar Valle | Realtor",
+  "short_name": "Edgar Valle",
+  "description": "Edgar Valle | Realtor - Premier San Diego Real Estate Services",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D1821",
+  "theme_color": "#C5A059",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

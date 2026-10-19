@@ -1,0 +1,278 @@
+---
+import type { Property } from '../lib/types';
+import { formatCurrency, formatNumber } from '../lib/mortgage';
+
+interface Props {
+  property: Property;
+}
+
+const { property } = Astro.props;
+---
+
+<article class="property-card card">
+  <!-- Image Thumbnail Container -->
+  <a href={`/properties/${property.slug}`} class="card-media" aria-label={`View details for ${property.title}`}>
+    <img 
+      src={property.primary_image || '/images/properties/north-park-spanish.svg'} 
+      alt={property.title} 
+      width="400" 
+      height="260"
+      loading="lazy"
+      class="card-img"
+    />
+    
+    <!-- Top Status Badges -->
+    <div class="card-badges">
+      {property.status === 'open_house' && (
+        <span class="badge badge-emerald">Open House</span>
+      )}
+      {property.status === 'pending' && (
+        <span class="badge badge-ruby">Under Contract</span>
+      )}
+      {property.is_va_eligible && (
+        <span class="badge badge-blue">VA 0% Down</span>
+      )}
+      {property.is_fixer_upper && (
+        <span class="badge badge-gold">Fix &amp; Flip</span>
+      )}
+    </div>
+
+    <!-- Bottom Price Bar -->
+    <div class="card-price-overlay">
+      <div class="price-val">{formatCurrency(property.price)}</div>
+      {property.original_price && property.original_price > property.price && (
+        <div class="original-price">
+          Was {formatCurrency(property.original_price)}
+        </div>
+      )}
+    </div>
+  </a>
+
+  <!-- Content Details -->
+  <div class="card-body">
+    <div class="neighborhood-tag">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      {property.neighborhood}, {property.address_city}
+    </div>
+
+    <h3 class="card-title">
+      <a href={`/properties/${property.slug}`}>{property.title}</a>
+    </h3>
+
+    <p class="card-address">{property.address_street}, {property.address_city}, {property.address_state} {property.address_zip}</p>
+
+    <!-- Specs Bar -->
+    <div class="card-specs">
+      <div class="spec-item">
+        <span class="spec-num">{property.bedrooms}</span>
+        <span class="spec-label">Beds</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-num">{property.bathrooms}</span>
+        <span class="spec-label">Baths</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-num">{formatNumber(property.square_feet)}</span>
+        <span class="spec-label">Sq Ft</span>
+      </div>
+      {property.garage_spaces > 0 && (
+        <div class="spec-item">
+          <span class="spec-num">{property.garage_spaces}</span>
+          <span class="spec-label">Garage</span>
+        </div>
+      )}
+    </div>
+
+    <!-- Investment ARV / Amenities Callout -->
+    {property.is_fixer_upper && property.arv_estimate && (
+      <div class="arv-callout">
+        <span>EST. ARV: <strong>{formatCurrency(property.arv_estimate)}</strong></span>
+        <span class="spread-tag">+${formatNumber(property.arv_estimate - property.price)} Spread</span>
+      </div>
+    )}
+
+    {property.has_pool && (
+      <div class="amenity-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M2 16h20M2 20h20"></path></svg>
+        Private Heated Pool &amp; Spa
+      </div>
+    )}
+
+    <!-- Card Action Buttons -->
+    <div class="card-actions">
+      <a href={`/properties/${property.slug}`} class="btn btn-outline btn-sm" style="flex: 1;">View Specs</a>
+      <a href={`/contact?property=${property.slug}&type=tour_request`} class="btn btn-gold btn-sm" style="flex: 1;">Schedule Tour</a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .property-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    background: #ffffff;
+  }
+
+  .card-media {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--color-navy-950);
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+  }
+
+  .property-card:hover .card-img {
+    transform: scale(1.05);
+  }
+
+  .card-badges {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    z-index: 2;
+  }
+
+  .card-price-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px 16px 10px 16px;
+    background: linear-gradient(to top, rgba(15, 24, 34, 0.9) 0%, rgba(15, 24, 34, 0) 100%);
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    z-index: 2;
+  }
+
+  .price-val {
+    color: #ffffff;
+    font-size: 1.45rem;
+    font-weight: 800;
+    font-family: var(--font-sans);
+    letter-spacing: -0.02em;
+  }
+
+  .original-price {
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    text-decoration: line-through;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .neighborhood-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-gold-600);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-title {
+    font-size: 1.15rem;
+    line-height: 1.35;
+    margin-bottom: 0.4rem;
+  }
+
+  .card-title a {
+    color: var(--text-primary);
+  }
+
+  .card-title a:hover {
+    color: var(--color-gold-600);
+  }
+
+  .card-address {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1.1rem;
+  }
+
+  .card-specs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .spec-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .spec-num {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .spec-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .arv-callout {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-xs);
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .spread-tag {
+    font-weight: 700;
+    color: #047857;
+  }
+
+  .amenity-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #0284c7;
+    background: #f0f9ff;
+    padding: 0.35rem 0.65rem;
+    border-radius: var(--radius-xs);
+    margin-bottom: 1rem;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+  }
+</style>

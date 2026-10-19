@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = false;
+Astro.response.status = 505;
+---
+
+<Layout 
+  title="505 — HTTP Version Not Supported"
+  description="The HTTP version used in your request is not supported by our web server."
+>
+  <div class="section" style="min-height: 65vh; display: flex; align-items: center; text-align: center;">
+    <div class="container" style="max-width: 680px; margin: 0 auto;">
+      <div class="badge badge-ruby" style="margin-bottom: 1.5rem; font-size: 0.85rem; padding: 0.4rem 1rem;">HTTP 505 • VERSION NOT SUPPORTED</div>
+      <h1>Protocol Version Unsupported</h1>
+      <p class="lead" style="margin: 0 auto 2.5rem auto;">
+        Your browser sent a request using an obsolete or unsupported HTTP protocol version. Please upgrade your browser to the latest version to view this platform.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="/" class="btn btn-gold btn-lg">Return to Homepage</a>
+      </div>
+    </div>
+  </div>
+</Layout>

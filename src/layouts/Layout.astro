@@ -1,0 +1,43 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SeoHead from '../components/SeoHead.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonicalUrl?: string;
+  type?: 'website' | 'article' | 'profile';
+  publishedTime?: string;
+  jsonLd?: string;
+}
+
+const { title, description, image, canonicalUrl, type, publishedTime, jsonLd } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <SeoHead 
+      title={title}
+      description={description}
+      image={image}
+      canonicalUrl={canonicalUrl}
+      type={type}
+      publishedTime={publishedTime}
+      jsonLd={jsonLd}
+    />
+    <ClientRouter />
+  </head>
+  <body>
+    <a href="#mainContent" class="skip-link">Skip to main content</a>
+    <Header />
+    <main id="mainContent">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4A90E2" />
+      <stop offset="60%" stop-color="#F5D0A9" />
+      <stop offset="100%" stop-color="#FCEADE" />
+    </linearGradient>
+    <linearGradient id="stuccoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FAF6EE" />
+      <stop offset="100%" stop-color="#EBE3D3" />
+    </linearGradient>
+    <linearGradient id="tileRoof" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B24926" />
+      <stop offset="50%" stop-color="#C85A32" />
+      <stop offset="100%" stop-color="#9E3C1B" />
+    </linearGradient>
+    <linearGradient id="paverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C26D47" />
+      <stop offset="100%" stop-color="#A2502B" />
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="800" height="500" fill="url(#skyGrad)" />
+  
+  <!-- Distant Palms -->
+  <g opacity="0.6">
+    <path d="M 680 280 Q 690 180 670 120" stroke="#2B4028" stroke-width="4" fill="none" />
+    <circle cx="660" cy="115" r="30" fill="#2B4028" opacity="0.7" />
+    <circle cx="680" cy="110" r="35" fill="#2B4028" opacity="0.7" />
+    <circle cx="700" cy="120" r="28" fill="#2B4028" opacity="0.7" />
+  </g>
+
+  <!-- Ground / Lawn -->
+  <rect y="360" width="800" height="140" fill="#4A6B3A" />
+  <polygon points="120,500 240,360 560,360 680,500" fill="url(#paverGrad)" />
+
+  <!-- Main House Structure -->
+  <rect x="200" y="210" width="400" height="150" fill="url(#stuccoGrad)" />
+  
+  <!-- Red Clay Barrel Tile Roof -->
+  <polygon points="170,210 200,160 600,160 630,210" fill="url(#tileRoof)" />
+  <line x1="200" y1="160" x2="170" y2="210" stroke="#7A2D13" stroke-width="4" />
+  <line x1="250" y1="160" x2="230" y2="210" stroke="#7A2D13" stroke-width="2" />
+  <line x1="300" y1="160" x2="285" y2="210" stroke="#7A2D13" stroke-width="2" />
+  <line x1="350" y1="160" x2="340" y2="210" stroke="#7A2D13" stroke-width="2" />
+  <line x1="400" y1="160" x2="400" y2="210" stroke="#7A2D13" stroke-width="2" />
+  <line x1="450" y1="160" x2="460" y2="210" stroke="#7A2D13" stroke-width="2" />
+  <line x1="500" y1="160" x2="515" y2="210" stroke="#7A2D13" stroke-width="2" />
+  <line x1="550" y1="160" x2="570" y2="210" stroke="#7A2D13" stroke-width="2" />
+  <line x1="600" y1="160" x2="630" y2="210" stroke="#7A2D13" stroke-width="4" />
+
+  <!-- Iconic Spanish Mission Arch Porch -->
+  <g transform="translate(330, 230)">
+    <rect x="0" y="30" width="140" height="100" fill="#141E28" rx="8" />
+    <path d="M 0 30 Q 70 -25 140 30 Z" fill="#141E28" />
+    <!-- Mahogany Door inside -->
+    <rect x="35" y="20" width="70" height="110" fill="#5A2E14" rx="4" />
+    <circle cx="90" cy="75" r="4" fill="#D4AF37" />
+    <line x1="70" y1="20" x2="70" y2="130" stroke="#3D1E0C" stroke-width="2" />
+  </g>
+
+  <!-- Arched Windows with Wrought Iron Grille -->
+  <g transform="translate(230, 240)">
+    <rect x="0" y="20" width="60" height="70" fill="#8BBAD9" />
+    <path d="M 0 20 Q 30 -10 60 20 Z" fill="#8BBAD9" />
+    <!-- Iron grill -->
+    <rect x="-4" y="50" width="68" height="40" fill="none" stroke="#222" stroke-width="3" />
+    <line x1="15" y1="50" x2="15" y2="90" stroke="#222" stroke-width="2" />
+    <line x1="30" y1="50" x2="30" y2="90" stroke="#222" stroke-width="2" />
+    <line x1="45" y1="50" x2="45" y2="90" stroke="#222" stroke-width="2" />
+  </g>
+
+  <g transform="translate(510, 240)">
+    <rect x="0" y="20" width="60" height="70" fill="#8BBAD9" />
+    <path d="M 0 20 Q 30 -10 60 20 Z" fill="#8BBAD9" />
+    <rect x="-4" y="50" width="68" height="40" fill="none" stroke="#222" stroke-width="3" />
+    <line x1="15" y1="50" x2="15" y2="90" stroke="#222" stroke-width="2" />
+    <line x1="30" y1="50" x2="30" y2="90" stroke="#222" stroke-width="2" />
+    <line x1="45" y1="50" x2="45" y2="90" stroke="#222" stroke-width="2" />
+  </g>
+
+  <!-- Potted Agave & Terracotta Planters -->
+  <ellipse cx="280" cy="370" rx="14" ry="6" fill="#8C3F22" />
+  <polygon points="270,370 273,395 287,395 290,370" fill="#B35630" />
+  <path d="M 280 370 L 265 345 M 280 370 L 280 335 M 280 370 L 295 345" stroke="#3D6638" stroke-width="4" stroke-linecap="round" />
+
+  <ellipse cx="520" cy="370" rx="14" ry="6" fill="#8C3F22" />
+  <polygon points="510,370 513,395 527,395 530,370" fill="#B35630" />
+  <path d="M 520 370 L 505 345 M 520 370 L 520 335 M 520 370 L 535 345" stroke="#3D6638" stroke-width="4" stroke-linecap="round" />
+
+  <!-- Badge Overlay -->
+  <g transform="translate(30, 30)">
+    <rect width="165" height="36" rx="18" fill="#141E28" fill-opacity="0.85" />
+    <circle cx="20" cy="18" r="6" fill="#D4AF37" />
+    <text x="35" y="23" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">NORTH PARK • $1.185M</text>
+  </g>
+</svg>

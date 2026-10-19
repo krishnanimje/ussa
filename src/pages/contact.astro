@@ -1,0 +1,181 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+import { SITE_SETTINGS } from '../lib/store';
+---
+
+<Layout 
+  title="Contact Edgar Valle — San Diego Realtor®"
+  description="Get in touch with Edgar Valle | Realtor (DRE #02375273) with Full Circle Group. Call (619) 555-0198 or schedule your private real estate consultation online."
+>
+  <!-- Hero -->
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">GET IN TOUCH</span>
+      <h1>Contact Edgar Valle</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Whether you are planning your first home purchase, PCSing to a San Diego military installation, or evaluating an investment flip, Edgar is ready to guide you.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact Grid -->
+  <section class="section">
+    <div class="container">
+      <div class="contact-layout-grid">
+        <!-- Direct Contact Cards -->
+        <div class="contact-info-col">
+          <div class="card info-card">
+            <h3>Direct Contact Channels</h3>
+            
+            <div class="channel-list">
+              <a href="tel:6195550198" class="channel-item">
+                <div class="ch-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </div>
+                <div>
+                  <span class="ch-label">Telephone / Text</span>
+                  <span class="ch-val">{SITE_SETTINGS.phone}</span>
+                </div>
+              </a>
+
+              <a href={`mailto:${SITE_SETTINGS.email}`} class="channel-item">
+                <div class="ch-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
+                <div>
+                  <span class="ch-label">Email Address</span>
+                  <span class="ch-val">{SITE_SETTINGS.email}</span>
+                </div>
+              </a>
+
+              <a href={SITE_SETTINGS.instagram_url} target="_blank" rel="noopener noreferrer" class="channel-item">
+                <div class="ch-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </div>
+                <div>
+                  <span class="ch-label">Instagram &amp; Video Tours</span>
+                  <span class="ch-val">{SITE_SETTINGS.instagram}</span>
+                </div>
+              </a>
+            </div>
+
+            <!-- Credentials Box -->
+            <div class="contact-brokerage-box">
+              <h4>Brokerage &amp; License Credentials</h4>
+              <p><strong>Edgar Valle</strong> | Realtor®</p>
+              <p>Affiliated with <strong>{SITE_SETTINGS.brokerage_name}</strong></p>
+              <p>California Department of Real Estate License <strong>#{SITE_SETTINGS.dre_license}</strong></p>
+              <p>Market Area: San Diego County, California</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Column -->
+        <div class="contact-form-col">
+          <LeadCaptureForm 
+            leadType="general_contact"
+            formTitle="Send a Direct Inquiry to Edgar"
+            buttonText="Submit Consultation Request"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .contact-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: 3rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 900px) {
+    .contact-layout-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .info-card {
+    padding: 2.5rem;
+    background: #ffffff;
+  }
+
+  .info-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .channel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .channel-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    background: #fdfbf7;
+    transition: all var(--transition-fast);
+  }
+
+  .channel-item:hover {
+    border-color: var(--color-gold-500);
+    background: var(--color-gold-100);
+    transform: translateX(4px);
+  }
+
+  .ch-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-navy-950);
+    color: var(--color-gold-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ch-label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .ch-val {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-navy-950);
+  }
+
+  .contact-brokerage-box {
+    background: #f8fafc;
+    border-top: 1px solid var(--border-subtle);
+    padding: 1.5rem 0 0 0;
+  }
+
+  .contact-brokerage-box h4 {
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-gold-700);
+    margin-bottom: 0.65rem;
+  }
+
+  .contact-brokerage-box p {
+    font-size: 0.88rem;
+    margin: 0 0 0.35rem 0;
+    color: var(--text-secondary);
+  }
+</style>

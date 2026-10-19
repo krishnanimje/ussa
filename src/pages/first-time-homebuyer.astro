@@ -1,0 +1,145 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+---
+
+<Layout 
+  title="San Diego First-Time Homebuyer Guide — Grants, CalHFA & Roadmap"
+  description="Comprehensive San Diego First-Time Homebuyer Guide by Edgar Valle. Explore down payment assistance, CalHFA grants, credit score tips, and low-down loans."
+>
+  <!-- Hero -->
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">EDUCATIONAL RESOURCE</span>
+      <h1>First-Time Homebuyer Guide</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Navigating your first home purchase in California does not have to be overwhelming. Learn how to leverage state grants, down payment assistance, and strategic budgeting with Edgar Valle.
+      </p>
+      <a href="#guideContent" class="btn btn-gold btn-lg">Read the Full Guide</a>
+    </div>
+  </section>
+
+  <!-- Educational Content -->
+  <section class="section" id="guideContent">
+    <div class="container container-narrow">
+      <div class="card" style="padding: 3rem; background: #ffffff;">
+        <h2 style="font-size: 1.85rem; margin-bottom: 1.25rem;">The Myth of the 20% Down Payment</h2>
+        <p>
+          One of the biggest misconceptions holding back prospective San Diego buyers is the belief that you must save a 20% down payment before buying a home. In a market where median home prices exceed $850,000, saving $170,000 in cash while paying San Diego rent feels nearly impossible.
+        </p>
+        <p>
+          The reality? <strong>Most first-time buyers purchase with far less down:</strong>
+        </p>
+
+        <div class="loan-options-grid">
+          <div class="loan-option card">
+            <span class="loan-badge">3.5% DOWN</span>
+            <h4>FHA Loans</h4>
+            <p>Backed by the Federal Housing Administration. Accommodates credit scores down to 580 with only 3.5% down payment. Flexible debt-to-income requirements.</p>
+          </div>
+
+          <div class="loan-option card">
+            <span class="loan-badge">3.0% DOWN</span>
+            <h4>Conventional 97</h4>
+            <p>Requires only 3% down for first-time buyers with credit scores of 620+. Allows cancelable PMI once you reach 20% home equity.</p>
+          </div>
+
+          <div class="loan-option card">
+            <span class="loan-badge">GRANTS &amp; LOANS</span>
+            <h4>CalHFA Programs</h4>
+            <p>California Housing Finance Agency offers down payment and closing cost assistance programs for qualified first-time buyers throughout San Diego County.</p>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.5rem; margin: 2.5rem 0 1rem 0;">Four Things Every First-Time Buyer Should Do Right Now</h3>
+        
+        <div class="guide-step">
+          <h4>1. Check &amp; Optimize Your Credit Utilization</h4>
+          <p>Paying down credit card balances below 20% of their limits can increase your score by 20 to 40 points in as little as 30 days, unlocking significantly lower interest rates.</p>
+        </div>
+
+        <div class="guide-step">
+          <h4>2. Gather Your Financial Documentation</h4>
+          <p>Lenders will request the last 2 years of W-2s, 2 months of bank statements, and recent paystubs. Self-employed buyers will need 2 years of federal tax returns.</p>
+        </div>
+
+        <div class="guide-step">
+          <h4>3. Account for Closing Costs Beyond Down Payment</h4>
+          <p>In California, buyer closing costs (escrow fees, title insurance, loan origination, prepaid property taxes, and homeowners insurance) typically total 1.5% to 2.5% of the purchase price. We help negotiate seller concessions to offset these costs.</p>
+        </div>
+
+        <div class="guide-step">
+          <h4>4. Work with an Agent Who Educates, Not Just Sells</h4>
+          <p>Edgar Valle conducts thorough inspection reviews and attends every home inspection personally, ensuring you understand every detail of the property's condition.</p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div style="margin-top: 3rem;">
+        <LeadCaptureForm 
+          leadType="first_time_buyer"
+          formTitle="Request a First-Time Buyer Strategy Session"
+          buttonText="Schedule My Free Consultation"
+        />
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .loan-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .loan-options-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .loan-option {
+    padding: 1.5rem;
+    background: #fdfbf7;
+    border: 1px solid var(--border-light);
+  }
+
+  .loan-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--color-gold-700);
+    background: var(--color-gold-100);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-xs);
+    margin-bottom: 0.75rem;
+  }
+
+  .loan-option h4 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .loan-option p {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .guide-step {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .guide-step h4 {
+    color: var(--color-navy-900);
+    margin-bottom: 0.4rem;
+  }
+
+  .guide-step p {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+</style>

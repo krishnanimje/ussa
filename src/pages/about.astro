@@ -1,0 +1,123 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE_SETTINGS } from '../lib/store';
+---
+
+<Layout 
+  title="About Edgar Valle — San Diego Realtor®"
+  description="Meet Edgar Valle, a licensed California Realtor® with Full Circle Group (DRE #02375273) serving first-time homebuyers, VA military families, and real estate investors in San Diego. Hablamos Español."
+>
+  <!-- Hero Section -->
+  <section class="section section-secondary">
+    <div class="container">
+      <div class="grid-2" style="align-items: center; gap: 4rem;">
+        <div>
+          <span class="section-eyebrow">MEET YOUR SAN DIEGO REALTOR</span>
+          <h1 style="margin-bottom: 0.75rem;">Edgar Valle</h1>
+          <p class="brokerage-text">
+            Realtor® • Affiliated with <strong>{SITE_SETTINGS.brokerage_name}</strong> • California DRE License <strong>#{SITE_SETTINGS.dre_license}</strong>
+          </p>
+          <p class="lead" style="margin-bottom: 1.5rem;">
+            Dedicated to providing transparent, mathematically rigorous, and culturally attuned real estate guidance across San Diego County.
+          </p>
+          <div class="about-badges">
+            <span class="badge badge-gold">San Diego Native Market Focus</span>
+            <span class="badge badge-emerald">Bilingual: English &amp; Español</span>
+            <span class="badge badge-blue">VA Military Relocation Specialist</span>
+          </div>
+        </div>
+
+        <div class="about-hero-img-wrap">
+          <img src="/images/branding/edgar-valle.svg" alt="Edgar Valle Realtor" width="500" height="600" class="hero-portrait" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Biography & Philosophy -->
+  <section class="section">
+    <div class="container container-narrow">
+      <div class="card bio-card">
+        <h2 style="font-size: 1.85rem; margin-bottom: 1.25rem;">Real Estate Grounded in Service &amp; Discipline</h2>
+        
+        <p>
+          San Diego’s real estate market is one of the most competitive, high-velocity coastal regions in the United States. Navigating this landscape requires far more than unlocking front doors—it demands deep local market mastery, micro-neighborhood comp analysis, and an unwavering advocate in your corner.
+        </p>
+
+        <p>
+          As a proud agent with <strong>{SITE_SETTINGS.brokerage_name}</strong>, Edgar Valle has established a reputation for relentless client advocacy. Whether walking first-time homebuyers through down payment assistance grants, structuring zero-down VA offers for active service members stationed at Camp Pendleton or Naval Base San Diego, or calculating after-repair values (ARV) for fix-and-flip investors, Edgar brings clarity and data to every decision.
+        </p>
+
+        <h3 style="font-size: 1.4rem; margin: 2rem 0 1rem 0;">Bilingual Service: Hablamos Tu Idioma</h3>
+        <p>
+          Real estate transactions involve complex legal contracts, financial commitments, and high emotional stakes. Edgar provides 100% fluent bilingual service in English and Spanish, ensuring Latino families and Spanish-speaking buyers feel completely informed, empowered, and respected at every step of the closing process.
+        </p>
+
+        <h3 style="font-size: 1.4rem; margin: 2rem 0 1rem 0;">Our Core Commitments to Every Client</h3>
+        <div class="grid-2" style="gap: 1.5rem; margin-top: 1.25rem;">
+          <div class="commitment-item">
+            <h4 style="color: var(--color-gold-700);">1. Complete Transparency</h4>
+            <p style="font-size: 0.92rem;">We disclose every nuance of a property, inspection finding, and neighborhood dynamic. If a home is not right for you, we will be the first to tell you.</p>
+          </div>
+          <div class="commitment-item">
+            <h4 style="color: var(--color-gold-700);">2. Financial Precision</h4>
+            <p style="font-size: 0.92rem;">Every offer we submit is backed by recent closed comps, absorption rate metrics, and strict mortgage qualification calculations.</p>
+          </div>
+          <div class="commitment-item">
+            <h4 style="color: var(--color-gold-700);">3. Military Family Advocacy</h4>
+            <p style="font-size: 0.92rem;">We honor our military service members by ensuring they utilize the full power of their zero-down VA loan benefit without paying junk fees.</p>
+          </div>
+          <div class="commitment-item">
+            <h4 style="color: var(--color-gold-700);">4. Long-Term Partnership</h4>
+            <p style="font-size: 0.92rem;">Our relationship does not end at the closing table. We provide trusted contractor recommendations, annual equity updates, and ongoing property advisory.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Box -->
+      <div class="cta-box card" style="margin-top: 3rem; text-align: center; padding: 3rem;">
+        <h2>Ready to Discuss Your San Diego Real Estate Goals?</h2>
+        <p class="lead" style="margin: 0 auto 2rem auto;">
+          Contact Edgar directly for a no-obligation strategy session or home valuation.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+          <a href="/contact" class="btn btn-gold btn-lg">Schedule Consultation</a>
+          <a href="tel:6195550198" class="btn btn-navy btn-lg">Call (619) 555-0198</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .brokerage-text {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+  }
+
+  .about-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-portrait {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    height: auto;
+  }
+
+  .bio-card {
+    padding: 3rem;
+    background: #ffffff;
+  }
+
+  .commitment-item {
+    background: #fdfbf7;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+  }
+</style>

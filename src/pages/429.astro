@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = false;
+Astro.response.status = 429;
+---
+
+<Layout 
+  title="429 — Rate Limit Exceeded"
+  description="Too many requests have been detected from your IP address. Please wait a moment before trying again."
+>
+  <div class="section" style="min-height: 65vh; display: flex; align-items: center; text-align: center;">
+    <div class="container" style="max-width: 680px; margin: 0 auto;">
+      <div class="badge badge-gold" style="margin-bottom: 1.5rem; font-size: 0.85rem; padding: 0.4rem 1rem;">HTTP 429 • TOO MANY REQUESTS</div>
+      <h1>Rate Limit Temporarily Exceeded</h1>
+      <p class="lead" style="margin: 0 auto 2.5rem auto;">
+        To protect our property database and client inquiry services against automated scraping, requests from your network have been temporarily throttled. Please wait 60 seconds and refresh.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <button onclick="window.location.reload()" class="btn btn-gold btn-lg">Refresh Page</button>
+        <a href="/" class="btn btn-outline btn-lg">Return to Home</a>
+      </div>
+    </div>
+  </div>
+</Layout>

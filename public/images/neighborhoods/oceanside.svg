@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="ocGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="60%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#93C5FD" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#ocGrad)" />
+
+  <!-- Historic Oceanside Wooden Pier -->
+  <rect x="0" y="290" width="800" height="18" fill="#1E293B" />
+  <line x1="100" y1="308" x2="100" y2="420" stroke="#1E293B" stroke-width="8" />
+  <line x1="250" y1="308" x2="250" y2="420" stroke="#1E293B" stroke-width="8" />
+  <line x1="400" y1="308" x2="400" y2="420" stroke="#1E293B" stroke-width="8" />
+  <line x1="550" y1="308" x2="550" y2="420" stroke="#1E293B" stroke-width="8" />
+  <line x1="700" y1="308" x2="700" y2="420" stroke="#1E293B" stroke-width="8" />
+
+  <!-- Red Diner on the End of Pier -->
+  <rect x="680" y="240" width="90" height="50" fill="#DC2626" rx="4" />
+  <rect x="690" y="250" width="70" height="20" fill="#FFFFFF" />
+
+  <text x="60" y="80" font-family="'Plus Jakarta Sans', sans-serif" font-size="34" font-weight="900" fill="#FFFFFF" letter-spacing="2">OCEANSIDE</text>
+  <text x="60" y="110" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#FDE047" letter-spacing="3">CAMP PENDLETON &amp; COASTAL HARBOR</text>
+</svg>

@@ -1,0 +1,125 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getProperties, getAllLeads, getOpenHouses, SITE_SETTINGS } from '../../lib/store';
+import { formatCurrency } from '../../lib/mortgage';
+import { checkAdminAuth } from '../../lib/auth';
+
+export const prerender = false;
+
+if (!checkAdminAuth(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+
+const properties = await getProperties();
+const leads = await getAllLeads();
+const openHouses = await getOpenHouses();
+
+const activeProperties = properties.filter(p => p.status === 'active' || p.status === 'open_house');
+const totalInventoryValue = activeProperties.reduce((sum, p) => sum + p.price, 0);
+const avgPrice = activeProperties.length > 0 ? totalInventoryValue / activeProperties.length : 0;
+const newLeadsCount = leads.filter(l => l.status === 'new').length;
+---
+
+<AdminLayout title="Dashboard" activeNav="dashboard">
+  <div class="admin-header">
+    <div>
+      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: #ffffff;">Executive Dashboard</h1>
+      <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.9rem;">
+        Edgar Valle Real Estate • {SITE_SETTINGS.brokerage_name} • DRE #{SITE_SETTINGS.dre_license}
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="/admin/leads" class="btn btn-gold btn-sm">Review New Leads ({newLeadsCount})</a>
+      <a href="/admin/properties" class="btn btn-outline-white btn-sm">Manage Inventory</a>
+    </div>
+  </div>
+
+  <!-- KPI Grid -->
+  <div class="admin-kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-title">Active Inventory</div>
+      <div class="kpi-value">{activeProperties.length}</div>
+      <span style="font-size: 0.78rem; color: #10b981;">{properties.length} Total Properties</span>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">Client Inquiries</div>
+      <div class="kpi-value" style="color: var(--color-gold-400);">{leads.length}</div>
+      <span style="font-size: 0.78rem; color: #f59e0b;">{newLeadsCount} Pending Follow-up</span>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">Average Listing Price</div>
+      <div class="kpi-value">{formatCurrency(avgPrice)}</div>
+      <span style="font-size: 0.78rem; color: #94a3b8;">San Diego County Median</span>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">Open Houses Scheduled</div>
+      <div class="kpi-value">{openHouses.length}</div>
+      <span style="font-size: 0.78rem; color: #38bdf8;">Upcoming Weekend</span>
+    </div>
+  </div>
+
+  <!-- Recent Leads Table -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h2 style="font-size: 1.35rem; color: #ffffff; margin: 0;">Recent Client Inquiries</h2>
+    <a href="/admin/leads" style="color: var(--color-gold-400); font-size: 0.88rem; text-decoration: underline;">View All Leads &rarr;</a>
+  </div>
+
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Client Name</th>
+          <th>Lead Type</th>
+          <th>Contact Info</th>
+          <th>Timeframe / Budget</th>
+          <th>Language</th>
+          <th>Status</th>
+          <th>Received</th>
+        </tr>
+      </thead>
+      <tbody>
+        {leads.slice(0, 5).map(lead => (
+          <tr>
+            <td>
+              <strong style="color: #ffffff;">{lead.full_name}</strong>
+              {lead.property_address && <div style="font-size: 0.75rem; color: #8b9bb0;">Addr: {lead.property_address}</div>}
+            </td>
+            <td>
+              <span class="badge badge-dark" style="font-size: 0.7rem;">
+                {lead.lead_type.replace('_', ' ')}
+              </span>
+            </td>
+            <td>
+              <div>{lead.phone}</div>
+              <div style="font-size: 0.78rem; color: #8b9bb0;">{lead.email}</div>
+            </td>
+            <td>
+              <div>{lead.timeframe || 'Not specified'}</div>
+              {lead.estimated_budget && <div style="font-size: 0.78rem; color: #c5a059;">{lead.estimated_budget}</div>}
+            </td>
+            <td>
+              <span style="text-transform: uppercase; font-weight: 700; font-size: 0.75rem;">
+                {lead.language_preference || 'en'}
+              </span>
+            </td>
+            <td>
+              <span class:list={[
+                'badge',
+                lead.status === 'new' ? 'badge-gold' :
+                lead.status === 'contacted' ? 'badge-blue' : 'badge-emerald'
+              ]}>
+                {lead.status}
+              </span>
+            </td>
+            <td style="font-size: 0.8rem; color: #8b9bb0;">
+              {new Date(lead.created_at).toLocaleDateString()}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

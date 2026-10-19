@@ -1,0 +1,461 @@
+---
+import { formatCurrency } from '../lib/mortgage';
+
+interface Props {
+  initialPrice?: number;
+  initialHoa?: number;
+  isVaEligible?: boolean;
+}
+
+const { initialPrice = 950000, initialHoa = 0, isVaEligible = false } = Astro.props;
+---
+
+<div class="calculator-card" id="mortgageCalculator" data-initial-price={initialPrice} data-initial-hoa={initialHoa} data-is-va={isVaEligible ? 'true' : 'false'}>
+  <div class="calc-header">
+    <div class="calc-title-wrap">
+      <span class="calc-eyebrow">ESTIMATED FINANCING</span>
+      <h3 class="calc-title">San Diego Mortgage Calculator</h3>
+    </div>
+    <div class="va-badge-toggle">
+      <label class="toggle-container">
+        <input type="checkbox" id="vaLoanToggle" checked={isVaEligible} />
+        <span class="toggle-slider"></span>
+        <span class="toggle-label"><strong>VA Loan Mode</strong> (0% Down &amp; $0 PMI)</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="calc-grid">
+    <!-- Controls Column -->
+    <div class="calc-controls">
+      <!-- Home Price -->
+      <div class="form-group">
+        <div class="label-row">
+          <label for="calcPrice" class="form-label">Home Price</label>
+          <span class="val-display" id="priceDisplay">{formatCurrency(initialPrice)}</span>
+        </div>
+        <input type="range" id="calcPrice" min="400000" max="3000000" step="10000" value={initialPrice} class="range-slider" />
+      </div>
+
+      <!-- Down Payment -->
+      <div class="form-group">
+        <div class="label-row">
+          <label for="calcDownPercent" class="form-label">Down Payment</label>
+          <span class="val-display" id="downDisplay">20% ($190,000)</span>
+        </div>
+        <input type="range" id="calcDownPercent" min="0" max="50" step="1" value={isVaEligible ? 0 : 20} class="range-slider" />
+        <div class="down-presets">
+          <button type="button" class="preset-btn" data-percent="0">0% (VA)</button>
+          <button type="button" class="preset-btn" data-percent="3.5">3.5% (FHA)</button>
+          <button type="button" class="preset-btn" data-percent="5">5%</button>
+          <button type="button" class="preset-btn" data-percent="10">10%</button>
+          <button type="button" class="preset-btn" data-percent="20">20%</button>
+        </div>
+      </div>
+
+      <!-- Interest Rate & Loan Term -->
+      <div class="calc-row-2">
+        <div class="form-group">
+          <label for="calcRate" class="form-label">Interest Rate (%)</label>
+          <input type="number" id="calcRate" min="2.0" max="12.0" step="0.125" value="6.5" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label for="calcTerm" class="form-label">Loan Term</label>
+          <select id="calcTerm" class="form-select">
+            <option value="30" selected>30-Year Fixed</option>
+            <option value="15">15-Year Fixed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- HOA Fee -->
+      <div class="form-group">
+        <label for="calcHoa" class="form-label">Monthly HOA Dues ($)</label>
+        <input type="number" id="calcHoa" min="0" max="2000" step="25" value={initialHoa} class="form-input" />
+      </div>
+    </div>
+
+    <!-- Results Display Column -->
+    <div class="calc-summary">
+      <div class="total-box">
+        <span class="total-label">Estimated Monthly Payment</span>
+        <div class="total-amount" id="totalPaymentDisplay">$5,940</div>
+        <span class="total-subtext">Principal, Interest, SD Taxes &amp; Insurance</span>
+      </div>
+
+      <div class="breakdown-list">
+        <div class="breakdown-item">
+          <div class="item-name"><span class="dot dot-navy"></span>Principal &amp; Interest</div>
+          <div class="item-val" id="piDisplay">$4,804</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="item-name"><span class="dot dot-gold"></span>Property Taxes (1.25%)</div>
+          <div class="item-val" id="taxDisplay">$990</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="item-name"><span class="dot dot-blue"></span>Homeowners Insurance</div>
+          <div class="item-val" id="insDisplay">$146</div>
+        </div>
+        <div class="breakdown-item" id="pmiRow">
+          <div class="item-name"><span class="dot dot-ruby"></span>PMI (Mortgage Ins.)</div>
+          <div class="item-val" id="pmiDisplay">$0</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="item-name"><span class="dot dot-slate"></span>HOA Dues</div>
+          <div class="item-val" id="hoaDisplay">${initialHoa}</div>
+        </div>
+      </div>
+
+      <div class="va-callout-banner" id="vaNotice">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span><strong>VA Military Privilege:</strong> No private mortgage insurance required, saving you up to $500/month!</span>
+      </div>
+
+      <div class="calc-cta">
+        <a href="/contact?type=first_time_buyer" class="btn btn-gold btn-sm" style="width: 100%;">Get Pre-Approved with Edgar's Lenders</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .calculator-card {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-md);
+    padding: 2.25rem;
+  }
+
+  .calc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .calc-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--color-gold-600);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .calc-title {
+    font-size: 1.65rem;
+    margin: 0;
+  }
+
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    cursor: pointer;
+    font-size: 0.88rem;
+  }
+
+  .toggle-container input {
+    display: none;
+  }
+
+  .toggle-slider {
+    width: 44px;
+    height: 24px;
+    background: #cbd5e1;
+    border-radius: 12px;
+    position: relative;
+    transition: background var(--transition-fast);
+  }
+
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    top: 3px;
+    left: 3px;
+    transition: transform var(--transition-fast);
+  }
+
+  .toggle-container input:checked + .toggle-slider {
+    background: #2563eb;
+  }
+
+  .toggle-container input:checked + .toggle-slider::before {
+    transform: translateX(20px);
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2.5rem;
+  }
+
+  @media (max-width: 900px) {
+    .calc-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .val-display {
+    font-weight: 700;
+    color: var(--color-gold-700);
+    font-size: 0.95rem;
+  }
+
+  .range-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    outline: none;
+    accent-color: var(--color-gold-500);
+  }
+
+  .down-presets {
+    display: flex;
+    gap: 6px;
+    margin-top: 0.65rem;
+  }
+
+  .preset-btn {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-xs);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .preset-btn:hover {
+    background: var(--color-gold-100);
+    border-color: var(--color-gold-400);
+    color: var(--color-gold-800);
+  }
+
+  .calc-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .calc-summary {
+    background: #f8fafc;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .total-box {
+    text-align: center;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .total-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .total-amount {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--color-navy-950);
+    line-height: 1.1;
+    margin: 0.4rem 0;
+  }
+
+  .total-subtext {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+  }
+
+  .item-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .dot-navy { background: var(--color-navy-900); }
+  .dot-gold { background: var(--color-gold-500); }
+  .dot-blue { background: #0284c7; }
+  .dot-ruby { background: #dc2626; }
+  .dot-slate { background: #64748b; }
+
+  .item-val {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .va-callout-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .va-callout-banner svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+</style>
+
+<script>
+  function initCalculator() {
+    const root = document.getElementById('mortgageCalculator');
+    if (!root) return;
+
+    const priceSlider = document.getElementById('calcPrice') as HTMLInputElement;
+    const downSlider = document.getElementById('calcDownPercent') as HTMLInputElement;
+    const rateInput = document.getElementById('calcRate') as HTMLInputElement;
+    const termSelect = document.getElementById('calcTerm') as HTMLSelectElement;
+    const hoaInput = document.getElementById('calcHoa') as HTMLInputElement;
+    const vaToggle = document.getElementById('vaLoanToggle') as HTMLInputElement;
+
+    const priceDisplay = document.getElementById('priceDisplay')!;
+    const downDisplay = document.getElementById('downDisplay')!;
+    const totalDisplay = document.getElementById('totalPaymentDisplay')!;
+    const piDisplay = document.getElementById('piDisplay')!;
+    const taxDisplay = document.getElementById('taxDisplay')!;
+    const insDisplay = document.getElementById('insDisplay')!;
+    const pmiDisplay = document.getElementById('pmiDisplay')!;
+    const hoaDisplay = document.getElementById('hoaDisplay')!;
+    const vaNotice = document.getElementById('vaNotice')!;
+
+    function fmt(num: number) {
+      return '$' + Math.round(num).toLocaleString('en-US');
+    }
+
+    function recalculate() {
+      const price = parseFloat(priceSlider.value) || 0;
+      const downPercent = parseFloat(downSlider.value) || 0;
+      const rate = parseFloat(rateInput.value) || 6.5;
+      const termYears = parseInt(termSelect.value, 10) || 30;
+      const hoa = parseFloat(hoaInput.value) || 0;
+      const isVa = vaToggle.checked;
+
+      const downAmount = (price * downPercent) / 100;
+      const loanAmount = Math.max(0, price - downAmount);
+
+      priceDisplay.textContent = fmt(price);
+      downDisplay.textContent = `${downPercent}% (${fmt(downAmount)})`;
+
+      // P&I calculation
+      let pi = 0;
+      if (loanAmount > 0) {
+        const monthlyRate = rate / 100 / 12;
+        const totalPayments = termYears * 12;
+        pi = (loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments))) /
+             (Math.pow(1 + monthlyRate, totalPayments) - 1);
+      }
+
+      // Taxes & Ins
+      const taxes = (price * 0.0125) / 12; // 1.25% San Diego tax
+      const ins = Math.max(1000, price * 0.002) / 12;
+
+      // PMI (0 if VA or down >= 20%)
+      let pmi = 0;
+      if (!isVa && downPercent < 20 && loanAmount > 0) {
+        pmi = (loanAmount * 0.0075) / 12;
+      }
+
+      const total = pi + taxes + ins + pmi + hoa;
+
+      totalDisplay.textContent = fmt(total);
+      piDisplay.textContent = fmt(pi);
+      taxDisplay.textContent = fmt(taxes);
+      insDisplay.textContent = fmt(ins);
+      pmiDisplay.textContent = isVa ? '$0 (VA Waived)' : fmt(pmi);
+      hoaDisplay.textContent = fmt(hoa);
+
+      if (isVa) {
+        vaNotice.style.display = 'flex';
+      } else {
+        vaNotice.style.display = 'none';
+      }
+    }
+
+    priceSlider.addEventListener('input', recalculate);
+    downSlider.addEventListener('input', recalculate);
+    rateInput.addEventListener('input', recalculate);
+    termSelect.addEventListener('change', recalculate);
+    hoaInput.addEventListener('input', recalculate);
+    vaToggle.addEventListener('change', () => {
+      if (vaToggle.checked && parseFloat(downSlider.value) > 10) {
+        downSlider.value = '0';
+      }
+      recalculate();
+    });
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const pct = target.getAttribute('data-percent') || '20';
+        downSlider.value = pct;
+        if (pct === '0') {
+          vaToggle.checked = true;
+        }
+        recalculate();
+      });
+    });
+
+    recalculate();
+  }
+
+  // Support both page loads and Astro view transition swaps
+  document.addEventListener('astro:page-load', initCalculator);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initCalculator();
+  }
+</script>

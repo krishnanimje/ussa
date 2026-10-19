@@ -1,0 +1,26 @@
+{
+  "name": "edgar-valle-real-estate",
+  "version": "1.0.0",
+  "description": "Edgar Valle | Realtor - Premium San Diego Real Estate Platform",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "node ./dist/server/entry.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@astrojs/node": "9.4.6",
+    "@supabase/supabase-js": "^2.118.0",
+    "astro": "5.18.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.4",
+    "@types/node": "^22.13.10",
+    "typescript": "5.8.3",
+    "vitest": "^3.0.7"
+  }
+}

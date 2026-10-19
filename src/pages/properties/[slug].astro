@@ -1,0 +1,749 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PropertyCard from '../../components/PropertyCard.astro';
+import MortgageCalculator from '../../components/MortgageCalculator.astro';
+import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+import { getPropertyBySlug, getProperties, getOpenHouses, SITE_SETTINGS } from '../../lib/store';
+import { formatCurrency, formatNumber } from '../../lib/mortgage';
+import { generatePropertyJsonLd, generateBreadcrumbJsonLd } from '../../lib/seo';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/properties');
+
+const property = await getPropertyBySlug(slug);
+if (!property) return Astro.redirect('/404');
+
+const allProperties = await getProperties();
+const similarProperties = allProperties
+  .filter(p => p.id !== property.id && (p.neighborhood === property.neighborhood || p.property_type === property.property_type))
+  .slice(0, 3);
+
+const allOpenHouses = await getOpenHouses();
+const propertyOpenHouses = allOpenHouses.filter(oh => oh.property_id === property.id && !oh.is_cancelled);
+
+const propertyJsonLd = generatePropertyJsonLd(property);
+const breadcrumbsJsonLd = generateBreadcrumbJsonLd([
+  { name: 'Home', url: '/' },
+  { name: 'Properties', url: '/properties' },
+  { name: property.title, url: `/properties/${property.slug}` }
+]);
+const combinedJsonLd = `[${propertyJsonLd}, ${breadcrumbsJsonLd}]`;
+
+const pricePerSqFt = Math.round(property.price / property.square_feet);
+---
+
+<Layout 
+  title={`${property.title} — ${property.neighborhood}, San Diego`}
+  description={`${property.bedrooms} Bed, ${property.bathrooms} Bath ${property.property_type} in ${property.neighborhood}, San Diego. Offered at ${formatCurrency(property.price)}. ${property.tagline || ''}`}
+  image={property.primary_image}
+  jsonLd={combinedJsonLd}
+>
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb-bar">
+    <div class="container breadcrumb-inner">
+      <nav aria-label="Breadcrumbs">
+        <ol class="breadcrumb-list">
+          <li><a href="/">Home</a></li>
+          <li><span class="sep">/</span></li>
+          <li><a href="/properties">Properties</a></li>
+          <li><span class="sep">/</span></li>
+          <li><a href={`/properties?neighborhood=${encodeURIComponent(property.neighborhood)}`}>{property.neighborhood}</a></li>
+          <li><span class="sep">/</span></li>
+          <li aria-current="page" class="active">{property.address_street}</li>
+        </ol>
+      </nav>
+      <div class="mls-info">
+        MLS #{property.mls_number || 'SD26-LOCAL'} • DRE #{SITE_SETTINGS.dre_license}
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Header Bar -->
+  <section class="prop-header-section">
+    <div class="container prop-header-inner">
+      <div class="prop-title-box">
+        <div class="prop-badge-row">
+          <span class="badge badge-gold">{property.neighborhood}</span>
+          <span class="badge badge-dark">{property.property_type}</span>
+          {property.status === 'open_house' && <span class="badge badge-emerald">Open House This Weekend</span>}
+          {property.is_va_eligible && <span class="badge badge-blue">VA Loan Approved (0% Down)</span>}
+          {property.is_fixer_upper && <span class="badge badge-ruby">High ARV Investment</span>}
+        </div>
+        <h1 class="prop-main-title">{property.title}</h1>
+        <p class="prop-sub-address">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          {property.address_street}, {property.address_city}, {property.address_state} {property.address_zip}
+        </p>
+      </div>
+
+      <div class="prop-price-box">
+        <span class="price-eyebrow">OFFERED AT</span>
+        <div class="prop-big-price">{formatCurrency(property.price)}</div>
+        {property.original_price && (
+          <div class="price-drop-tag">Original Price: {formatCurrency(property.original_price)}</div>
+        )}
+        <div class="price-sqft-calc">${pricePerSqFt} / Sq Ft</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Image Gallery -->
+  <section class="gallery-section">
+    <div class="container">
+      <div class="gallery-grid">
+        <!-- Main Large Featured Photo -->
+        <div class="gallery-main-frame">
+          <img 
+            id="mainGalleryImg"
+            src={property.primary_image || '/images/properties/north-park-spanish.svg'} 
+            alt={property.title} 
+            width="800" 
+            height="500" 
+            class="gallery-main-img" 
+          />
+          <button type="button" id="fullscreenBtn" class="fullscreen-btn" aria-label="View Fullscreen Photo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+            <span>Expand High-Res</span>
+          </button>
+        </div>
+
+        <!-- Thumbnails Column -->
+        <div class="gallery-thumbs">
+          {(property.gallery_images || [property.primary_image || '']).map((imgUrl, idx) => (
+            <button type="button" class:list={['thumb-btn', { active: idx === 0 }]} data-img={imgUrl} aria-label={`View Photo ${idx + 1}`}>
+              <img src={imgUrl} alt={`${property.title} view ${idx + 1}`} width="200" height="125" />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Layout (Specs & Narrative vs Sidebar Sticky Actions) -->
+  <section class="section" style="padding-top: 2rem;">
+    <div class="container prop-body-grid">
+      <!-- Left Column: Specs, Narrative, Calculator -->
+      <div class="prop-left-col">
+        <!-- Key At-A-Glance Metric Strip -->
+        <div class="card specs-strip">
+          <div class="spec-cell">
+            <span class="cell-val">{property.bedrooms}</span>
+            <span class="cell-lbl">Bedrooms</span>
+          </div>
+          <div class="spec-cell">
+            <span class="cell-val">{property.bathrooms}</span>
+            <span class="cell-lbl">Bathrooms</span>
+          </div>
+          <div class="spec-cell">
+            <span class="cell-val">{formatNumber(property.square_feet)}</span>
+            <span class="cell-lbl">Square Feet</span>
+          </div>
+          <div class="spec-cell">
+            <span class="cell-val">{property.garage_spaces} Car</span>
+            <span class="cell-lbl">Garage</span>
+          </div>
+          <div class="spec-cell">
+            <span class="cell-val">{property.year_built || 'Custom'}</span>
+            <span class="cell-lbl">Year Built</span>
+          </div>
+          <div class="spec-cell">
+            <span class="cell-val">${property.hoa_fee_monthly || 0}/mo</span>
+            <span class="cell-lbl">HOA Dues</span>
+          </div>
+        </div>
+
+        <!-- Open House Announcement (if scheduled) -->
+        {propertyOpenHouses.length > 0 && (
+          <div class="card open-house-card">
+            <div class="oh-badge-title">
+              <span class="badge badge-emerald">UPCOMING OPEN HOUSE</span>
+              <span class="oh-host">Hosted by Edgar Valle</span>
+            </div>
+            {propertyOpenHouses.map(oh => (
+              <div class="oh-row">
+                <div class="oh-time">
+                  <strong>Saturday / Sunday Tour:</strong> {new Date(oh.start_time).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })} from 1:00 PM – 4:00 PM
+                </div>
+                <p class="oh-instructions">{oh.special_instructions}</p>
+              </div>
+            ))}
+            <a href={`/contact?property=${property.slug}&type=open_house_rsvp`} class="btn btn-gold btn-sm">RSVP for Open House Guestlist</a>
+          </div>
+        )}
+
+        <!-- Narrative Description -->
+        <div class="card narrative-box">
+          <h2 class="section-subheading">Property Overview</h2>
+          <p class="narrative-text">{property.description}</p>
+
+          {property.is_fixer_upper && property.arv_estimate && (
+            <div class="arv-detail-box">
+              <h3 style="font-size: 1.25rem; color: #047857; margin-bottom: 0.5rem;">Fix-and-Flip Pro Forma Highlights</h3>
+              <p style="margin-bottom: 0.75rem;">
+                This property was personally sourced by Edgar Valle as a prime value-add candidate. Surrounding renovated comps within 0.5 miles are closing at $980,000+.
+              </p>
+              <div class="arv-stats-row">
+                <div>Purchase: <strong>{formatCurrency(property.price)}</strong></div>
+                <div>Projected ARV: <strong>{formatCurrency(property.arv_estimate)}</strong></div>
+                <div>Potential Spread: <strong>+${formatNumber(property.arv_estimate - property.price)}</strong></div>
+              </div>
+            </div>
+          )}
+
+          <!-- Features & Amenities Checklist -->
+          <h3 class="section-subheading" style="margin-top: 2rem;">Features &amp; Upgrades</h3>
+          <div class="features-checklist-grid">
+            {property.features.map(feat => (
+              <div class="feat-item">
+                <span class="feat-check">✓</span>
+                <span class="feat-name">{feat}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Embedded Mortgage Estimator -->
+        <div style="margin-top: 2.5rem;">
+          <MortgageCalculator 
+            initialPrice={property.price}
+            initialHoa={property.hoa_fee_monthly || 0}
+            isVaEligible={property.is_va_eligible}
+          />
+        </div>
+      </div>
+
+      <!-- Right Column: Sticky Contact & Showing Request Sidebar -->
+      <aside class="prop-right-col">
+        <div class="sticky-sidebar-wrap">
+          <!-- Direct Agent Card -->
+          <div class="card agent-sidebar-card">
+            <div class="agent-card-header">
+              <img src="/images/branding/edgar-valle.svg" alt="Edgar Valle" width="70" height="70" class="agent-thumb" />
+              <div>
+                <h4 style="margin: 0; font-size: 1.15rem;">Edgar Valle</h4>
+                <span class="agent-title">Realtor® • Full Circle Group</span>
+                <span class="agent-dre">DRE #02375273</span>
+              </div>
+            </div>
+
+            <div class="agent-quick-actions">
+              <a href="tel:6195550198" class="btn btn-navy" style="width: 100%;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <span>Call (619) 555-0198</span>
+              </a>
+              <a href={SITE_SETTINGS.instagram_url} target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="width: 100%;">
+                <span>DM @yourrealtoredgar</span>
+              </a>
+            </div>
+
+            <!-- Embedded Showing Request Form -->
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);">
+              <LeadCaptureForm 
+                leadType="tour_request"
+                propertyId={property.id}
+                propertyTitle={property.title}
+                formTitle="Schedule a Private Tour"
+                buttonText="Request Showing Time"
+              />
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {similarProperties.length > 0 && (
+    <section class="section section-secondary">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-eyebrow">EXPLORE ALTERNATIVES</span>
+          <h2>Similar San Diego Properties</h2>
+          <p class="lead">Compare with other high-demand listings in {property.neighborhood} and surrounding neighborhoods.</p>
+        </div>
+        <div class="grid-3" style="margin-top: 2rem;">
+          {similarProperties.map(sim => (
+            <PropertyCard property={sim} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Lightbox Modal (For Fullscreen Gallery) -->
+  <div id="lightboxModal" class="lightbox-modal" style="display: none;" role="dialog" aria-modal="true">
+    <div class="lightbox-content">
+      <button type="button" id="closeLightboxBtn" class="lightbox-close" aria-label="Close Lightbox">&times;</button>
+      <img id="lightboxImg" src="" alt="Fullscreen property view" />
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .breadcrumb-bar {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-light);
+    padding: 0.75rem 0;
+    font-size: 0.82rem;
+  }
+
+  .breadcrumb-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .breadcrumb-list {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .breadcrumb-list a {
+    color: var(--text-secondary);
+  }
+
+  .breadcrumb-list a:hover {
+    color: var(--color-gold-700);
+  }
+
+  .breadcrumb-list .sep {
+    color: var(--text-muted);
+  }
+
+  .breadcrumb-list .active {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .mls-info {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+
+  /* Property Header Bar */
+  .prop-header-section {
+    padding: 2.5rem 0 1.5rem 0;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .prop-header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .prop-badge-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+  }
+
+  .prop-main-title {
+    font-size: clamp(2rem, 3.8vw, 3rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .prop-sub-address {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .prop-price-box {
+    text-align: right;
+  }
+
+  @media (max-width: 768px) {
+    .prop-price-box {
+      text-align: left;
+    }
+  }
+
+  .price-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-gold-600);
+    display: block;
+  }
+
+  .prop-big-price {
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    color: var(--color-navy-950);
+    line-height: 1;
+    margin: 0.25rem 0;
+  }
+
+  .price-drop-tag {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+  }
+
+  .price-sqft-calc {
+    font-size: 0.85rem;
+    color: var(--color-gold-700);
+    font-weight: 700;
+  }
+
+  /* Gallery */
+  .gallery-section {
+    padding: 1.5rem 0;
+    background: var(--bg-primary);
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 1rem;
+    max-height: 520px;
+  }
+
+  @media (max-width: 800px) {
+    .gallery-grid {
+      grid-template-columns: 1fr;
+      max-height: none;
+    }
+  }
+
+  .gallery-main-frame {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #000;
+    box-shadow: var(--shadow-md);
+  }
+
+  .gallery-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+  }
+
+  .fullscreen-btn {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(15, 24, 34, 0.85);
+    color: #ffffff;
+    border: 1px solid rgba(197, 160, 89, 0.5);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .gallery-thumbs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 800px) {
+    .gallery-thumbs {
+      flex-direction: row;
+      overflow-x: auto;
+    }
+  }
+
+  .thumb-btn {
+    background: none;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.7;
+    transition: all var(--transition-fast);
+  }
+
+  .thumb-btn:hover, .thumb-btn.active {
+    opacity: 1;
+    border-color: var(--color-gold-500);
+  }
+
+  .thumb-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Body Grid */
+  .prop-body-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.15fr;
+    gap: 3rem;
+  }
+
+  @media (max-width: 1024px) {
+    .prop-body-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Specs Strip */
+  .specs-strip {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #ffffff;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 680px) {
+    .specs-strip {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+  }
+
+  .cell-val {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  .cell-lbl {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .open-house-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .oh-badge-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .oh-host {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #166534;
+  }
+
+  .oh-row {
+    margin-bottom: 1rem;
+  }
+
+  .narrative-box {
+    padding: 2.25rem;
+    background: #ffffff;
+  }
+
+  .section-subheading {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .narrative-text {
+    font-size: 1.08rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+  }
+
+  .arv-detail-box {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .arv-stats-row {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+  }
+
+  .features-checklist-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+  }
+
+  @media (max-width: 600px) {
+    .features-checklist-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .feat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+
+  .feat-check {
+    color: var(--color-gold-600);
+    font-weight: 800;
+  }
+
+  /* Right Sidebar */
+  .sticky-sidebar-wrap {
+    position: sticky;
+    top: 100px;
+  }
+
+  .agent-sidebar-card {
+    padding: 2rem;
+    background: #ffffff;
+  }
+
+  .agent-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .agent-thumb {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-gold-400);
+  }
+
+  .agent-title {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--color-gold-700);
+    font-weight: 600;
+  }
+
+  .agent-dre {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .agent-quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  /* Lightbox */
+  .lightbox-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 17, 24, 0.95);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+
+  .lightbox-content img {
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 2.5rem;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  function setupGallery() {
+    const mainImg = document.getElementById('mainGalleryImg') as HTMLImageElement;
+    const thumbBtns = document.querySelectorAll('.thumb-btn');
+    const fsBtn = document.getElementById('fullscreenBtn');
+    const modal = document.getElementById('lightboxModal');
+    const modalImg = document.getElementById('lightboxImg') as HTMLImageElement;
+    const closeBtn = document.getElementById('closeLightboxBtn');
+
+    if (!mainImg) return;
+
+    thumbBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        thumbBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const newSrc = btn.getAttribute('data-img');
+        if (newSrc && mainImg) {
+          mainImg.src = newSrc;
+        }
+      });
+    });
+
+    if (fsBtn && modal && modalImg) {
+      fsBtn.addEventListener('click', () => {
+        modalImg.src = mainImg.src;
+        modal.style.display = 'flex';
+      });
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          modal.style.display = 'none';
+        });
+      }
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', setupGallery);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setupGallery();
+  }
+</script>

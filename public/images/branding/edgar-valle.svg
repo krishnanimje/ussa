@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" width="600" height="700">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A2634" />
+      <stop offset="50%" stop-color="#0E1620" />
+      <stop offset="100%" stop-color="#060A0E" />
+    </linearGradient>
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5C07B" />
+      <stop offset="100%" stop-color="#C5A059" />
+    </linearGradient>
+    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E2A77A" />
+      <stop offset="100%" stop-color="#C9865A" />
+    </linearGradient>
+    <linearGradient id="suitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1B2838" />
+      <stop offset="100%" stop-color="#111B27" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="700" fill="url(#bgGrad)" />
+  
+  <!-- Subtle Architectural Grid & Geometry -->
+  <circle cx="300" cy="280" r="220" fill="none" stroke="url(#goldAccent)" stroke-width="1.5" stroke-opacity="0.25" />
+  <circle cx="300" cy="280" r="180" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.08" />
+  <line x1="50" y1="280" x2="550" y2="280" stroke="url(#goldAccent)" stroke-width="1" stroke-opacity="0.15" stroke-dasharray="6,6" />
+
+  <!-- Realtor Portrait Illustration -->
+  <!-- Shoulders & Suit -->
+  <path d="M 140 680 L 160 510 L 220 460 L 300 480 L 380 460 L 440 510 L 460 680 Z" fill="url(#suitGrad)" />
+  <!-- Lapels -->
+  <path d="M 220 460 L 275 600 L 300 680 L 325 600 L 380 460 Z" fill="#0D1620" stroke="url(#goldAccent)" stroke-width="1" stroke-opacity="0.3" />
+  <!-- White Dress Shirt -->
+  <path d="M 265 470 L 300 550 L 335 470 Z" fill="#FFFFFF" />
+  <!-- Tie in Warm Gold Bronze -->
+  <path d="M 292 485 L 308 485 L 305 620 L 300 635 L 295 620 Z" fill="url(#goldAccent)" />
+  <polygon points="292,485 308,485 304,505 296,505" fill="#A88237" />
+
+  <!-- Neck -->
+  <rect x="272" y="380" width="56" height="95" rx="10" fill="url(#skinGrad)" />
+
+  <!-- Head & Jaw -->
+  <path d="M 230 260 C 230 180, 370 180, 370 260 C 370 340, 340 395, 300 400 C 260 395, 230 340, 230 260 Z" fill="url(#skinGrad)" />
+  
+  <!-- Hair (Clean modern pompadour/fade) -->
+  <path d="M 225 240 C 220 160, 300 130, 375 160 C 385 190, 375 240, 370 250 C 355 200, 320 180, 280 180 C 250 180, 230 210, 225 240 Z" fill="#1A1512" />
+  
+  <!-- Well-groomed Beard & Mustache -->
+  <path d="M 252 325 C 270 335, 330 335, 348 325 C 345 375, 325 395, 300 398 C 275 395, 255 375, 252 325 Z" fill="#201A16" fill-opacity="0.85" />
+
+  <!-- Eyes and Eyebrows -->
+  <path d="M 255 248 Q 272 242 285 248" stroke="#1A1512" stroke-width="3" stroke-linecap="round" fill="none" />
+  <path d="M 315 248 Q 328 242 345 248" stroke="#1A1512" stroke-width="3" stroke-linecap="round" fill="none" />
+  <ellipse cx="270" cy="260" rx="6" ry="4" fill="#2E2018" />
+  <ellipse cx="330" cy="260" rx="6" ry="4" fill="#2E2018" />
+
+  <!-- Warm Confident Smile -->
+  <path d="M 280 340 Q 300 355 320 340" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" fill="none" />
+
+  <!-- Floating Verified Realtor Badge -->
+  <g transform="translate(390, 480)">
+    <rect width="180" height="70" rx="14" fill="#0F1722" stroke="url(#goldAccent)" stroke-width="1.5" />
+    <text x="20" y="28" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">EDGAR VALLE</text>
+    <text x="20" y="44" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="600" fill="url(#goldAccent)">DRE #02375273</text>
+    <text x="20" y="58" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" fill="#94A3B8">FULL CIRCLE GROUP</text>
+  </g>
+</svg>

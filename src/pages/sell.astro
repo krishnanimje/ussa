@@ -1,0 +1,90 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+---
+
+<Layout 
+  title="Sell Your San Diego Home for Maximum Value — Edgar Valle | Realtor"
+  description="Strategic home selling with Edgar Valle. Cinematic 4K property tours, targeted social media marketing, professional staging, and expert negotiation."
+>
+  <!-- Hero -->
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">MAXIMUM VALUE LISTINGS</span>
+      <h1>Sell Your San Diego Home</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Combine modern digital marketing, professional staging, high-definition cinematic video tours, and aggressive negotiation to achieve top-dollar results for your property.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="#valuationForm" class="btn btn-gold btn-lg">Request Free Home Valuation</a>
+        <a href="tel:6195550198" class="btn btn-outline btn-lg">Call Edgar: (619) 555-0198</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marketing Pillars -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">THE MARKETING ADVANTAGE</span>
+        <h2>How We Showcase Your Property to Qualified Buyers</h2>
+        <p class="lead">In today's digital real estate world, the first showing happens on a smartphone screen.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card sell-card">
+          <div class="sell-icon">📸</div>
+          <h3>Architectural HDR Photography</h3>
+          <p>Every listing receives twilight architectural photography, high-resolution interior HDR captures, and calibrated color-grading that accentuates natural California coastal light.</p>
+        </div>
+
+        <div class="card sell-card">
+          <div class="sell-icon">🎬</div>
+          <h3>Cinematic 4K Video Tours</h3>
+          <p>We produce engaging, high-retention video walkthroughs shared across Instagram (@yourrealtoredgar), YouTube, and targeted digital ad campaigns to reach active buyers moving to San Diego.</p>
+        </div>
+
+        <div class="card sell-card">
+          <div class="sell-icon">🛋️</div>
+          <h3>Strategic Staging &amp; Prep</h3>
+          <p>From furniture rearrangement to full bespoke staging and minor high-ROI cosmetic tune-ups (fresh paint, landscape spruce), we ensure your home makes an unforgettable impression.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Instant Home Valuation Section -->
+  <section class="section section-secondary" id="valuationForm">
+    <div class="container container-narrow">
+      <LeadCaptureForm 
+        leadType="seller_valuation"
+        formTitle="Request a Complimentary Comparative Market Analysis (CMA)"
+        buttonText="Get My Home's Current Value"
+      />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .sell-card {
+    padding: 2.25rem;
+    background: #ffffff;
+    height: 100%;
+  }
+
+  .sell-icon {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .sell-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .sell-card p {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+</style>

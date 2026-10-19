@@ -1,0 +1,94 @@
+---
+import '../styles/tokens.css';
+import '../styles/admin.css';
+import { SITE_SETTINGS } from '../lib/store';
+
+export const prerender = false;
+
+interface Props {
+  title?: string;
+  activeNav?: string;
+}
+
+const { title = 'Admin Portal', activeNav = 'dashboard' } = Astro.props;
+
+// Server-side session verification
+const adminSecret = process.env.ADMIN_SECRET_KEY || import.meta.env.ADMIN_SECRET_KEY || 'dev-secret-valle-admin-session-key-2026';
+const cookie = Astro.request.headers.get('cookie') || '';
+const isAuthenticated = cookie.includes(`valle_admin_session=${adminSecret}`);
+
+if (!isAuthenticated && Astro.url.pathname !== '/admin/login') {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | Edgar Valle Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="robots" content="noindex, nofollow" />
+  </head>
+  <body class="admin-body">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <a href="/admin" class="admin-logo-link">
+        <img src="/images/branding/logo-white.svg" alt="Edgar Valle Admin" width="200" height="48" />
+      </a>
+
+      <nav class="admin-nav">
+        <a href="/admin" class:list={['admin-nav-item', { active: activeNav === 'dashboard' }]}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="/admin/leads" class:list={['admin-nav-item', { active: activeNav === 'leads' }]}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Inquiries &amp; Leads</span>
+        </a>
+
+        <a href="/admin/properties" class:list={['admin-nav-item', { active: activeNav === 'properties' }]}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Listings Manager</span>
+        </a>
+
+        <a href="/admin/settings" class:list={['admin-nav-item', { active: activeNav === 'settings' }]}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Broker Settings</span>
+        </a>
+      </nav>
+
+      <div style="padding-top: 1rem; border-top: 1px solid var(--admin-border); margin-top: auto;">
+        <a href="/" target="_blank" class="admin-nav-item" style="color: var(--color-gold-400);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          <span>View Public Site</span>
+        </a>
+        <button id="adminLogoutBtn" class="admin-nav-item" style="background: none; border: none; width: 100%; cursor: pointer; text-align: left;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Log Out</span>
+        </button>
+        <div style="padding: 0.75rem 0.5rem 0 0.5rem; font-size: 0.72rem; color: var(--admin-text-muted); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 0.5rem;">
+          <span>{SITE_SETTINGS.brand_name}</span><br />
+          <span>DRE #{SITE_SETTINGS.dre_license}</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-content">
+      <slot />
+    </main>
+
+    <script>
+      const logoutBtn = document.getElementById('adminLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          document.cookie = 'valle_admin_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+          window.location.href = '/admin/login';
+        });
+      }
+    </script>
+  </body>
+</html>

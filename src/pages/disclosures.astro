@@ -1,0 +1,63 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE_SETTINGS } from '../lib/store';
+---
+
+<Layout 
+  title="Real Estate & Brokerage Disclosures"
+  description="Mandatory California real estate, Equal Housing Opportunity, and Full Circle Group brokerage disclosures for Edgar Valle | Realtor."
+>
+  <div class="section">
+    <div class="container container-narrow">
+      <div class="section-header" style="text-align: left; margin-bottom: 2.5rem;">
+        <span class="section-eyebrow">REGULATORY COMPLIANCE</span>
+        <h1>Real Estate &amp; Brokerage Disclosures</h1>
+        <p class="lead">
+          Transparency, ethical integrity, and adherence to California Department of Real Estate regulations are foundational to our practice.
+        </p>
+      </div>
+
+      <div class="card" style="padding: 2.5rem; margin-bottom: 2.5rem;">
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">1. California DRE License Verification</h2>
+        <p>
+          <strong>Edgar Valle</strong> is a licensed real estate agent in the State of California under California Department of Real Estate (DRE) License <strong>#02375273</strong>. Edgar Valle is proudly affiliated with <strong>{SITE_SETTINGS.brokerage_name}</strong>. Consumers may verify licensing status directly at the official California DRE public licensing portal at <a href="https://www.dre.ca.gov" target="_blank" rel="noopener noreferrer" style="color: var(--color-gold-700); text-decoration: underline;">dre.ca.gov</a>.
+        </p>
+
+        <h2 style="font-size: 1.5rem; margin: 2rem 0 1rem 0;">2. Equal Housing Opportunity</h2>
+        <div style="display: flex; gap: 1.25rem; align-items: flex-start; background: #fdfbf7; border: 1px solid var(--border-light); padding: 1.25rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+          <svg viewBox="0 0 64 64" width="48" height="48" fill="#c5a059" style="flex-shrink: 0;">
+            <path d="M32 6 L6 28 L14 28 L14 56 L50 56 L50 28 L58 28 Z M32 18 L44 28 L20 28 Z M22 34 L42 34 L42 40 L22 40 Z M22 44 L42 44 L42 50 L22 50 Z" />
+          </svg>
+          <div>
+            <h4 style="margin: 0 0 0.4rem 0;">Fair Housing Act Statement</h4>
+            <p style="font-size: 0.92rem; margin: 0;">
+              We strictly adhere to the federal Fair Housing Act (Title VIII of the Civil Rights Act of 1968, as amended) and the California Fair Employment and Housing Act (FEHA). We do not discriminate on the basis of race, color, religion, sex, disability, familial status, national origin, sexual orientation, gender identity, source of income, or ancestry.
+            </p>
+          </div>
+        </div>
+
+        <h2 style="font-size: 1.5rem; margin: 2rem 0 1rem 0;">3. Property Information Accuracy &amp; Disclaimers</h2>
+        <p>
+          All material presented on this website is intended for informational purposes only. Information is compiled from sources deemed reliable, including local Multiple Listing Services (MLS), county records, tax assessors, and sellers, but is not guaranteed as to accuracy, completeness, or timeliness.
+        </p>
+        <p>
+          Square footage, room dimensions, lot boundaries, homeowners association dues, property taxes, school attendance zones, and potential future zoning/SB9 entitlements are estimates and must be verified by the prospective buyer through personal inspection, appraisal, surveys, and appropriate licensed professionals (e.g., structural engineers, licensed general contractors, land surveyors, and CPAs).
+        </p>
+
+        <h2 style="font-size: 1.5rem; margin: 2rem 0 1rem 0;">4. No Existing Agency Solicitation</h2>
+        <p>
+          If your property is currently listed with an active exclusive right-to-sell listing agreement with another real estate broker, please disregard any marketing content on this site. This website is not intended as a solicitation of properties currently under contract with other brokerages.
+        </p>
+
+        <h2 style="font-size: 1.5rem; margin: 2rem 0 1rem 0;">5. Investment &amp; Fix-and-Flip Projections</h2>
+        <p>
+          Any After Repair Value (ARV) figures, gross margin calculations, rental yields, or rehab estimates shown for fixer-upper properties are for illustrative and educational discussion purposes only. Past performance does not guarantee future financial results. Real estate investing carries inherent market, economic, and construction risks.
+        </p>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="/contact" class="btn btn-gold">Contact Edgar for Representation</a>
+      </div>
+    </div>
+  </div>
+</Layout>

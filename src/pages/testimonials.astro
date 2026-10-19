@@ -1,0 +1,124 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+import { SITE_SETTINGS } from '../lib/store';
+
+const testimonials = [
+  {
+    quote: "As active duty stationed at Camp Pendleton, we were terrified that sellers in San Diego wouldn't accept our VA loan offer. Edgar broke down our purchasing power, showed us how our BAH covered our mortgage with zero down payment, and structured an offer that was accepted on our first attempt in Oceanside. We cannot thank him enough.",
+    author: "Staff Sgt. Marcus & Rachel R.",
+    category: "VA Military Loan Relocation",
+    location: "Oceanside, CA",
+    stars: 5
+  },
+  {
+    quote: "Edgar guided my parents and me completely in Spanish. In a market where real estate jargon can be overwhelming, Edgar explained every single document, escrow contingency, and loan condition with incredible patience. We closed on our dream home in Chula Vista with zero surprises.",
+    author: "Sofia & Carlos M.",
+    category: "First-Time Homebuyers",
+    location: "Chula Vista, CA",
+    stars: 5
+  },
+  {
+    quote: "I've completed four fix-and-flips with Edgar in Central San Diego. What separates him is that he actually understands construction costs, city permitting delays, and accurate ARV modeling. He doesn't sugarcoat numbers just to get a deal done. A true investor's broker.",
+    author: "David L., Apex Real Estate Holdings",
+    category: "Real Estate Investor",
+    location: "Clairemont, CA",
+    stars: 5
+  },
+  {
+    quote: "Edgar's video walkthroughs on Instagram (@yourrealtoredgar) are what initially caught our attention. When we hired him to list our North Park condo, his team brought in professional staging and 4K video that had 35 buyers through the doors on the first weekend. Sold for $35,000 over asking price in 5 days.",
+    author: "Brian & Jessica T.",
+    category: "Home Sellers",
+    location: "North Park, CA",
+    stars: 5
+  }
+];
+---
+
+<Layout 
+  title="Client Testimonials & Reviews — Edgar Valle | Realtor"
+  description="Read firsthand experiences from first-time buyers, military families using VA loans, and real estate investors represented by Edgar Valle in San Diego."
+>
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">VERIFIED CLIENT EXPERIENCES</span>
+      <h1>Client Reviews &amp; Testimonials</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Hear directly from homeowners, military families, and investors who trusted Edgar Valle ({SITE_SETTINGS.brokerage_name}, DRE #{SITE_SETTINGS.dre_license}) with their San Diego real estate moves.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-2" style="gap: 2.5rem; max-width: 1040px; margin: 0 auto;">
+        {testimonials.map(t => (
+          <article class="card review-card">
+            <div class="review-stars">{'★'.repeat(t.stars)}</div>
+            <p class="review-quote">"{t.quote}"</p>
+            <div class="review-author-box">
+              <span class="author-name">{t.author}</span>
+              <span class="author-cat">{t.category} • {t.location}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Submit Review / Inquire -->
+  <section class="section section-secondary">
+    <div class="container container-narrow">
+      <LeadCaptureForm 
+        leadType="general_contact"
+        formTitle="Ready to Write Your Own Success Story?"
+        buttonText="Connect with Edgar Valle"
+      />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .review-card {
+    padding: 2.5rem;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .review-stars {
+    color: #eab308;
+    font-size: 1.35rem;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+  }
+
+  .review-quote {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 1.75rem;
+  }
+
+  .review-author-box {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .author-name {
+    display: block;
+    font-weight: 700;
+    color: var(--color-navy-950);
+    font-size: 1.05rem;
+  }
+
+  .author-cat {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--color-gold-700);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+</style>

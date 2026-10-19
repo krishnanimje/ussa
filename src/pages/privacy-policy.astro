@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE_SETTINGS } from '../lib/store';
+---
+
+<Layout 
+  title="Privacy Policy"
+  description="Privacy Policy for Edgar Valle | Realtor. How we collect, safeguard, and use your personal information under California law."
+>
+  <div class="section">
+    <div class="container container-narrow">
+      <div class="section-header" style="text-align: left; margin-bottom: 2.5rem;">
+        <span class="section-eyebrow">YOUR PRIVACY MATTERS</span>
+        <h1>Privacy Policy</h1>
+        <p class="lead">Last Updated: October 2026. This Privacy Policy outlines how Edgar Valle ({SITE_SETTINGS.brokerage_name}) collects, protects, and uses your personal information.</p>
+      </div>
+
+      <div class="card" style="padding: 2.5rem;">
+        <h3>1. Information We Collect</h3>
+        <p>
+          When you submit inquiries on this website—such as requesting a private property tour, scheduling a home valuation, inquiring about VA loans or first-time homebuyer assistance—we collect the contact information you provide: full name, email address, phone number, property preferences, and message content.
+        </p>
+
+        <h3 style="margin-top: 1.5rem;">2. How We Use Your Information</h3>
+        <p>
+          We use your information exclusively to:
+        </p>
+        <ul style="margin: 0 0 1.25rem 1.5rem; color: var(--text-secondary);">
+          <li>Respond directly to your property inquiries and consultation requests.</li>
+          <li>Coordinate in-person or video home showings.</li>
+          <li>Deliver requested comparative market analyses (CMAs) and neighborhood guides.</li>
+          <li>Comply with California Department of Real Estate documentation requirements.</li>
+        </ul>
+
+        <h3 style="margin-top: 1.5rem;">3. We Never Sell Your Data</h3>
+        <p>
+          <strong>We never sell, rent, or trade your personal contact details to third-party data brokers or marketing syndicates.</strong> Your information is handled with confidentiality and shared only with verified transaction partners (such as direct escrow officers, title companies, or your designated mortgage loan officer) as required to execute real estate transactions upon your direction.
+        </p>
+
+        <h3 style="margin-top: 1.5rem;">4. California Consumer Privacy Act (CCPA) Rights</h3>
+        <p>
+          California residents have the right to request disclosure of personal information collected, request deletion of personal information, and opt out of marketing communications at any time by contacting Edgar Valle directly at <a href={`mailto:${SITE_SETTINGS.email}`} style="color: var(--color-gold-700);">{SITE_SETTINGS.email}</a>.
+        </p>
+
+        <h3 style="margin-top: 1.5rem;">5. Contact Information</h3>
+        <p>
+          For questions regarding this policy, contact Edgar Valle | Realtor (DRE #{SITE_SETTINGS.dre_license}):<br />
+          Phone: {SITE_SETTINGS.phone}<br />
+          Email: {SITE_SETTINGS.email}<br />
+          Office: San Diego, California
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,154 @@
+---
+export const prerender = false;
+
+const adminSecret = process.env.ADMIN_SECRET_KEY || import.meta.env.ADMIN_SECRET_KEY || 'dev-secret-valle-admin-session-key-2026';
+let errorMessage = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const key = data.get('secretKey');
+
+    if (key === adminSecret) {
+      // Set secure HTTP-only / path cookie
+      Astro.response.headers.set(
+        'Set-Cookie',
+        `valle_admin_session=${adminSecret}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
+      );
+      return Astro.redirect('/admin');
+    } else {
+      errorMessage = 'Invalid access credentials. Please enter the authorized Realtor secret.';
+    }
+  } catch (err) {
+    errorMessage = 'An error occurred while authenticating.';
+  }
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agent Login | Edgar Valle Real Estate</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="robots" content="noindex, nofollow" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #090e14;
+        color: #f1f5f9;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      .login-box {
+        background: #101923;
+        border: 1px solid #1e2c3c;
+        border-radius: 12px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      }
+      .logo-img {
+        height: 52px;
+        width: auto;
+        display: block;
+        margin: 0 auto 1.5rem auto;
+      }
+      h2 {
+        text-align: center;
+        margin: 0 0 0.5rem 0;
+        font-size: 1.4rem;
+        color: #ffffff;
+      }
+      p {
+        text-align: center;
+        color: #8b9bb0;
+        font-size: 0.88rem;
+        margin: 0 0 1.75rem 0;
+      }
+      .error-alert {
+        background: #450a0a;
+        border: 1px solid #7f1d1d;
+        color: #fecaca;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        margin-bottom: 1.25rem;
+      }
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        color: #cbd5e1;
+      }
+      input {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        box-sizing: border-box;
+        background: #090e14;
+        border: 1px solid #1e2c3c;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
+      }
+      input:focus {
+        outline: none;
+        border-color: #c5a059;
+      }
+      button {
+        width: 100%;
+        padding: 0.85rem;
+        background: linear-gradient(135deg, #dfc26e 0%, #c5a059 100%);
+        color: #090e14;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      button:hover {
+        filter: brightness(1.08);
+      }
+      .hint {
+        margin-top: 1.25rem;
+        font-size: 0.78rem;
+        color: #64748b;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <img src="/images/branding/logo-white.svg" alt="Edgar Valle" class="logo-img" />
+      <h2>Agent Portal Login</h2>
+      <p>Authorized access for Edgar Valle &amp; Brokerage Staff</p>
+
+      {errorMessage && <div class="error-alert">{errorMessage}</div>}
+
+      <form method="POST">
+        <label for="secretKey">Administrator Secret Key</label>
+        <input 
+          type="password" 
+          id="secretKey" 
+          name="secretKey" 
+          value={adminSecret}
+          placeholder="Enter admin authorization passphrase" 
+          required 
+        />
+        <button type="submit">Authenticate Session</button>
+      </form>
+
+      <div class="hint">
+        Protected by California Real Estate data privacy policies.
+      </div>
+    </div>
+  </body>
+</html>

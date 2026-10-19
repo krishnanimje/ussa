@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="pbHero" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F97316" />
+      <stop offset="40%" stop-color="#FBBF24" />
+      <stop offset="70%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#pbHero)" />
+
+  <!-- Crystal Pier Wooden Pier Structure Silhouette -->
+  <rect x="0" y="270" width="550" height="15" fill="#1E293B" />
+  <!-- Pier Pilings -->
+  <line x1="80" y1="285" x2="80" y2="380" stroke="#1E293B" stroke-width="6" />
+  <line x1="160" y1="285" x2="160" y2="390" stroke="#1E293B" stroke-width="6" />
+  <line x1="240" y1="285" x2="240" y2="400" stroke="#1E293B" stroke-width="6" />
+  <line x1="320" y1="285" x2="320" y2="410" stroke="#1E293B" stroke-width="6" />
+  <line x1="400" y1="285" x2="400" y2="415" stroke="#1E293B" stroke-width="6" />
+  <line x1="480" y1="285" x2="480" y2="420" stroke="#1E293B" stroke-width="6" />
+
+  <!-- Pier Cottages on Top -->
+  <rect x="180" y="240" width="40" height="30" fill="#0F172A" />
+  <polygon points="175,240 200,225 225,240" fill="#0F172A" />
+  <rect x="250" y="240" width="40" height="30" fill="#0F172A" />
+  <polygon points="245,240 270,225 295,240" fill="#0F172A" />
+
+  <!-- Ocean Waves and Surfers -->
+  <path d="M 0 360 Q 200 320 400 360 Q 600 400 800 360 L 800 450 L 0 450 Z" fill="#0369A1" opacity="0.8" />
+  
+  <g transform="translate(620, 200)">
+    <ellipse cx="0" cy="0" rx="30" ry="6" fill="#0F172A" transform="rotate(-15)" />
+    <circle cx="5" cy="-15" r="8" fill="#0F172A" />
+  </g>
+
+  <!-- Typography -->
+  <text x="750" y="80" font-family="'Plus Jakarta Sans', sans-serif" font-size="34" font-weight="900" fill="#FFFFFF" text-anchor="end" letter-spacing="2">PACIFIC BEACH</text>
+  <text x="750" y="110" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="600" fill="#FEF08A" text-anchor="end" letter-spacing="3">CRYSTAL PIER &amp; SAIL BAY</text>
+</svg>

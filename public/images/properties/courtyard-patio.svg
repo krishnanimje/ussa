@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="duskSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B" />
+      <stop offset="60%" stop-color="#4338CA" />
+      <stop offset="100%" stop-color="#FB923C" />
+    </linearGradient>
+    <linearGradient id="patioPavers" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C2410C" />
+      <stop offset="100%" stop-color="#9A3412" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="280" fill="url(#duskSky)" />
+  <rect y="280" width="800" height="220" fill="url(#patioPavers)" />
+
+  <!-- Courtyard Stucco Walls -->
+  <polygon points="0,150 180,180 180,400 0,450" fill="#E2E8F0" />
+  <polygon points="620,180 800,150 800,450 620,400" fill="#E2E8F0" />
+
+  <!-- Bistro String Lights Glow -->
+  <path d="M 0 160 Q 200 240 400 170 Q 600 240 800 160" stroke="#333" stroke-width="2" fill="none" />
+  <!-- Glowing Bulbs -->
+  <circle cx="100" cy="195" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #FDE047)" />
+  <circle cx="200" cy="212" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #FDE047)" />
+  <circle cx="300" cy="200" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #FDE047)" />
+  <circle cx="400" cy="170" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #FDE047)" />
+  <circle cx="500" cy="200" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #FDE047)" />
+  <circle cx="600" cy="212" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #FDE047)" />
+  <circle cx="700" cy="195" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #FDE047)" />
+
+  <!-- Spanish Fountain in Center -->
+  <ellipse cx="400" cy="400" rx="90" ry="35" fill="#78716C" />
+  <ellipse cx="400" cy="396" rx="82" ry="30" fill="#38BDF8" />
+  <ellipse cx="400" cy="360" rx="50" ry="20" fill="#78716C" />
+  <ellipse cx="400" cy="358" rx="44" ry="17" fill="#38BDF8" />
+
+  <!-- Outdoor Teak Dining Table & Chairs -->
+  <rect x="220" y="320" width="80" height="50" rx="4" fill="#B45309" />
+  <circle cx="210" cy="345" r="14" fill="#78350F" />
+  <circle cx="310" cy="345" r="14" fill="#78350F" />
+
+  <!-- Potted Olive Tree in Terracotta Urn -->
+  <g transform="translate(560, 290)">
+    <polygon points="20,80 25,120 55,120 60,80" fill="#C2410C" />
+    <path d="M 40 80 Q 30 40 10 20 Q 50 10 70 30 Q 50 60 40 80 Z" fill="#4D7C0F" opacity="0.9" />
+  </g>
+</svg>

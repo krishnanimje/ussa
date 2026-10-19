@@ -1,0 +1,120 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = false;
+Astro.response.status = 404;
+---
+
+<Layout 
+  title="404 — Page Not Found"
+  description="The property or page you are looking for in San Diego may have been moved, sold, or is temporarily unavailable."
+>
+  <div class="error-page-container section">
+    <div class="container error-box">
+      <div class="error-badge">ERROR 404</div>
+      <h1 class="error-title">Page or Listing Not Found</h1>
+      <p class="error-text">
+        The San Diego property or page you requested could not be located. The listing may have sold, moved off-market, or the URL might have been updated.
+      </p>
+
+      <div class="error-actions">
+        <a href="/" class="btn btn-gold btn-lg">Return to Homepage</a>
+        <a href="/properties" class="btn btn-outline btn-lg">Browse Active Listings</a>
+        <a href="/contact" class="btn btn-navy btn-lg">Contact Edgar</a>
+      </div>
+
+      <div class="error-suggestions">
+        <h4 class="sugg-heading">Popular Destinations:</h4>
+        <div class="sugg-links">
+          <a href="/va-loans">VA Loan Program</a>
+          <a href="/first-time-homebuyer">First-Time Homebuyer Roadmap</a>
+          <a href="/fix-and-flip">Fix-and-Flip Sourcing</a>
+          <a href="/open-houses">Weekend Open Houses</a>
+          <a href="/neighborhoods">San Diego Neighborhoods</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .error-page-container {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    background: radial-gradient(circle at center, #ffffff 0%, var(--bg-primary) 100%);
+  }
+
+  .error-box {
+    max-width: 740px;
+    text-align: center;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .error-badge {
+    display: inline-block;
+    background: rgba(197, 160, 89, 0.15);
+    color: var(--color-gold-700);
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-gold-300);
+  }
+
+  .error-title {
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    margin-bottom: 1rem;
+  }
+
+  .error-text {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+  }
+
+  .error-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .error-suggestions {
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+  }
+
+  .sugg-heading {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .sugg-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .sugg-links a {
+    color: var(--color-gold-700);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: underline;
+  }
+
+  .sugg-links a:hover {
+    color: var(--color-navy-900);
+  }
+</style>

@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = false;
+Astro.response.status = 500;
+---
+
+<Layout 
+  title="500 — Server Encountered An Issue"
+  description="Our server encountered an unexpected error while processing your request. Please try again shortly."
+>
+  <div class="section" style="min-height: 65vh; display: flex; align-items: center; text-align: center;">
+    <div class="container" style="max-width: 680px; margin: 0 auto;">
+      <div class="badge badge-ruby" style="margin-bottom: 1.5rem; font-size: 0.85rem; padding: 0.4rem 1rem;">HTTP 500 • INTERNAL SERVER ERROR</div>
+      <h1>We Are Experiencing a Technical Hiccup</h1>
+      <p class="lead" style="margin: 0 auto 2.5rem auto;">
+        Our engineering team has been notified. In the meantime, Edgar Valle is directly reachable via telephone or WhatsApp at (619) 555-0198.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="/" class="btn btn-gold btn-lg">Return to Homepage</a>
+        <a href="tel:6195550198" class="btn btn-navy btn-lg">Call Edgar Directly</a>
+      </div>
+    </div>
+  </div>
+</Layout>

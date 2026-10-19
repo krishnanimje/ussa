@@ -1,0 +1,31 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+import { SITE_SETTINGS } from '../../lib/store';
+---
+
+<Layout 
+  title="Contacto en Español — Edgar Valle | Realtor en San Diego"
+  description="Comunícate directamente con Edgar Valle | Realtor. Llama al (619) 555-0198 o envía un mensaje para tu consulta inmobiliaria en español."
+>
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">ESTAMOS A TU DISPOSICIÓN</span>
+      <h1>Contáctanos en Español</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Llámanos directamente al <strong>{SITE_SETTINGS.phone}</strong> o déjanos un mensaje a continuación. Edgar te responderá personalmente en menos de 24 horas.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-narrow">
+      <LeadCaptureForm 
+        language="es"
+        leadType="general_contact"
+        formTitle="Envíanos Tu Mensaje o Pregunta"
+        buttonText="Enviar Consulta"
+      />
+    </div>
+  </section>
+</Layout>

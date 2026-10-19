@@ -1,0 +1,182 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getAllLeads } from '../../lib/store';
+import { checkAdminAuth } from '../../lib/auth';
+
+export const prerender = false;
+
+if (!checkAdminAuth(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+
+const leads = await getAllLeads();
+---
+
+<AdminLayout title="Leads & Inquiries" activeNav="leads">
+  <div class="admin-header">
+    <div>
+      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: #ffffff;">Inquiries &amp; Leads Management</h1>
+      <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.9rem;">
+        Securely managing private client inquiries across First-Time Buyers, VA loans, and Sellers.
+      </p>
+    </div>
+    <div>
+      <span class="badge badge-gold" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+        {leads.length} Total Leads in Database
+      </span>
+    </div>
+  </div>
+
+  <!-- Filter Buttons Row -->
+  <div class="card" style="padding: 1.25rem; background: var(--admin-surface); border: 1px solid var(--admin-border); margin-bottom: 1.75rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    <button class="lead-filter-btn active" data-type="all">All Inquiries ({leads.length})</button>
+    <button class="lead-filter-btn" data-type="first_time_buyer">First-Time Buyers</button>
+    <button class="lead-filter-btn" data-type="va_buyer">VA Military</button>
+    <button class="lead-filter-btn" data-type="seller_valuation">Home Valuations</button>
+    <button class="lead-filter-btn" data-type="investor_flip">Fix &amp; Flip Investors</button>
+    <button class="lead-filter-btn" data-type="tour_request">Tour Requests</button>
+  </div>
+
+  <!-- Leads Table -->
+  <div class="admin-table-container">
+    <table class="admin-table" id="leadsTable">
+      <thead>
+        <tr>
+          <th>Client Name &amp; Address</th>
+          <th>Type</th>
+          <th>Phone &amp; Email</th>
+          <th>Budget / Timeframe</th>
+          <th>Language</th>
+          <th>Client Message</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {leads.map(lead => (
+          <tr class="lead-row" data-lead-id={lead.id} data-lead-type={lead.lead_type}>
+            <td>
+              <strong style="color: #ffffff; font-size: 0.95rem;">{lead.full_name}</strong>
+              {lead.property_address && (
+                <div style="font-size: 0.78rem; color: var(--color-gold-400);">Address: {lead.property_address}</div>
+              )}
+              <div style="font-size: 0.72rem; color: #64748b;">ID: {lead.id.substring(0, 12)}...</div>
+            </td>
+            <td>
+              <span class="badge badge-dark" style="font-size: 0.7rem; border-color: var(--color-gold-500);">
+                {lead.lead_type.replace('_', ' ')}
+              </span>
+            </td>
+            <td>
+              <div><a href={`tel:${lead.phone}`} style="color: #38bdf8; font-weight: 600;">{lead.phone}</a></div>
+              <div style="font-size: 0.78rem;"><a href={`mailto:${lead.email}`} style="color: #8b9bb0;">{lead.email}</a></div>
+              <div style="font-size: 0.72rem; color: #64748b;">Prefers: {lead.preferred_contact_method || 'phone'}</div>
+            </td>
+            <td>
+              <div>{lead.timeframe || 'Not specified'}</div>
+              {lead.estimated_budget && (
+                <div style="font-size: 0.78rem; color: var(--color-gold-400); font-weight: 600;">{lead.estimated_budget}</div>
+              )}
+            </td>
+            <td>
+              <span class="badge badge-dark" style="font-size: 0.7rem;">
+                {lead.language_preference === 'es' ? '🇲🇽 Español' : '🇺🇸 English'}
+              </span>
+            </td>
+            <td style="max-width: 240px; font-size: 0.82rem; color: #cbd5e1; line-height: 1.5;">
+              {lead.message || 'No additional message provided.'}
+            </td>
+            <td>
+              <select class="admin-status-select" data-id={lead.id} style="background: #090e14; color: #ffffff; border: 1px solid #1e2c3c; padding: 0.35rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">
+                <option value="new" selected={lead.status === 'new'}>New</option>
+                <option value="contacted" selected={lead.status === 'contacted'}>Contacted</option>
+                <option value="appointment_set" selected={lead.status === 'appointment_set'}>Appt Set</option>
+                <option value="closed" selected={lead.status === 'closed'}>Closed</option>
+                <option value="archived" selected={lead.status === 'archived'}>Archived</option>
+              </select>
+            </td>
+            <td>
+              <a href={`tel:${lead.phone}`} class="btn btn-gold btn-sm" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">Call</a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>
+
+<style>
+  .lead-filter-btn {
+    background: #090e14;
+    color: #8b9bb0;
+    border: 1px solid #1e2c3c;
+    border-radius: var(--radius-xs);
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .lead-filter-btn:hover, .lead-filter-btn.active {
+    background: var(--color-gold-500);
+    color: #090e14;
+    border-color: var(--color-gold-500);
+  }
+</style>
+
+<script>
+  function setupLeadsManager() {
+    // 1. Filter tabs
+    const buttons = document.querySelectorAll('.lead-filter-btn');
+    const rows = document.querySelectorAll('.lead-row');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const type = btn.getAttribute('data-type');
+
+        rows.forEach(row => {
+          const rowType = row.getAttribute('data-lead-type');
+          if (type === 'all' || rowType === type) {
+            (row as HTMLElement).style.display = '';
+          } else {
+            (row as HTMLElement).style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // 2. Status updater
+    const selects = document.querySelectorAll('.admin-status-select');
+    selects.forEach(sel => {
+      sel.addEventListener('change', async (e) => {
+        const target = e.target as HTMLSelectElement;
+        const leadId = target.getAttribute('data-id');
+        const newStatus = target.value;
+
+        try {
+          const res = await fetch('/api/admin/leads', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ leadId, status: newStatus })
+          });
+          if (res.ok) {
+            target.style.borderColor = '#10b981';
+            setTimeout(() => target.style.borderColor = '#1e2c3c', 1500);
+          } else {
+            alert('Failed to update status on server.');
+          }
+        } catch {
+          alert('Network error updating status.');
+        }
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupLeadsManager);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setupLeadsManager();
+  }
+</script>

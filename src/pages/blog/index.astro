@@ -1,0 +1,142 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getBlogPosts } from '../../lib/store';
+
+const posts = await getBlogPosts();
+---
+
+<Layout 
+  title="San Diego Real Estate Insights & Market Reports — Edgar Valle"
+  description="Expert San Diego real estate analysis, VA home loan guides, interest rate breakdowns, and fix-and-flip strategies by Realtor Edgar Valle."
+>
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">MARKET INTELLIGENCE</span>
+      <h1>San Diego Real Estate Insights</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Analytical reports, mortgage updates, and neighborhood strategies from Realtor Edgar Valle.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-3">
+        {posts.map(post => (
+          <article class="card blog-card">
+            <a href={`/blog/${post.slug}`} class="blog-media-link" aria-label={`Read article: ${post.title}`}>
+              <img src={post.cover_image} alt={post.title} width="400" height="230" class="blog-img" />
+              <div class="blog-badge-tag">{post.category}</div>
+            </a>
+
+            <div class="blog-body">
+              <div class="blog-meta">
+                <span>{new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                <span>•</span>
+                <span>{post.read_time_mins} Min Read</span>
+              </div>
+
+              <h3 class="blog-title">
+                <a href={`/blog/${post.slug}`}>{post.title}</a>
+              </h3>
+
+              <p class="blog-excerpt">{post.excerpt}</p>
+
+              <a href={`/blog/${post.slug}`} class="blog-read-link">Read Full Guide &rarr;</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .blog-media-link {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--color-navy-950);
+    overflow: hidden;
+  }
+
+  .blog-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+  }
+
+  .blog-card:hover .blog-img {
+    transform: scale(1.05);
+  }
+
+  .blog-badge-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(15, 24, 34, 0.9);
+    color: var(--color-gold-400);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--color-gold-500);
+  }
+
+  .blog-body {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .blog-meta {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 0.65rem;
+  }
+
+  .blog-title {
+    font-size: 1.25rem;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+  }
+
+  .blog-title a {
+    color: var(--text-primary);
+  }
+
+  .blog-title a:hover {
+    color: var(--color-gold-700);
+  }
+
+  .blog-excerpt {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .blog-read-link {
+    margin-top: auto;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-gold-700);
+  }
+
+  .blog-read-link:hover {
+    color: var(--color-navy-950);
+  }
+</style>

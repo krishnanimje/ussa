@@ -1,0 +1,323 @@
+---
+import { SITE_SETTINGS } from '../lib/store';
+---
+
+<footer class="site-footer">
+  <!-- Main Footer Content -->
+  <div class="footer-primary">
+    <div class="container footer-grid">
+      <!-- Col 1: Brand & Bio -->
+      <div class="footer-col brand-col">
+        <a href="/" class="footer-logo">
+          <img src="/images/branding/logo-white.svg" alt="Edgar Valle | Realtor" width="240" height="60" />
+        </a>
+        <p class="footer-bio">
+          Providing high-touch, analytical, and bilingual real estate guidance across San Diego County. Specializing in first-time homebuyers, VA military relocation, and fix-and-flip investment properties.
+        </p>
+        <div class="footer-credentials">
+          <div class="cred-item">
+            <span class="cred-label">CALIFORNIA DRE LICENSE:</span>
+            <span class="cred-val">#{SITE_SETTINGS.dre_license}</span>
+          </div>
+          <div class="cred-item">
+            <span class="cred-label">BROKERAGE:</span>
+            <span class="cred-val">{SITE_SETTINGS.brokerage_name}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 2: San Diego Specialties -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Specialties</h4>
+        <ul class="footer-links">
+          <li><a href="/first-time-homebuyer">First-Time Homebuyer Roadmap</a></li>
+          <li><a href="/va-loans">VA Military Loans (0% Down)</a></li>
+          <li><a href="/fix-and-flip">Fix-and-Flip &amp; ARV Sourcing</a></li>
+          <li><a href="/open-houses">Weekend Open Houses</a></li>
+          <li><a href="/buy">San Diego Home Buyer Guide</a></li>
+          <li><a href="/sell">Home Valuation &amp; Marketing</a></li>
+          <li><a href="/es">Servicios en Español</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: San Diego Neighborhoods -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Neighborhoods</h4>
+        <ul class="footer-links">
+          <li><a href="/neighborhoods/north-park">North Park</a></li>
+          <li><a href="/neighborhoods/pacific-beach">Pacific Beach</a></li>
+          <li><a href="/neighborhoods/chula-vista">Chula Vista &amp; Eastlake</a></li>
+          <li><a href="/neighborhoods/oceanside">Oceanside (Camp Pendleton)</a></li>
+          <li><a href="/neighborhoods/la-jolla">La Jolla</a></li>
+          <li><a href="/neighborhoods">All San Diego Areas</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Contact & Office -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Contact Edgar</h4>
+        <ul class="footer-contact-list">
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <a href="tel:6195550198">{SITE_SETTINGS.phone}</a>
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <a href={`mailto:${SITE_SETTINGS.email}`}>{SITE_SETTINGS.email}</a>
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            <a href={SITE_SETTINGS.instagram_url} target="_blank" rel="noopener noreferrer">@yourrealtoredgar</a>
+          </li>
+        </ul>
+        <div class="footer-cta-card">
+          <p class="cta-card-title">Looking to buy or sell?</p>
+          <a href="/contact" class="btn btn-gold btn-sm" style="width: 100%;">Request Consultation</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mandatory Real Estate & Legal Disclosures Bar -->
+  <div class="footer-disclosures">
+    <div class="container disclosures-inner">
+      <div class="housing-badge-wrap">
+        <!-- Equal Housing Opportunity Icon -->
+        <svg class="housing-logo" viewBox="0 0 64 64" width="36" height="36" fill="#c5a059">
+          <path d="M32 6 L6 28 L14 28 L14 56 L50 56 L50 28 L58 28 Z M32 18 L44 28 L20 28 Z M22 34 L42 34 L42 40 L22 40 Z M22 44 L42 44 L42 50 L22 50 Z" />
+        </svg>
+        <div class="housing-text">
+          <strong>EQUAL HOUSING OPPORTUNITY</strong>
+          <span>We are pledged to the letter and spirit of U.S. policy for the achievement of equal housing opportunity throughout the Nation.</span>
+        </div>
+      </div>
+      <p class="disclaimer-text">
+        California Department of Real Estate License #02375273. Edgar Valle is affiliated with {SITE_SETTINGS.brokerage_name}. All property data, square footages, lot sizes, school boundaries, and pricing are deemed reliable but not guaranteed and should be independently verified through personal inspection and by appropriate professionals. Not intended to solicit properties already listed for sale with another broker.
+      </p>
+    </div>
+  </div>
+
+  <!-- Bottom Legal Copyright Bar -->
+  <div class="footer-bottom">
+    <div class="container footer-bottom-inner">
+      <div class="copyright">
+        &copy; {new Date().getFullYear()} Edgar Valle | Realtor. All rights reserved.
+      </div>
+      <ul class="legal-links">
+        <li><a href="/privacy-policy">Privacy Policy</a></li>
+        <li><a href="/terms-of-service">Terms of Use</a></li>
+        <li><a href="/cookie-policy">Cookie Policy</a></li>
+        <li><a href="/accessibility">Accessibility</a></li>
+        <li><a href="/disclosures">Brokerage Disclosures</a></li>
+        <li><a href="/admin/login" class="admin-link">Agent Login</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background-color: var(--color-navy-950);
+    color: #e2e8f0;
+    margin-top: auto;
+  }
+
+  .footer-primary {
+    padding: 5rem 0 3.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 1.2fr 1.6fr;
+    gap: 3rem;
+  }
+
+  @media (max-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .footer-logo img {
+    height: 52px;
+    width: auto;
+    margin-bottom: 1.25rem;
+  }
+
+  .footer-bio {
+    color: #94a3b8;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .footer-credentials {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(197, 160, 89, 0.25);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .cred-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--color-gold-400);
+    letter-spacing: 0.08em;
+  }
+
+  .cred-val {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .footer-heading {
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-gold-500);
+    display: inline-block;
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer-links a {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    transition: color var(--transition-fast), padding-left var(--transition-fast);
+  }
+
+  .footer-links a:hover {
+    color: var(--color-gold-400);
+    padding-left: 4px;
+  }
+
+  .footer-contact-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin: 0 0 1.5rem 0;
+    padding: 0;
+  }
+
+  .footer-contact-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #cbd5e1;
+    font-size: 0.92rem;
+  }
+
+  .footer-contact-list svg {
+    color: var(--color-gold-400);
+    flex-shrink: 0;
+  }
+
+  .footer-cta-card {
+    background: rgba(197, 160, 89, 0.08);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .cta-card-title {
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-disclosures {
+    padding: 2.25rem 0;
+    background-color: #080d13;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .housing-badge-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .housing-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  .housing-text strong {
+    color: #ffffff;
+    letter-spacing: 0.05em;
+  }
+
+  .disclaimer-text {
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-bottom {
+    padding: 1.5rem 0;
+    background-color: #060a0e;
+    font-size: 0.82rem;
+    color: #64748b;
+  }
+
+  .footer-bottom-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .legal-links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .legal-links a {
+    color: #94a3b8;
+    transition: color var(--transition-fast);
+  }
+
+  .legal-links a:hover {
+    color: #ffffff;
+  }
+
+  .admin-link {
+    color: var(--color-gold-400) !important;
+  }
+</style>

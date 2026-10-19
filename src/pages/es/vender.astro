@@ -1,0 +1,30 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+---
+
+<Layout 
+  title="Vender Tu Casa en San Diego al Mejor Precio — Edgar Valle | Realtor"
+  description="Mercadeo profesional en video 4K, redes sociales y negociación experta para vender tu propiedad en San Diego por el valor más alto posible."
+>
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">REPRESENTACIÓN DE VENDEDORES</span>
+      <h1>Vende Tu Casa en San Diego</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Descubre el valor real de tu propiedad hoy mismo con un análisis comparativo de mercado (CMA) sin costo ni compromiso.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-narrow">
+      <LeadCaptureForm 
+        language="es"
+        leadType="seller_valuation"
+        formTitle="Solicita Tu Valuación Inmobiliaria Gratuita"
+        buttonText="Obtener el Valor de Mi Casa"
+      />
+    </div>
+  </section>
+</Layout>

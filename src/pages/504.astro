@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = false;
+Astro.response.status = 504;
+---
+
+<Layout 
+  title="504 — Gateway Timeout"
+  description="The server did not receive a timely response from an upstream server."
+>
+  <div class="section" style="min-height: 65vh; display: flex; align-items: center; text-align: center;">
+    <div class="container" style="max-width: 680px; margin: 0 auto;">
+      <div class="badge badge-gold" style="margin-bottom: 1.5rem; font-size: 0.85rem; padding: 0.4rem 1rem;">HTTP 504 • GATEWAY TIMEOUT</div>
+      <h1>Request Timed Out</h1>
+      <p class="lead" style="margin: 0 auto 2.5rem auto;">
+        The database query took longer than expected to complete. Please try reloading the page or search for properties with more specific filter criteria.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <button onclick="window.location.reload()" class="btn btn-gold btn-lg">Retry Request</button>
+        <a href="/properties" class="btn btn-outline btn-lg">Browse Listings</a>
+      </div>
+    </div>
+  </div>
+</Layout>

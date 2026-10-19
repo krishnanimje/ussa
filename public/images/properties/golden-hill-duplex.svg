@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="twilightSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#14213D" />
+      <stop offset="50%" stop-color="#4A4E69" />
+      <stop offset="100%" stop-color="#FCA311" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="300" fill="url(#twilightSky)" />
+
+  <!-- Distant Downtown San Diego Skyline Silhouette -->
+  <polygon points="520,300 520,170 560,170 560,300" fill="#0D1B2A" />
+  <polygon points="565,300 565,140 595,140 605,120 605,300" fill="#0D1B2A" />
+  <polygon points="610,300 610,190 645,190 645,300" fill="#0D1B2A" />
+  <polygon points="650,300 650,160 685,160 685,300" fill="#0D1B2A" />
+  <polygon points="690,300 690,210 730,210 730,300" fill="#0D1B2A" />
+
+  <!-- Skyline Window Lights -->
+  <circle cx="540" cy="200" r="2" fill="#FCA311" />
+  <circle cx="585" cy="180" r="2" fill="#FCA311" />
+  <circle cx="630" cy="220" r="2" fill="#FCA311" />
+  <circle cx="670" cy="190" r="2" fill="#FCA311" />
+
+  <!-- Hillside Ground -->
+  <rect y="300" width="800" height="200" fill="#2B3A4A" />
+
+  <!-- Front Craftsman Cottage House -->
+  <rect x="80" y="240" width="260" height="110" fill="#E0A96D" />
+  <polygon points="60,240 210,180 360,240" fill="#4B3832" />
+  <rect x="120" y="260" width="50" height="50" fill="#FFF3B0" stroke="#333" stroke-width="2" />
+  <rect x="220" y="270" width="40" height="80" fill="#3D1E0C" />
+
+  <!-- Rear Cottage House (Unit B) -->
+  <rect x="360" y="220" width="200" height="100" fill="#DDB892" />
+  <polygon points="340,220 460,170 580,220" fill="#7F5539" />
+  <rect x="440" y="250" width="45" height="45" fill="#FFF3B0" stroke="#333" stroke-width="2" />
+
+  <!-- Multi-Family Income Badge -->
+  <g transform="translate(30, 30)">
+    <rect width="235" height="36" rx="18" fill="#141E28" fill-opacity="0.9" />
+    <circle cx="20" cy="18" r="6" fill="#FCA311" />
+    <text x="35" y="23" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">GOLDEN HILL DUPLEX • $1.35M</text>
+  </g>
+</svg>

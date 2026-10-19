@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE_SETTINGS } from '../lib/store';
+---
+
+<Layout 
+  title="Accessibility Statement"
+  description="Commitment to digital accessibility and WCAG 2.1 AA standards for all home seekers on the Edgar Valle Real Estate platform."
+>
+  <div class="section">
+    <div class="container container-narrow">
+      <div class="section-header" style="text-align: left; margin-bottom: 2.5rem;">
+        <span class="section-eyebrow">DIGITAL INCLUSION</span>
+        <h1>Accessibility Statement</h1>
+        <p class="lead">Edgar Valle is committed to ensuring digital accessibility for people of all abilities.</p>
+      </div>
+
+      <div class="card" style="padding: 2.5rem;">
+        <h3>Our Commitment</h3>
+        <p>
+          We believe that real estate opportunities in San Diego should be accessible to everyone, including individuals with visual, auditory, cognitive, and physical impairments. We continuously optimize our website to conform to the <strong>Web Content Accessibility Guidelines (WCAG) 2.1 Level AA</strong>.
+        </p>
+
+        <h3 style="margin-top: 1.5rem;">Accessibility Features Implemented</h3>
+        <ul style="margin: 0 0 1.25rem 1.5rem; color: var(--text-secondary);">
+          <li><strong>Keyboard Navigation:</strong> All interactive elements, navigation drawers, calculators, and forms can be navigated via keyboard.</li>
+          <li><strong>Focus Indicators:</strong> High-contrast focus rings appear around active elements.</li>
+          <li><strong>Color Contrast:</strong> Text and buttons meet or exceed minimum WCAG AA contrast ratio requirements.</li>
+          <li><strong>Screen Reader Compatibility:</strong> Proper semantic HTML5 tags (header, main, nav, footer, article, section) and descriptive ARIA labels.</li>
+          <li><strong>Alternative Text:</strong> Descriptive alt attributes on all property photography, diagrams, and vector illustrations.</li>
+        </ul>
+
+        <h3 style="margin-top: 1.5rem;">Accessibility Assistance &amp; Feedback</h3>
+        <p>
+          If you encounter any accessibility barrier or require assistance accessing any property details or schedule information, please contact Edgar Valle directly:
+        </p>
+        <p>
+          Telephone: <strong>{SITE_SETTINGS.phone}</strong><br />
+          Email: <strong>{SITE_SETTINGS.email}</strong><br />
+          We welcome your feedback and are dedicated to providing accommodations.
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>

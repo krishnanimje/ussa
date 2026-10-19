@@ -1,0 +1,770 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PropertyCard from '../components/PropertyCard.astro';
+import LeadCaptureForm from '../components/LeadCaptureForm.astro';
+import { getFeaturedProperties, getOpenHouses, getNeighborhoods, SITE_SETTINGS } from '../lib/store';
+
+const featuredProperties = await getFeaturedProperties();
+const openHouses = await getOpenHouses();
+const neighborhoods = await getNeighborhoods();
+---
+
+<Layout 
+  title="Edgar Valle | Realtor — San Diego Real Estate Specialist"
+  description="Edgar Valle is a top San Diego Realtor® with Full Circle Group (DRE #02375273) specializing in first-time homebuyers, VA military loans (0% down), and fix-and-flip investments. Hablamos Español."
+>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-bg-overlay"></div>
+    <div class="container hero-container">
+      <div class="hero-content">
+        <div class="hero-badge-row">
+          <span class="badge badge-gold">SAN DIEGO, CA</span>
+          <span class="badge badge-dark">DRE #{SITE_SETTINGS.dre_license}</span>
+          <span class="badge badge-emerald">Hablamos Español</span>
+        </div>
+
+        <h1 class="hero-title">
+          Guiding Your Next Move in <span class="gold-gradient-text">San Diego</span> Real Estate
+        </h1>
+
+        <p class="hero-lead">
+          Strategic representation tailored for <strong>first-time homebuyers</strong>, <strong>VA military families</strong>, and <strong>fix-and-flip investors</strong> throughout America’s Finest City.
+        </p>
+
+        <!-- Quick Search Bar Widget -->
+        <div class="hero-search-card card">
+          <form action="/properties" method="GET" class="search-form">
+            <div class="search-field">
+              <label for="searchNeighborhood" class="search-label">Neighborhood</label>
+              <select id="searchNeighborhood" name="neighborhood" class="search-select">
+                <option value="all">All San Diego Areas</option>
+                <option value="North Park">North Park</option>
+                <option value="Pacific Beach">Pacific Beach</option>
+                <option value="Chula Vista">Chula Vista &amp; Eastlake</option>
+                <option value="Oceanside">Oceanside (Camp Pendleton)</option>
+                <option value="La Jolla">La Jolla</option>
+                <option value="Clairemont">Clairemont</option>
+                <option value="Golden Hill">Golden Hill</option>
+              </select>
+            </div>
+
+            <div class="search-field">
+              <label for="searchType" class="search-label">Property Type</label>
+              <select id="searchType" name="type" class="search-select">
+                <option value="all">All Property Types</option>
+                <option value="Single Family">Single Family Homes</option>
+                <option value="Condo">Condos &amp; Lofts</option>
+                <option value="Townhome">Townhomes</option>
+                <option value="Multi-Family">Multi-Family / Duplex</option>
+                <option value="Fixer-Upper">Fix &amp; Flip Opportunities</option>
+              </select>
+            </div>
+
+            <div class="search-field">
+              <label for="searchPrice" class="search-label">Max Price</label>
+              <select id="searchPrice" name="maxPrice" class="search-select">
+                <option value="">Any Budget</option>
+                <option value="800000">Up to $800,000</option>
+                <option value="1000000">Up to $1,000,000</option>
+                <option value="1300000">Up to $1,300,000</option>
+                <option value="2000000">Up to $2,000,000</option>
+              </select>
+            </div>
+
+            <div class="search-btn-field">
+              <button type="submit" class="btn btn-gold btn-lg search-submit-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Find Properties</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="hero-quick-tags">
+          <span class="quick-tags-title">Direct Searches:</span>
+          <a href="/properties?va=true" class="quick-tag">VA Loan Eligible Homes</a>
+          <a href="/properties?fixer=true" class="quick-tag">Fix &amp; Flip / High ARV</a>
+          <a href="/properties?pool=true" class="quick-tag">Homes with Pool</a>
+          <a href="/open-houses" class="quick-tag">This Weekend's Open Houses</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Edgar's 3 Pillars of Expertise Section -->
+  <section class="section section-secondary">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">TARGETED CLIENT SPECIALTIES</span>
+        <h2>How Edgar Valle Elevates Your Outcomes</h2>
+        <p class="lead">
+          Rather than generic real estate transactions, Edgar provides deep, specialized advisory tailored to three specific communities in San Diego County.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <!-- Pillar 1: First-Time Homebuyers -->
+        <div class="card pillar-card">
+          <div class="pillar-icon-box gold-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          </div>
+          <span class="pillar-eyebrow">STEP-BY-STEP GUIDANCE</span>
+          <h3 class="pillar-title">First-Time Homebuyers</h3>
+          <p class="pillar-desc">
+            Demystifying the California market with clear budgeting, credit optimization, down payment grant exploration (including CalHFA), and aggressive offer negotiation that protects your earnest money.
+          </p>
+          <ul class="pillar-list">
+            <li>Low down payment loan strategies (3% to 3.5%)</li>
+            <li>CalHFA assistance program navigation</li>
+            <li>Off-market starter home notifications</li>
+          </ul>
+          <a href="/first-time-homebuyer" class="pillar-link">Read First-Time Buyer Guide &rarr;</a>
+        </div>
+
+        <!-- Pillar 2: VA Loans & Military Relocation -->
+        <div class="card pillar-card">
+          <div class="pillar-icon-box blue-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <span class="pillar-eyebrow">SERVING THOSE WHO SERVE</span>
+          <h3 class="pillar-title">VA Loans (0% Down)</h3>
+          <p class="pillar-desc">
+            Proudly serving active military and veterans stationed across Camp Pendleton, 32nd St Naval Base, Coronado, and Miramar. Maximize your San Diego BAH and build permanent personal equity.
+          </p>
+          <ul class="pillar-list">
+            <li>Zero down payment with full entitlement</li>
+            <li>No monthly private mortgage insurance (PMI)</li>
+            <li>Seamless PCS virtual tours for deploying families</li>
+          </ul>
+          <a href="/va-loans" class="pillar-link">Explore Military VA Guide &rarr;</a>
+        </div>
+
+        <!-- Pillar 3: Fix & Flip / Investor Sourcing -->
+        <div class="card pillar-card">
+          <div class="pillar-icon-box dark-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <span class="pillar-eyebrow">DATA-DRIVEN ROI</span>
+          <h3 class="pillar-title">Fix-and-Flip &amp; Investors</h3>
+          <p class="pillar-desc">
+            Rigorous mathematical analysis using the 70% ARV formula. Edgar uncovers distressed, canyon-adjacent, and SB9-entitled San Diego properties with significant equity upside for flippers and landlords.
+          </p>
+          <ul class="pillar-list">
+            <li>Accurate After Repair Value (ARV) comp models</li>
+            <li>San Diego contractor &amp; rehab cost estimates</li>
+            <li>ADU (Accessory Dwelling Unit) income expansion</li>
+          </ul>
+          <a href="/fix-and-flip" class="pillar-link">View Fix &amp; Flip Playbook &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Properties Section -->
+  <section class="section">
+    <div class="container">
+      <div class="featured-header-row">
+        <div>
+          <span class="section-eyebrow">CURATED SAN DIEGO HOMES</span>
+          <h2>Featured Properties</h2>
+          <p class="lead" style="margin-bottom: 0;">Explore hand-selected residences across premier San Diego neighborhoods.</p>
+        </div>
+        <div>
+          <a href="/properties" class="btn btn-outline btn-lg">View All Properties ({featuredProperties.length}+)</a>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 2.5rem;">
+        {featuredProperties.slice(0, 6).map((property) => (
+          <PropertyCard property={property} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Weekend Open House Spotlight Banner -->
+  {openHouses.length > 0 && (
+    <section class="open-house-banner-section">
+      <div class="container">
+        <div class="open-house-banner card">
+          <div class="banner-badge-wrap">
+            <span class="badge badge-emerald">HOSTED BY EDGAR VALLE</span>
+            <span class="open-house-date">THIS COMING WEEKEND</span>
+          </div>
+          <div class="banner-content-grid">
+            <div class="banner-text">
+              <h3 class="banner-title">{openHouses[0].property?.title || 'Open House This Weekend'}</h3>
+              <p class="banner-address">{openHouses[0].property?.address_street}, {openHouses[0].property?.neighborhood}, San Diego</p>
+              <p class="banner-desc">{openHouses[0].special_instructions}</p>
+            </div>
+            <div class="banner-cta">
+              <a href="/open-houses" class="btn btn-gold btn-lg">View Open House Schedule &amp; RSVP</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Meet Edgar Valle Section -->
+  <section class="section section-dark">
+    <div class="container">
+      <div class="grid-2" style="align-items: center; gap: 4rem;">
+        <div class="about-portrait-wrap">
+          <img 
+            src="/images/branding/edgar-valle.svg" 
+            alt="Edgar Valle | Realtor DRE #02375273" 
+            width="540" 
+            height="630" 
+            class="about-portrait"
+          />
+          <div class="portrait-floating-stat">
+            <span class="stat-number">100%</span>
+            <span class="stat-label">Bilingual English &amp; Spanish Advisory</span>
+          </div>
+        </div>
+
+        <div class="about-copy">
+          <span class="section-eyebrow" style="color: var(--color-gold-400);">MEET YOUR REALTOR</span>
+          <h2 style="color: #ffffff;">Edgar Valle</h2>
+          <p class="brokerage-badge">Full Circle Group • DRE #02375273</p>
+          
+          <p class="about-paragraph">
+            Real estate in San Diego is more than transactions—it is about securing generational stability, building real equity, and navigating one of California's most vibrant coastal markets with complete transparency.
+          </p>
+
+          <p class="about-paragraph">
+            Affiliated with <strong>Full Circle Group</strong>, Edgar blends rigorous financial comp analysis with high-touch personal service. Fluent in both English and Spanish, Edgar ensures Spanish-speaking families and military service members stationed at Camp Pendleton, 32nd St, and Coronado have an unwavering advocate from contract to keys.
+          </p>
+
+          <div class="about-metrics">
+            <div class="metric-item">
+              <span class="metric-val">DRE #02375273</span>
+              <span class="metric-lbl">California Licensed</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-val">@yourrealtoredgar</span>
+              <span class="metric-lbl">Instagram Property Tours</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-val">San Diego, CA</span>
+              <span class="metric-lbl">Local Market Specialist</span>
+            </div>
+          </div>
+
+          <div class="about-cta-row">
+            <a href="/about" class="btn btn-gold btn-lg">Learn More About Edgar</a>
+            <a href={SITE_SETTINGS.instagram_url} target="_blank" rel="noopener noreferrer" class="btn btn-outline-white btn-lg">Watch Property Tours on IG</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- San Diego Neighborhoods Showcase -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">LOCAL EXPERTISE</span>
+        <h2>Explore San Diego Neighborhoods</h2>
+        <p class="lead">From walkable historic urban enclaves to sun-drenched beach breaks and master-planned South Bay retreats.</p>
+      </div>
+
+      <div class="grid-3">
+        {neighborhoods.slice(0, 3).map((n) => (
+          <article class="card neighborhood-preview-card">
+            <div class="hood-img-wrap">
+              <img src={n.hero_image} alt={n.name} width="400" height="220" loading="lazy" />
+              <div class="hood-price-tag">Median: ${(n.median_home_price / 1000).toFixed(0)}K</div>
+            </div>
+            <div class="hood-body">
+              <h3 class="hood-title">{n.name}</h3>
+              <p class="hood-tagline">{n.tagline}</p>
+              <p class="hood-summary">{n.summary.substring(0, 110)}...</p>
+              <a href={`/neighborhoods/${n.slug}`} class="hood-link">Explore {n.name} &rarr;</a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div style="text-align: center; margin-top: 2.5rem;">
+        <a href="/neighborhoods" class="btn btn-outline btn-lg">View All San Diego Communities</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lead Consultation Form Section -->
+  <section class="section section-secondary" id="consultation">
+    <div class="container">
+      <div class="grid-2" style="align-items: center; gap: 3.5rem;">
+        <div>
+          <span class="section-eyebrow">START THE CONVERSATION</span>
+          <h2>Schedule Your Confidential Strategy Session</h2>
+          <p class="lead">
+            Whether you want to understand your true home purchasing power in San Diego, discuss listing your property with professional staging and video, or review a fix-and-flip pro forma, Edgar is ready to guide you.
+          </p>
+          <div class="consultation-features">
+            <div class="c-feat">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c5a059" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Zero-obligation consultation customized to your financial timeline</span>
+            </div>
+            <div class="c-feat">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c5a059" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Direct access to trusted San Diego VA and CalHFA approved lenders</span>
+            </div>
+            <div class="c-feat">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c5a059" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Bilingual service in English &amp; Spanish (Hablamos Español)</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <LeadCaptureForm 
+            leadType="general_contact"
+            formTitle="Book a Private Consultation"
+            buttonText="Submit Consultation Request"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Hero Styles */
+  .hero-section {
+    position: relative;
+    padding: 6.5rem 0 5rem 0;
+    background: linear-gradient(135deg, #0a1118 0%, #15202c 60%, #1d2c3d 100%);
+    color: #ffffff;
+    overflow: hidden;
+  }
+
+  .hero-bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle at 80% 20%, rgba(197, 160, 89, 0.15) 0%, transparent 50%),
+                      radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-content {
+    max-width: 980px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-badge-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title {
+    color: #ffffff;
+    font-size: clamp(2.5rem, 5.5vw, 4.2rem);
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+  }
+
+  .gold-gradient-text {
+    background: linear-gradient(135deg, #fceade 0%, #dfc26e 50%, #c5a059 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-lead {
+    color: #cbd5e1;
+    font-size: clamp(1.15rem, 2vw, 1.35rem);
+    line-height: 1.6;
+    max-width: 760px;
+    margin: 0 auto 2.5rem auto;
+  }
+
+  .hero-search-card {
+    background: #ffffff;
+    padding: 1.75rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    text-align: left;
+    margin-bottom: 1.75rem;
+  }
+
+  .search-form {
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr 1.2fr 1.2fr;
+    gap: 1rem;
+    align-items: flex-end;
+  }
+
+  @media (max-width: 960px) {
+    .search-form {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .search-form {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .search-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+  }
+
+  .search-select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.92rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    background: #ffffff;
+  }
+
+  .search-submit-btn {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .hero-quick-tags {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    font-size: 0.85rem;
+  }
+
+  .quick-tags-title {
+    color: var(--color-gold-400);
+    font-weight: 700;
+  }
+
+  .quick-tag {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all var(--transition-fast);
+  }
+
+  .quick-tag:hover {
+    background: var(--color-gold-500);
+    color: #0f1822;
+    border-color: var(--color-gold-500);
+  }
+
+  /* Pillars */
+  .pillar-card {
+    padding: 2.25rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #ffffff;
+  }
+
+  .pillar-icon-box {
+    width: 58px;
+    height: 58px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .gold-icon { background: var(--color-gold-100); color: var(--color-gold-700); }
+  .blue-icon { background: #eff6ff; color: #1d4ed8; }
+  .dark-icon { background: #0f1822; color: #ffffff; }
+
+  .pillar-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-gold-600);
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+
+  .pillar-title {
+    font-size: 1.45rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .pillar-desc {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  .pillar-list {
+    list-style: none;
+    margin: 0 0 1.5rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+  }
+
+  .pillar-list li::before {
+    content: "✓ ";
+    color: var(--color-gold-600);
+    font-weight: 700;
+  }
+
+  .pillar-link {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--color-gold-700);
+    margin-top: auto;
+  }
+
+  .pillar-link:hover {
+    color: var(--color-navy-950);
+  }
+
+  /* Featured Header Row */
+  .featured-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  /* Open House Banner */
+  .open-house-banner-section {
+    padding: 0 0 4rem 0;
+  }
+
+  .open-house-banner {
+    background: linear-gradient(135deg, #101c28 0%, #172738 100%);
+    color: #ffffff;
+    padding: 2.25rem 2.5rem;
+    border: 1px solid rgba(197, 160, 89, 0.4);
+  }
+
+  .banner-badge-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .open-house-date {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-gold-400);
+    letter-spacing: 0.08em;
+  }
+
+  .banner-content-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .banner-title {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .banner-address {
+    color: var(--color-gold-300);
+    font-size: 0.92rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .banner-desc {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    margin: 0;
+    max-width: 680px;
+  }
+
+  /* About Section */
+  .about-portrait-wrap {
+    position: relative;
+  }
+
+  .about-portrait {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    height: auto;
+  }
+
+  .portrait-floating-stat {
+    position: absolute;
+    bottom: -20px;
+    right: 20px;
+    background: #ffffff;
+    color: var(--color-navy-950);
+    padding: 1.15rem 1.5rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    border: 2px solid var(--color-gold-400);
+    text-align: center;
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--color-gold-700);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-navy-950);
+  }
+
+  .brokerage-badge {
+    color: var(--color-gold-400);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .about-paragraph {
+    color: #cbd5e1;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    margin-bottom: 1.25rem;
+  }
+
+  .about-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 2rem 0;
+    padding: 1.25rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .metric-val {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .metric-lbl {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  .about-cta-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  /* Neighborhood Cards */
+  .neighborhood-preview-card {
+    overflow: hidden;
+  }
+
+  .hood-img-wrap {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .hood-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hood-price-tag {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(15, 24, 34, 0.85);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-xs);
+  }
+
+  .hood-body {
+    padding: 1.5rem;
+  }
+
+  .hood-title {
+    font-size: 1.35rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .hood-tagline {
+    font-size: 0.85rem;
+    color: var(--color-gold-700);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .hood-summary {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .hood-link {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--color-gold-700);
+  }
+
+  /* Consultation Features */
+  .consultation-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .c-feat {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+</style>

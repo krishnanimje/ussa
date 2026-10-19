@@ -1,0 +1,138 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PropertyCard from '../../components/PropertyCard.astro';
+import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+import { getFeaturedProperties, SITE_SETTINGS } from '../../lib/store';
+
+const properties = await getFeaturedProperties();
+---
+
+<Layout 
+  title="Edgar Valle | Tu Agente de Confianza en San Diego — Hablamos Español"
+  description="Edgar Valle es tu Realtor® bilingüe en San Diego con Full Circle Group (DRE #02375273). Especialista en primeros compradores, préstamos VA sin enganche y propiedades de inversión."
+>
+  <!-- Hero en Español -->
+  <section class="section section-secondary hero-es">
+    <div class="container text-center">
+      <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+        <span class="badge badge-emerald">🇲🇽 100% EN TU IDIOMA</span>
+        <span class="badge badge-gold">SAN DIEGO, CALIFORNIA</span>
+        <span class="badge badge-dark">DRE #{SITE_SETTINGS.dre_license}</span>
+      </div>
+
+      <h1 style="font-size: clamp(2.4rem, 5vw, 4rem); max-width: 900px; margin: 0 auto 1.25rem auto;">
+        Tu Hogar en San Diego en Manos de <span style="color: var(--color-gold-600);">Tu Agente de Confianza</span>
+      </h1>
+
+      <p class="lead" style="max-width: 760px; margin: 0 auto 2.5rem auto;">
+        Asesoría inmobiliaria transparente, profesional y completamente en español para familias latinas, primeros compradores y veteranos en todo el condado de San Diego.
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="#contactoEs" class="btn btn-gold btn-lg">Consulta Gratuita en Español</a>
+        <a href="/properties" class="btn btn-navy btn-lg">Ver Propiedades Disponibles</a>
+        <a href="tel:6195550198" class="btn btn-outline btn-lg">Llamar a Edgar: (619) 555-0198</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pilares de Servicio en Español -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">NUESTROS SERVICIOS</span>
+        <h2>¿En Qué Te Puede Ayudar Edgar Valle?</h2>
+        <p class="lead">Explicamos cada contrato, inspección y opción de crédito hipotecario de manera clara y sin tecnicismos confusos.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card pilar-es card">
+          <div class="pilar-num">01</div>
+          <h3>Primeros Compradores</h3>
+          <p>Te enseñamos a comprar tu primera casa sin necesidad del 20% de enganche. Acceso a programas de asistencia del estado de California (CalHFA) y préstamos FHA desde el 3.5% de pago inicial.</p>
+          <a href="/es/primeros-compradores" class="link-es">Ver Guía de Primeros Compradores &rarr;</a>
+        </div>
+
+        <div class="card pilar-es card">
+          <div class="pilar-num">02</div>
+          <h3>Préstamos Militares VA (0% Enganche)</h3>
+          <p>Para miembros activos de las fuerzas armadas y veteranos de Camp Pendleton, Base Naval de San Diego (32nd St) y Coronado. Cero pago inicial y sin seguro hipotecario mensual (PMI).</p>
+          <a href="/va-loans" class="link-es">Ver Beneficios Militares &rarr;</a>
+        </div>
+
+        <div class="card pilar-es card">
+          <div class="pilar-num">03</div>
+          <h3>Vender Tu Casa al Mejor Precio</h3>
+          <p>Estrategia de mercadeo digital, fotografía profesional y video 4K en Instagram (@yourrealtoredgar) para que tu propiedad destaque y se venda al valor más alto del mercado.</p>
+          <a href="/es/vender" class="link-es">Valuación Gratuita de Tu Casa &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Propiedades Destacadas -->
+  <section class="section section-secondary">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">OPORTUNIDADES DE VIVIENDA</span>
+        <h2>Propiedades en San Diego</h2>
+        <p class="lead">Explora casas residenciales, condominios con vista y residencias con alberca y cochera.</p>
+      </div>
+
+      <div class="grid-3">
+        {properties.slice(0, 3).map(p => (
+          <PropertyCard property={p} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Formulario en Español -->
+  <section class="section" id="contactoEs">
+    <div class="container container-narrow">
+      <LeadCaptureForm 
+        language="es"
+        leadType="general_contact"
+        formTitle="Agenda Tu Consulta Gratuita en Español"
+        buttonText="Enviar Mensaje a Edgar Valle"
+      />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero-es {
+    padding: 5.5rem 0;
+  }
+
+  .pilar-es {
+    padding: 2.25rem;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pilar-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-gold-500);
+    margin-bottom: 0.5rem;
+  }
+
+  .pilar-es h3 {
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .pilar-es p {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+  }
+
+  .link-es {
+    font-weight: 700;
+    color: var(--color-gold-700);
+    margin-top: auto;
+  }
+</style>

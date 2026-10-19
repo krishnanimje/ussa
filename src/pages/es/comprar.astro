@@ -1,0 +1,42 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LeadCaptureForm from '../../components/LeadCaptureForm.astro';
+---
+
+<Layout 
+  title="Cómo Comprar Casa en San Diego — Asesoría Inmobiliaria con Edgar Valle"
+  description="Proceso completo para comprar casa o departamento en San Diego. Búsqueda de propiedades, inspección y negociación bilingüe con Edgar Valle."
+>
+  <section class="section section-secondary">
+    <div class="container container-narrow text-center">
+      <span class="section-eyebrow">REPRESENTACIÓN DE COMPRADORES</span>
+      <h1>Comprar Casa en San Diego</h1>
+      <p class="lead" style="margin: 0 auto 2rem auto;">
+        Te acompañamos en cada etapa: desde buscar el vecindario ideal hasta inspeccionar la propiedad y negociar el mejor precio ante el vendedor.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-narrow">
+      <div class="card" style="padding: 2.75rem; background: #ffffff;">
+        <h2 style="font-size: 1.75rem; margin-bottom: 1.25rem;">Nuestra Promesa de Servicio</h2>
+        <p>
+          En el mercado de San Diego, comprar una vivienda es una de las decisiones financieras más significativas de tu vida. Con Edgar Valle a tu lado, tendrás la tranquilidad de comprender cada cláusula contractual, fechas límite del periodo de contingencias y reportes de inspección de la propiedad.
+        </p>
+        <p>
+          Defendemos tus intereses para que nunca pagues de más y te aseguramos créditos del vendedor para cubrir reparaciones necesarias.
+        </p>
+      </div>
+
+      <div style="margin-top: 3rem;">
+        <LeadCaptureForm 
+          language="es"
+          leadType="first_time_buyer"
+          formTitle="Inicia Tu Búsqueda de Casa en San Diego"
+          buttonText="Contactar a Edgar"
+        />
+      </div>
+    </div>
+  </section>
+</Layout>

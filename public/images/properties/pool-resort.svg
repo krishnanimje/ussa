@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="poolSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#BAE6FD" />
+    </linearGradient>
+    <linearGradient id="deepWater" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="50%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#0369A1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="200" fill="url(#poolSky)" />
+  <rect y="200" width="800" height="300" fill="#E2E8F0" />
+
+  <!-- Turquoise Swimming Pool -->
+  <polygon points="100,240 700,240 780,480 20,480" fill="url(#deepWater)" stroke="#94A3B8" stroke-width="4" />
+
+  <!-- Underwater Pool Steps and Lights -->
+  <polygon points="60,400 240,400 220,480 20,480" fill="#0EA5E9" opacity="0.6" />
+  <line x1="80" y1="425" x2="230" y2="425" stroke="#E0F2FE" stroke-width="2" />
+  <line x1="50" y1="455" x2="225" y2="455" stroke="#E0F2FE" stroke-width="2" />
+
+  <!-- Pool Surface Caustics -->
+  <path d="M 150 300 Q 250 280 350 310 Q 480 290 600 320" stroke="#E0F2FE" stroke-width="3" fill="none" opacity="0.7" />
+  <path d="M 120 360 Q 280 340 420 370 Q 560 350 680 380" stroke="#E0F2FE" stroke-width="2.5" fill="none" opacity="0.5" />
+
+  <!-- Poolside Chaise Loungers -->
+  <g transform="translate(180, 160)">
+    <rect width="80" height="20" rx="3" fill="#D4AF37" />
+    <polygon points="60,0 80,0 75,20 60,20" fill="#CA8A04" />
+  </g>
+  <g transform="translate(320, 160)">
+    <rect width="80" height="20" rx="3" fill="#D4AF37" />
+    <polygon points="60,0 80,0 75,20 60,20" fill="#CA8A04" />
+  </g>
+  <g transform="translate(460, 160)">
+    <rect width="80" height="20" rx="3" fill="#D4AF37" />
+    <polygon points="60,0 80,0 75,20 60,20" fill="#CA8A04" />
+  </g>
+</svg>
