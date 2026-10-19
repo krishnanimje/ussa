@@ -1,0 +1,87 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { SITE_SETTINGS } from '../../lib/store';
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/es' },
+  { name: 'Sobre Edgar Valle', url: '/es/sobre-mi' }
+];
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateAgent',
+  'name': 'Edgar Valle',
+  'telephone': SITE_SETTINGS.phone,
+  'email': SITE_SETTINGS.email,
+  'url': 'https://edgarvalle.com/es/sobre-mi',
+  'license': '02375273',
+  'parentOrganization': {
+    '@type': 'RealEstateAgent',
+    'name': SITE_SETTINGS.brokerage_name
+  },
+  'knowsLanguage': ['en', 'es']
+};
+---
+
+<Layout 
+  title="Sobre Edgar Valle | Agente Inmobiliario en San Diego | Hablo Español"
+  description="Conozca a Edgar Valle | Realtor (DRE #02375273). Asesoría bilingüe en bienes raíces en San Diego, compras militares VA, primeros compradores y remodelaciones."
+  canonicalUrl="/es/sobre-mi"
+  lang="es"
+  hreflangEn="/about"
+  hreflangEs="/es/sobre-mi"
+  breadcrumbs={breadcrumbItems}
+  jsonLd={JSON.stringify(personSchema)}
+>
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <!-- Hero Section -->
+  <section class="section" style="background: radial-gradient(circle at top right, #1f2937 0%, var(--bg-primary) 100%); padding: 4rem 0;">
+    <div class="container">
+      <div style="max-width: 840px;">
+        <span class="section-eyebrow" style="color: var(--color-gold-400);">ASESORÍA DE CONFIANZA</span>
+        <h1 style="color: #ffffff; font-size: clamp(2.2rem, 4.5vw, 3.25rem); line-height: 1.15; margin: 0.5rem 0 1.25rem 0;">
+          Edgar Valle | Su Aliado Inmobiliario en San Diego
+        </h1>
+        <p class="lead" style="color: #cbd5e1; font-size: 1.15rem; line-height: 1.6;">
+          Combinando un profundo conocimiento del mercado de San Diego, negociación estratégica y una comunicación transparente en su propio idioma, le acompaño en cada etapa para lograr el éxito en su patrimonio familiar o inversión.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Narrative & Bio -->
+  <section class="section">
+    <div class="container container-narrow">
+      <div class="card" style="padding: 2.5rem; margin-bottom: 2.5rem;">
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Mi Compromiso con la Comunidad Hispana</h2>
+        <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.25rem;">
+          Comprar o vender una propiedad en California es una de las decisiones financieras y emocionales más importantes de su vida. Mi objetivo fundamental es eliminar la incertidumbre y barreras del proceso. Cuando trabajamos juntos, usted cuenta con un asesor profesional que comprende sus metas, protege sus intereses y le explica cada cláusula contractual con total claridad.
+        </p>
+
+        <h3 style="font-size: 1.25rem; margin: 2rem 0 0.75rem 0;">Áreas de Especialización Comprobada:</h3>
+        <ul style="margin: 0 0 1.5rem 1.5rem; color: var(--text-secondary); line-height: 1.7;">
+          <li><strong>Primeros Compradores de Vivienda:</strong> Asistencia paso a paso con préstamos FHA (3.5% de enganche), convencionales (3%) y subsidios estatales de CalHFA.</li>
+          <li><strong>Veteranos y Familias Militares (VA Loans):</strong> Asesoría especializada para personal en servicio en las bases de San Diego, Coronado y Camp Pendleton con 0% de enganche.</li>
+          <li><strong>Inversionistas y Remodelaciones (Fix-and-Flip):</strong> Análisis de plusvalía (ARV), regla del 70% y desarrollo de unidades secundarias (ADU) bajo la Ley SB9 de California.</li>
+          <li><strong>Venta Estratégica Residencial:</strong> Comercialización digital multicanal, fotografía profesional, tours virtuales 4K y máxima difusión para obtener el precio récord por su casa.</li>
+        </ul>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-light); padding: 1.5rem; border-radius: 8px; margin-top: 2rem;">
+          <h4 style="margin: 0 0 0.5rem 0;">Credenciales Oficiales &amp; Licenciamiento</h4>
+          <p style="font-size: 0.92rem; margin: 0; color: var(--text-secondary); line-height: 1.6;">
+            <strong>Agente:</strong> Edgar Valle<br />
+            <strong>Licencia DRE de California:</strong> #{SITE_SETTINGS.dre_license}<br />
+            <strong>Correduría (Brokerage):</strong> {SITE_SETTINGS.brokerage_name}<br />
+            <strong>Asociaciones:</strong> Miembro de la Asociación de Agentes Inmobiliarios de San Diego (SDAR), Asociación de Realtors de California (CAR) y la Asociación Nacional de Realtors (NAR).
+          </p>
+        </div>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="/es/contacto" class="btn btn-gold btn-lg">Programar una Consulta Privada</a>
+      </div>
+    </div>
+  </section>
+</Layout>

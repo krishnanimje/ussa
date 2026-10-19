@@ -1,0 +1,106 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getOpenHouses, SITE_SETTINGS } from '../../lib/store';
+
+const openHouses = await getOpenHouses();
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/es' },
+  { name: 'Casas Abiertas en San Diego', url: '/es/casas-abiertas' }
+];
+---
+
+<Layout 
+  title="Casas Abiertas en San Diego Este Fin de Semana | Edgar Valle"
+  description="Explore casas abiertas programadas para este fin de semana en San Diego, CA. Recorridos presenciales y virtuales con Edgar Valle | Realtor (DRE #02375273)."
+  canonicalUrl="/es/casas-abiertas"
+  lang="es"
+  hreflangEn="/open-houses"
+  hreflangEs="/es/casas-abiertas"
+  breadcrumbs={breadcrumbItems}
+>
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <!-- Hero Section -->
+  <section class="section" style="background: radial-gradient(circle at top right, #1f2937 0%, var(--bg-primary) 100%); padding: 3.5rem 0;">
+    <div class="container text-center" style="max-width: 780px;">
+      <span class="section-eyebrow" style="color: var(--color-gold-400);">RECORRIDOS PRESENCIALES</span>
+      <h1 style="color: #ffffff; font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.2; margin: 0.5rem 0 1rem 0;">
+        Casas Abiertas de Fin de Semana en San Diego
+      </h1>
+      <p class="lead" style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">
+        Visite personalmente nuestras exclusivas residencias en venta. Conozca el vecindario, examine la calidad de los acabados y resuelva todas sus dudas hipotecarias directamente en español con Edgar Valle.
+      </p>
+    </div>
+  </section>
+
+  <!-- Open Houses Listing Grid -->
+  <section class="section">
+    <div class="container">
+      {openHouses.length > 0 ? (
+        <div class="grid grid-2" style="gap: 2rem;">
+          {openHouses.map((oh) => {
+            const prop = oh.property;
+            if (!prop) return null;
+            return (
+              <div class="card" style="overflow: hidden; display: flex; flex-direction: column;">
+                <div style="position: relative; height: 260px;">
+                  <img 
+                    src={prop.primary_image || '/images/properties/prop-1.webp'} 
+                    alt={prop.title} 
+                    style="width: 100%; height: 100%; object-fit: cover;"
+                    loading="lazy"
+                  />
+                  <div style="position: absolute; top: 1rem; left: 1rem; background: var(--color-gold-600); color: #090e14; padding: 0.35rem 0.75rem; border-radius: 4px; font-weight: 800; font-size: 0.82rem; text-transform: uppercase;">
+                    CASA ABIERTA
+                  </div>
+                </div>
+                
+                <div style="padding: 1.75rem; display: flex; flex-direction: column; flex: 1;">
+                  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--color-gold-700); text-transform: uppercase;">{prop.neighborhood}</span>
+                    <span style="font-size: 1.4rem; font-weight: 800; color: var(--color-navy);">${prop.price.toLocaleString()}</span>
+                  </div>
+                  
+                  <h3 style="font-size: 1.2rem; margin: 0 0 0.5rem 0;">
+                    <a href={`/properties/${prop.slug}`} style="color: #0f172a; text-decoration: none;">{prop.title}</a>
+                  </h3>
+
+                  <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                    {prop.bedrooms} Recámaras • {prop.bathrooms} Baños • {prop.square_feet.toLocaleString()} Pies²
+                  </p>
+
+                  <!-- Open House Badge -->
+                  <div style="background: #f8fafc; border: 1px solid var(--border-light); padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+                    <div style="font-weight: 700; font-size: 0.9rem; color: #0f172a;">
+                      📅 Próximo Fin de Semana: {oh.start_time} – {oh.end_time}
+                    </div>
+                    <div style="font-size: 0.82rem; color: var(--text-secondary);">
+                      {oh.special_instructions || 'Recorridos guiados y refrigerios disponibles.'}
+                    </div>
+                  </div>
+
+                  <div style="margin-top: auto; display: flex; gap: 0.75rem;">
+                    <a href={`/properties/${prop.slug}`} class="btn btn-outline btn-sm" style="flex: 1; text-align: center;">Detalles</a>
+                    <a href={`/properties/${prop.slug}/flyer`} target="_blank" class="btn btn-outline btn-sm" style="text-align: center;">Ficha PDF</a>
+                    <a href={`/es/contacto?subject=open_house_rsvp&prop=${prop.slug}`} class="btn btn-gold btn-sm" style="flex: 1; text-align: center;">Confirmar RSVP</a>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="card text-center" style="padding: 3.5rem 2rem; max-width: 650px; margin: 0 auto;">
+          <h3>Próximas Casas Abiertas en Preparación</h3>
+          <p style="color: var(--text-secondary); margin: 0.75rem 0 1.5rem 0;">
+            Actualmente estamos coordinando los horarios para este fin de semana. Puede solicitar un recorrido privado personal para cualquiera de nuestras residencias activas.
+          </p>
+          <a href="/es/contacto" class="btn btn-gold">Solicitar Recorrido Privado</a>
+          <a href={`tel:${SITE_SETTINGS.phone.replace(/\\D/g, '')}`} class="btn btn-outline" style="margin-left: 0.75rem;">Llamar al {SITE_SETTINGS.phone}</a>
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>

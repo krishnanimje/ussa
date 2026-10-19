@@ -38,6 +38,11 @@ export const GET: APIRoute = async () => {
     '/es/vender',
     '/es/primeros-compradores',
     '/es/contacto',
+    '/es/prestamos-va',
+    '/es/inversionistas',
+    '/es/casas-abiertas',
+    '/es/sobre-mi',
+    '/es/preguntas-frecuentes',
     '/privacy-policy',
     '/terms-of-service',
     '/cookie-policy',
@@ -56,7 +61,17 @@ export const GET: APIRoute = async () => {
     '/first-time-homebuyer': { en: '/first-time-homebuyer', es: '/es/primeros-compradores' },
     '/es/primeros-compradores': { en: '/first-time-homebuyer', es: '/es/primeros-compradores' },
     '/contact': { en: '/contact', es: '/es/contacto' },
-    '/es/contacto': { en: '/contact', es: '/es/contacto' }
+    '/es/contacto': { en: '/contact', es: '/es/contacto' },
+    '/va-loans': { en: '/va-loans', es: '/es/prestamos-va' },
+    '/es/prestamos-va': { en: '/va-loans', es: '/es/prestamos-va' },
+    '/fix-and-flip': { en: '/fix-and-flip', es: '/es/inversionistas' },
+    '/es/inversionistas': { en: '/fix-and-flip', es: '/es/inversionistas' },
+    '/open-houses': { en: '/open-houses', es: '/es/casas-abiertas' },
+    '/es/casas-abiertas': { en: '/open-houses', es: '/es/casas-abiertas' },
+    '/about': { en: '/about', es: '/es/sobre-mi' },
+    '/es/sobre-mi': { en: '/about', es: '/es/sobre-mi' },
+    '/faq': { en: '/faq', es: '/es/preguntas-frecuentes' },
+    '/es/preguntas-frecuentes': { en: '/faq', es: '/es/preguntas-frecuentes' }
   };
 
   const now = new Date().toISOString();

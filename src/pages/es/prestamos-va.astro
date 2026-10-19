@@ -1,0 +1,143 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { SITE_SETTINGS } from '../../lib/store';
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/es' },
+  { name: 'Préstamos Militares VA', url: '/es/prestamos-va' }
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'mainEntity': [
+    {
+      '@type': 'Question',
+      'name': '¿Se requiere pago inicial con un préstamo militar VA en San Diego?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'No. Los préstamos garantizados por el Departamento de Asuntos de Veteranos (VA) permiten a los miembros en servicio activo y veteranos calificados comprar una vivienda con 0% de enganche y sin seguro hipotecario mensual (PMI).'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': '¿Puedo usar mi subsidio de vivienda militar (BAH) para calificar en San Diego?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'Sí. El subsidio de vivienda básico (BAH) libre de impuestos de San Diego puede utilizarse para calificar y cubrir la mayor parte o totalidad de su pago hipotecario mensual.'
+      }
+    }
+  ]
+};
+---
+
+<Layout 
+  title="Préstamos Militares VA en San Diego | 0% Enganche | Edgar Valle"
+  description="Guía especializada en préstamos hipotecarios militares VA en San Diego para personal activo y veteranos. 0% de enganche, $0 PMI y optimización de BAH con Edgar Valle."
+  canonicalUrl="/es/prestamos-va"
+  lang="es"
+  hreflangEn="/va-loans"
+  hreflangEs="/es/prestamos-va"
+  breadcrumbs={breadcrumbItems}
+  jsonLd={JSON.stringify(faqSchema)}
+>
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <!-- Hero Section -->
+  <section class="section" style="background: radial-gradient(circle at top right, #1a2938 0%, var(--bg-primary) 100%); padding: 4rem 0;">
+    <div class="container">
+      <div style="max-width: 820px;">
+        <span class="section-eyebrow" style="color: var(--color-gold-400);">ESPECIALIDAD MILITAR EN SAN DIEGO</span>
+        <h1 style="color: #ffffff; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15; margin: 0.5rem 0 1.25rem 0;">
+          Préstamos Hipotecarios VA: Su Beneficio Militar para Comprar Casa en San Diego
+        </h1>
+        <p class="lead" style="color: #cbd5e1; font-size: 1.15rem; line-height: 1.6;">
+          Usted sirvió con honor a nuestra nación; ahora permítame ayudarle a maximizar su derecho de préstamo VA. Compre su hogar en San Diego con <strong>0% de enganche</strong>, <strong>$0 de seguro hipotecario mensual (PMI)</strong> y tasas de interés altamente competitivas.
+        </p>
+        <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+          <a href="/es/contacto?subject=va_buyer" class="btn btn-gold btn-lg">Solicitar Asesoría Militar Gratuita</a>
+          <a href="tel:6195550198" class="btn btn-outline btn-lg" style="color: #ffffff; border-color: rgba(255,255,255,0.3);">Llamar Directamente: (619) 555-0198</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Pillars Grid -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+        <span class="section-eyebrow">VENTAJAS EXCLUSIVAS DEL PRÉSTAMO VA</span>
+        <h2>Los Tres Grandes Beneficios de su Subsidio VA</h2>
+      </div>
+
+      <div class="grid grid-3" style="gap: 2rem;">
+        <div class="card" style="padding: 2.25rem;">
+          <div style="width: 52px; height: 52px; background: rgba(197, 160, 89, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-600)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">0% de Pago Inicial</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+            A diferencia de los préstamos convencionales que requieren entre el 3% y el 20%, los veteranos y personal en servicio calificado no necesitan desembolsar enganche para adquirir su residencia principal en San Diego.
+          </p>
+        </div>
+
+        <div class="card" style="padding: 2.25rem;">
+          <div style="width: 52px; height: 52px; background: rgba(197, 160, 89, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-600)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">$0 Seguro Privado (PMI)</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+            Los préstamos convencionales o FHA con enganche menor al 20% imponen un seguro hipotecario mensual de $250 a $600. El préstamo VA elimina este costo por completo, ahorrándole miles de dólares al año.
+          </p>
+        </div>
+
+        <div class="card" style="padding: 2.25rem;">
+          <div style="width: 52px; height: 52px; background: rgba(197, 160, 89, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-600)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          </div>
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Optimización de BAH</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+            El subsidio de vivienda básico (BAH) de San Diego es uno de los más elevados del país. Convertimos su subsidio de alquiler en plusvalía patrimonial propia cerca de su base de servicio.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Military Bases in San Diego -->
+  <section class="section" style="background: var(--bg-surface);">
+    <div class="container container-narrow">
+      <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+        <span class="section-eyebrow">COBERTURA REGIONAL</span>
+        <h2>Cercanía Estratégica a las Bases de San Diego</h2>
+        <p class="lead">Representamos activamente a familias militares asignadas a las siguientes instalaciones clave:</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+        <div style="background: var(--bg-primary); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-light);">
+          <h4 style="margin: 0 0 0.35rem 0;">Naval Base San Diego (32nd Street)</h4>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 0;">Barrios ideales: Chula Vista, National City, Bonita, Eastlake.</p>
+        </div>
+        <div style="background: var(--bg-primary); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-light);">
+          <h4 style="margin: 0 0 0.35rem 0;">Naval Amphibious Base Coronado</h4>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 0;">Barrios ideales: Imperial Beach, Coronado, South San Diego.</p>
+        </div>
+        <div style="background: var(--bg-primary); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-light);">
+          <h4 style="margin: 0 0 0.35rem 0;">MCAS Miramar</h4>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 0;">Barrios ideales: Clairemont, Tierrasanta, Mira Mesa, Scripps Ranch.</p>
+        </div>
+        <div style="background: var(--bg-primary); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-light);">
+          <h4 style="margin: 0 0 0.35rem 0;">Marine Corps Base Camp Pendleton</h4>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 0;">Barrios ideales: Oceanside, Vista, Carlsbad, San Marcos.</p>
+        </div>
+      </div>
+
+      <!-- Legal Disclosure -->
+      <div style="margin-top: 3rem; padding: 1.5rem; background: #fdfbf7; border: 1px solid var(--border-light); border-radius: 8px; font-size: 0.85rem; color: #475569;">
+        <strong>Divulgación Regulatoria de California (TILA-RESPA / Regulación Z):</strong><br />
+        Edgar Valle es Agente de Bienes Raíces con licencia en California (DRE #{SITE_SETTINGS.dre_license}) afiliado a {SITE_SETTINGS.brokerage_name}; no es prestamista hipotecario directo ni Originador de Préstamos Hipotecarios (MLO). Todos los términos de financiamiento, tasas de interés y aprobación de préstamos VA están sujetos a verificación de elegibilidad militar y suscripción crediticia independiente por parte de un prestamista hipotecario con licencia NMLS.
+      </div>
+    </div>
+  </section>
+</Layout>

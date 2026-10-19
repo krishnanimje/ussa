@@ -1,0 +1,556 @@
+---
+export const prerender = false;
+import { getPropertyBySlug, SITE_SETTINGS } from '../../../lib/store';
+import { checkAdminAuth } from '../../../lib/auth';
+
+const { slug } = Astro.params;
+const isAdmin = checkAdminAuth(Astro.request);
+const property = await getPropertyBySlug(slug || '', { allowUnpublished: isAdmin });
+
+if (!property) {
+  return Astro.redirect('/404');
+}
+
+const siteUrl = import.meta.env.SITE_URL || 'https://edgarvalle.com';
+const propertyUrl = `${siteUrl}/properties/${property.slug}`;
+const formattedPrice = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: property.currency || 'USD',
+  maximumFractionDigits: 0
+}).format(property.price);
+
+const primaryImage = property.primary_image || (property.gallery_images && property.gallery_images[0]) || '/images/properties/prop-1.webp';
+
+const secondaryImages: string[] = (property.gallery_images && property.gallery_images.length > 0)
+  ? property.gallery_images.slice(0, 3)
+  : [];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{property.title} — Property Flyer | Edgar Valle</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="robots" content="noindex, follow" />
+    <style>
+      :root {
+        --color-navy: #090e14;
+        --color-gold: #c5a059;
+        --color-slate: #334155;
+        --color-light-bg: #f8fafc;
+        --border-color: #e2e8f0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #e2e8f0;
+        color: #0f172a;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* Screen Toolbar */
+      .no-print-bar {
+        background: #0d1520;
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .btn-print {
+        background: linear-gradient(135deg, #dfc26e 0%, #c5a059 100%);
+        color: #090e14;
+        font-weight: 700;
+        border: none;
+        padding: 0.6rem 1.25rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-back {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .btn-back:hover {
+        color: #ffffff;
+      }
+
+      /* 8.5 x 11 in Letter Page */
+      .flyer-sheet {
+        width: 8.5in;
+        min-height: 11in;
+        margin: 1.5rem auto;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 0.45in;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      /* Header */
+      .flyer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-bottom: 2px solid var(--color-gold);
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .flyer-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .flyer-logo {
+        height: 38px;
+        width: auto;
+      }
+
+      .flyer-agent-tag {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--color-navy);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .flyer-brokerage-tag {
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+
+      .flyer-hero-title {
+        text-align: right;
+      }
+
+      .flyer-neighborhood {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--color-gold);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .flyer-price {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--color-navy);
+        line-height: 1.1;
+      }
+
+      /* Property Title & Address */
+      .prop-heading {
+        margin: 0.35rem 0 0.5rem 0;
+      }
+
+      .prop-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 0.15rem 0;
+      }
+
+      .prop-address {
+        font-size: 0.85rem;
+        color: #475569;
+        font-weight: 500;
+        margin: 0;
+      }
+
+      /* Photos Section */
+      .photo-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 0.4rem;
+        margin-bottom: 0.6rem;
+        height: 3.1in;
+      }
+
+      .photo-main {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+
+      .photo-sub-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        height: 100%;
+      }
+
+      .photo-thumb {
+        width: 100%;
+        height: calc(33.333% - 0.27rem);
+        object-fit: cover;
+        border-radius: 4px;
+      }
+
+      /* Key Specs Bar */
+      .specs-ribbon {
+        background: #0f172a;
+        color: #ffffff;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-around;
+        padding: 0.5rem 0.25rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .spec-item {
+        text-align: center;
+      }
+
+      .spec-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #dfc26e;
+        display: block;
+        line-height: 1;
+      }
+
+      .spec-lbl {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        color: #94a3b8;
+        letter-spacing: 0.05em;
+      }
+
+      /* Details Columns */
+      .details-row {
+        display: grid;
+        grid-template-columns: 1.8fr 1.2fr;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+        flex: 1;
+      }
+
+      .details-col h4 {
+        margin: 0 0 0.35rem 0;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #0f172a;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.2rem;
+      }
+
+      .desc-text {
+        font-size: 0.76rem;
+        line-height: 1.45;
+        color: #334155;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .features-list {
+        margin: 0.4rem 0 0 0;
+        padding: 0 0 0 1.1rem;
+        font-size: 0.74rem;
+        color: #334155;
+        line-height: 1.4;
+      }
+
+      .amenities-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        margin-top: 0.4rem;
+      }
+
+      .amenity-chip {
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        border-radius: 3px;
+        padding: 0.15rem 0.45rem;
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: #1e293b;
+      }
+
+      /* Footer Contact & QR Section */
+      .flyer-footer {
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 0.5rem 0.65rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .agent-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .agent-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: var(--color-navy);
+        border: 2px solid var(--color-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .agent-details {
+        font-size: 0.75rem;
+        line-height: 1.35;
+      }
+
+      .agent-name {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+      }
+
+      .agent-contact {
+        color: #334155;
+        font-weight: 600;
+      }
+
+      .agent-dre {
+        font-size: 0.68rem;
+        color: #64748b;
+      }
+
+      .qr-block {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-align: right;
+      }
+
+      .qr-text {
+        font-size: 0.65rem;
+        color: #475569;
+        line-height: 1.25;
+      }
+
+      .qr-svg {
+        width: 54px;
+        height: 54px;
+        flex-shrink: 0;
+        background: #ffffff;
+        padding: 2px;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+      }
+
+      .fair-housing-micro {
+        font-size: 0.6rem;
+        color: #94a3b8;
+        text-align: center;
+        margin-top: 0.35rem;
+      }
+
+      /* Print Optimizations */
+      @media print {
+        @page {
+          size: letter portrait;
+          margin: 0;
+        }
+
+        body {
+          background: #ffffff;
+        }
+
+        .no-print-bar {
+          display: none !important;
+        }
+
+        .flyer-sheet {
+          box-shadow: none;
+          margin: 0;
+          width: 100%;
+          min-height: 100vh;
+          padding: 0.35in 0.4in;
+          page-break-after: avoid;
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top toolbar for browser view -->
+    <div class="no-print-bar">
+      <a href={`/properties/${property.slug}`} class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Back to Property Details
+      </a>
+      <div>
+        <button onclick="window.print()" class="btn-print">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          Print Feature Sheet / Save PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Letter Size Presentation Sheet -->
+    <main class="flyer-sheet">
+      <!-- Header -->
+      <header class="flyer-header">
+        <div class="flyer-brand">
+          <img src="/images/branding/logo-black.svg" alt="Edgar Valle" class="flyer-logo" onerror="this.style.display='none'" />
+          <div>
+            <div class="flyer-agent-tag">Edgar Valle | Realtor</div>
+            <div class="flyer-brokerage-tag">{SITE_SETTINGS.brokerage_name} • San Diego, CA</div>
+          </div>
+        </div>
+        <div class="flyer-hero-title">
+          <div class="flyer-neighborhood">{property.neighborhood || property.address_city}</div>
+          <div class="flyer-price">{formattedPrice}</div>
+        </div>
+      </header>
+
+      <!-- Property Identity -->
+      <section class="prop-heading">
+        <h1 class="prop-title">{property.title}</h1>
+        <p class="prop-address">
+          {property.address_visibility === 'neighborhood_only'
+            ? `${property.neighborhood}, ${property.address_city}, CA ${property.address_zip}`
+            : `${property.address_street}${property.address_unit ? ' Unit ' + property.address_unit : ''}, ${property.address_city}, CA ${property.address_zip}`
+          }
+        </p>
+      </section>
+
+      <!-- Photos Matrix -->
+      <section class="photo-grid">
+        <img src={primaryImage} alt={property.title} class="photo-main" />
+        <div class="photo-sub-col">
+          {secondaryImages.map((img: string) => (
+            <img src={img} alt="Property interior" class="photo-thumb" />
+          ))}
+          {secondaryImages.length === 0 && (
+            <>
+              <img src="/images/properties/prop-2.webp" alt="Kitchen" class="photo-thumb" />
+              <img src="/images/properties/prop-3.webp" alt="Living room" class="photo-thumb" />
+              <img src="/images/properties/prop-4.webp" alt="Backyard" class="photo-thumb" />
+            </>
+          )}
+        </div>
+      </section>
+
+      <!-- Key Specifications Ribbon -->
+      <section class="specs-ribbon">
+        <div class="spec-item">
+          <span class="spec-val">{property.bedrooms}</span>
+          <span class="spec-lbl">Bedrooms</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-val">{property.bathrooms}</span>
+          <span class="spec-lbl">Bathrooms</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-val">{property.square_feet.toLocaleString()}</span>
+          <span class="spec-lbl">Sq. Feet</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-val">{property.lot_size ? `${property.lot_size.toLocaleString()} ${property.lot_size_unit || 'sqft'}` : 'N/A'}</span>
+          <span class="spec-lbl">Lot Size</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-val">{property.year_built || 'Custom'}</span>
+          <span class="spec-lbl">Year Built</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-val">{property.parking_spaces || property.garage_spaces || 2}</span>
+          <span class="spec-lbl">Parking</span>
+        </div>
+      </section>
+
+      <!-- Property Details & Amenities -->
+      <section class="details-row">
+        <div class="details-col">
+          <h4>Property Description</h4>
+          <p class="desc-text">{property.description}</p>
+          <ul class="features-list">
+            <li><strong>Property Type:</strong> {property.property_type.replace(/_/g, ' ').toUpperCase()}</li>
+            <li><strong>Renovation:</strong> {property.renovation_status ? property.renovation_status.toUpperCase() : 'MOVE-IN READY'}</li>
+            <li><strong>HOA:</strong> {property.hoa_fee_monthly ? `$${property.hoa_fee_monthly}/mo` : 'None / Verified'}</li>
+          </ul>
+        </div>
+        <div class="details-col">
+          <h4>Features &amp; Highlights</h4>
+          <div class="amenities-cloud">
+            {property.has_pool && <span class="amenity-chip">Swimming Pool</span>}
+            {property.has_spa && <span class="amenity-chip">Hot Tub / Spa</span>}
+            {property.amenities && property.amenities.map((item) => (
+              <span class="amenity-chip">{item}</span>
+            ))}
+            <span class="amenity-chip">San Diego Climate</span>
+            <span class="amenity-chip">Prime Location</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer & Contact Block -->
+      <footer class="flyer-footer">
+        <div class="agent-profile">
+          <div class="agent-avatar">EV</div>
+          <div class="agent-details">
+            <div class="agent-name">Edgar Valle | Realtor</div>
+            <div class="agent-contact">Direct: {SITE_SETTINGS.phone} • {SITE_SETTINGS.email}</div>
+            <div class="agent-dre">California DRE #{SITE_SETTINGS.dre_license} • {SITE_SETTINGS.brokerage_name}</div>
+          </div>
+        </div>
+
+        <div class="qr-block">
+          <div class="qr-text">
+            <strong>Scan for 4K Tour:</strong><br />
+            View photos, video &amp;<br />
+            schedule a showing<br />
+            <span style="font-size: 0.65rem; color: #64748b; word-break: break-all;">{propertyUrl}</span>
+          </div>
+          <!-- Vector QR Code representation pointing to propertyUrl -->
+          <svg class="qr-svg" viewBox="0 0 25 25" fill="#090e14" xmlns="http://www.w3.org/2000/svg" aria-label="QR Code to listing">
+            <path d="M1 1h7v7h-7zM2 2v5h5v-5zM3 3h3v3h-3zM17 1h7v7h-7zM18 2v5h5v-5zM19 3h3v3h-3zM1 17h7v7h-7zM2 18v5h5v-5zM3 19h3v3h-3zM10 2h2v3h-2zM14 2h1v1h-1zM11 7h1v1h-1zM14 6h2v2h-2zM10 10h1v2h-1zM13 10h2v1h-2zM17 10h1v1h-1zM20 10h2v2h-2zM23 11h1v2h-1zM11 13h1v3h-1zM14 13h1v2h-1zM17 13h2v1h-2zM10 18h1v2h-1zM13 17h1v1h-1zM16 17h1v2h-1zM20 16h2v2h-2zM23 17h1v2h-1zM11 22h2v2h-2zM15 21h2v1h-2zM19 21h1v1h-1zM22 22h2v2h-2z" />
+          </svg>
+        </div>
+      </footer>
+
+      <div class="fair-housing-micro">
+        Equal Housing Opportunity • All material presented is deemed reliable but subject to buyer verification. Not intended to solicit active listings.
+      </div>
+    </main>
+  </body>
+</html>

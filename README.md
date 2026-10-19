@@ -3,7 +3,7 @@
 [![Astro](https://img.shields.io/badge/Astro-5.18-BC52EE.svg?style=flat&logo=astro)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20RLS-3ECF8E.svg?style=flat&logo=supabase)](https://supabase.com)
-[![Vitest](https://img.shields.io/badge/Vitest-75%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
+[![Vitest](https://img.shields.io/badge/Vitest-93%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
 [![Power BI](https://img.shields.io/badge/Analytics-Power%20BI%20Engine-F2C811.svg?style=flat)](https://edgarvalle.com/admin/analytics)
 [![SEO](https://img.shields.io/badge/SEO-7--Workstream%20Compliant-00C49F.svg?style=flat)](https://edgarvalle.com/sitemap.xml)
 [![Security](https://img.shields.io/badge/Security-OWASP%20%2B%20DRE%20Compliant-3B82F6.svg?style=flat)](docs/security-audit-and-compliance-report.md)
@@ -24,7 +24,9 @@ The platform integrates five comprehensive core tiers:
   - **First-Time Homebuyers** (`/first-time-homebuyer` & `/es/primeros-compradores`): Low-down-payment navigation (FHA 3.5%, Conventional 3%), CalHFA grant assistance, credit repair, and 6-step roadmap.
   - **VA Military Loans** (`/va-loans`): Stationed across Camp Pendleton, Naval Base San Diego (32nd St), Naval Base Coronado, and MCAS Miramar. 0% down, $0 PMI, and San Diego BAH optimization.
   - **Fix-and-Flip & Investors** (`/fix-and-flip`): 70% underwriting rule ($MAO = [ARV \times 70\%] - \text{Rehab}$), off-market deal sourcing, and California SB9 ADU lot expansion.
-- **Bilingual Service**: Full Spanish-language mirror (`/es/`, `/es/comprar`, `/es/vender`, `/es/contacto`).
+- **Bilingual Service & Spanish Localization Parity**: Full Spanish-language mirror across all services (`/es/`, `/es/comprar`, `/es/vender`, `/es/primeros-compradores`, `/es/prestamos-va`, `/es/inversionistas`, `/es/casas-abiertas`, `/es/sobre-mi`, `/es/preguntas-frecuentes`, `/es/contacto`) with synchronized bidirectional `hreflang` tags (`en`, `es`, `x-default`) and sitemap indexing.
+- **Open House Feature Sheets & Printable Flyers** (`/properties/[slug]/flyer`): Print-optimized 8.5" x 11" Letter presentation sheets with `@media print` typography, photo grid, key specs ribbon, verified DRE credentials, and dynamic vector QR code.
+- **Real-Time Lead Webhook Dispatcher** (`src/lib/notifications.ts`): Non-blocking webhook notification pipeline triggered on form submission, formatting human-readable lead alerts with DRE disclosures.
 - **Interactive Tools**: Real-time Mortgage Calculator (`/buy`) with VA funding fee calculations, property tax, HOA, and amortization schedules.
 - **Community Guides**: Deep-dive neighborhood spotlights for North Park, La Jolla, Chula Vista, Mission Hills, Pacific Beach, and Downtown San Diego.
 - **Regulatory Compliance**: Equal Housing Opportunity badge, DRE disclosures, Privacy Policy, Terms of Service, Cookie Policy, Accessibility Statement, and Brokerage Disclosures.
@@ -140,7 +142,7 @@ The platform integrates five comprehensive core tiers:
 - **Rendering & Server**: Modern hybrid SSR with `@astrojs/node` standalone adapter.
 - **Styling**: Curated **Vanilla CSS design system** using design tokens (`tokens.css`, `global.css`, `admin.css`), CSS grid, flexbox, micro-animations, and responsive breakpoints. **Zero bloated UI frameworks or Next.js dependencies.**
 - **Database & Storage**: [Supabase](https://supabase.com) PostgreSQL with **Row Level Security (RLS)**, storage bucket policies, automated audit triggers, and input sanitization (`validation.ts`). Includes a zero-downtime runtime repository fallback for development.
-- **Testing**: [Vitest](https://vitest.dev) (75 automated tests across 8 test suites).
+- **Testing**: [Vitest](https://vitest.dev) (93 automated tests across 9 test suites).
 
 ---
 
@@ -262,7 +264,7 @@ Open [http://localhost:4321](http://localhost:4321) in your browser.
 
 ## 🧪 Testing & Verification
 
-### Run the Vitest Test Suite (75 Tests)
+### Run the Vitest Test Suite (93 Tests)
 ```bash
 npm test
 ```
@@ -271,19 +273,20 @@ npm test
 ✓ src/tests/mortgage.test.ts (4 tests)
 ✓ src/tests/auth.test.ts (5 tests)
 ✓ src/tests/seo.test.ts (11 tests)
+✓ src/tests/suite-extensions.test.ts (18 tests)
 ✓ src/tests/cms.test.ts (9 tests)
 ✓ src/tests/security.test.ts (24 tests)
 ✓ src/tests/bi-crm.test.ts (13 tests)
 ✓ src/tests/filter.test.ts (5 tests)
 
-Test Files  8 passed (8)
-     Tests  75 passed (75)
+Test Files  9 passed (9)
+     Tests  93 passed (93)
 ```
 
 ### Run Astro Diagnostic Check
 ```bash
 npx astro check
-# Result (91 files): 0 errors, 0 warnings, 0 hints
+# Result (99 files): 0 errors, 0 warnings, 0 hints
 ```
 
 ### Run Production Build

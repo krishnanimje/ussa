@@ -1,0 +1,113 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { SITE_SETTINGS } from '../../lib/store';
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/es' },
+  { name: 'Inversionistas & Fix-and-Flip', url: '/es/inversionistas' }
+];
+---
+
+<Layout 
+  title="Inversión Inmobiliaria & Fix-and-Flip en San Diego | Edgar Valle"
+  description="Estrategias de inversión en bienes raíces en San Diego: Fix-and-Flip, regla del 70%, desarrollo de ADUs bajo la Ley SB9 de California y acuerdos fuera de mercado con Edgar Valle."
+  canonicalUrl="/es/inversionistas"
+  lang="es"
+  hreflangEn="/fix-and-flip"
+  hreflangEs="/es/inversionistas"
+  breadcrumbs={breadcrumbItems}
+>
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <!-- Hero Section -->
+  <section class="section" style="background: radial-gradient(circle at top right, #1f2937 0%, var(--bg-primary) 100%); padding: 4rem 0;">
+    <div class="container">
+      <div style="max-width: 820px;">
+        <span class="section-eyebrow" style="color: var(--color-gold-400);">REMODELACIÓN &amp; PLUSVALÍA PATRIMONIAL</span>
+        <h1 style="color: #ffffff; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15; margin: 0.5rem 0 1.25rem 0;">
+          Fix-and-Flip e Inversión Inmobiliaria Inteligente en San Diego
+        </h1>
+        <p class="lead" style="color: #cbd5e1; font-size: 1.15rem; line-height: 1.6;">
+          Localice propiedades con alto margen de remodelación, optimice su capital con la regla del 70% y aproveche las regulaciones de California SB9 para expandir lotes con unidades accesorias (ADU).
+        </p>
+        <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+          <a href="/es/contacto?subject=investor_flip" class="btn btn-gold btn-lg">Unirse a la Red de Inversionistas</a>
+          <a href="/properties" class="btn btn-outline btn-lg" style="color: #ffffff; border-color: rgba(255,255,255,0.3);">Ver Oportunidades Activas</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Investor Principles -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+        <span class="section-eyebrow">METODOLOGÍA FINANCIERA</span>
+        <h2>Los Fundamentos de Nuestra Estrategia de Inversión</h2>
+      </div>
+
+      <div class="grid grid-3" style="gap: 2rem;">
+        <div class="card" style="padding: 2.25rem;">
+          <div style="font-size: 2rem; font-weight: 800; color: var(--color-gold-600); margin-bottom: 0.75rem;">70%</div>
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">La Regla del 70% de Compra</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+            Calculamos rigurosamente la Oferta Máxima Permitida (MAO):
+            <br />
+            <code>MAO = (ARV × 70%) − Costos de Remodelación</code>.
+            Esto protege su inversión contra fluctuaciones de mercado y contingencias de construcción.
+          </p>
+        </div>
+
+        <div class="card" style="padding: 2.25rem;">
+          <div style="font-size: 2rem; font-weight: 800; color: var(--color-gold-600); margin-bottom: 0.75rem;">SB 9</div>
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">California SB9 &amp; Expansión ADU</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+            Identificamos parcelas zonificadas para construir unidades secundarias habitacionales (ADU y JADU). Convierta un lote unifamiliar tradicional en una fuente de múltiples ingresos de alquiler mensual.
+          </p>
+        </div>
+
+        <div class="card" style="padding: 2.25rem;">
+          <div style="font-size: 2rem; font-weight: 800; color: var(--color-gold-600); margin-bottom: 0.75rem;">OFF</div>
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Tratos Fuera de Mercado (Off-Market)</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+            Acceda a inventario exclusivo antes de que llegue a portales públicos, permitiéndole negociar términos ventajosos directamente sin guerras de ofertas innecesarias.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Neighborhood Investment Zones -->
+  <section class="section" style="background: var(--bg-surface);">
+    <div class="container container-narrow">
+      <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+        <span class="section-eyebrow">ZONAS DE ALTO RETORNO EN SAN DIEGO</span>
+        <h2>Submercados con Demanda Sólida para Reventa</h2>
+      </div>
+
+      <div class="card" style="padding: 2rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem;">1. North Park &amp; Normal Heights</h3>
+        <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+          Casas estilo artesano y revival español de los años 1920-1940. Excelente margen para remodelaciones de cocina abierta, preservación de maderas nobles y adición de suites principales modernas.
+        </p>
+
+        <h3 style="font-size: 1.2rem; margin: 1.5rem 0 0.75rem 0;">2. Chula Vista &amp; South Bay</h3>
+        <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+          Lotes residenciales amplios de 6,000 a 10,000 pies cuadrados con acceso ideal para construir ADUs independientes, generando flujo de caja positivo inmediato.
+        </p>
+
+        <h3 style="font-size: 1.2rem; margin: 1.5rem 0 0.75rem 0;">3. Clairemont &amp; Linda Vista</h3>
+        <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+          Ubicación central con acceso rápido a Mission Bay, UCSD y UTC. Muy buscado por compradores primerizos y familias que pagan primas por casas llave en mano.
+        </p>
+      </div>
+
+      <!-- Legal Disclosure -->
+      <div style="padding: 1.5rem; background: #fdfbf7; border: 1px solid var(--border-light); border-radius: 8px; font-size: 0.85rem; color: #475569;">
+        <strong>Aviso Legal y de Riesgo de Inversión (Edgar Valle, DRE #{SITE_SETTINGS.dre_license} • {SITE_SETTINGS.brokerage_name}):</strong><br />
+        Cualquier estimación de valor posterior a la reparación (ARV), márgenes proyectados o presupuestos de remodelación se presentan con fines estrictamente educativos y de debate. El mercado inmobiliario y la construcción conllevan riesgos económicos inherentes. Los inversionistas deben realizar sus propias inspecciones y consultar a sus contadores (CPA) e ingenieros estructurales certificados antes de comprometer capital.
+      </div>
+    </div>
+  </section>
+</Layout>

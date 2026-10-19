@@ -1,0 +1,104 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/es' },
+  { name: 'Preguntas Frecuentes', url: '/es/preguntas-frecuentes' }
+];
+
+const faqs = [
+  {
+    q: '¿Cuánto dinero necesito de pago inicial (enganche) para comprar casa en San Diego?',
+    a: 'Depende del tipo de préstamo. Con un préstamo garantizado por el VA (para personal militar y veteranos), el enganche es del 0%. Con préstamos convencionales para primeros compradores se requiere desde un 3%, y con préstamos FHA desde un 3.5%. Además, existen subsidios de asistencia de enganche de CalHFA en California que pueden cubrir parte o la totalidad de estos costos.'
+  },
+  {
+    q: '¿Quién paga los honorarios del agente de bienes raíces en California?',
+    a: 'Bajo las normas actualizadas de la Asociación Nacional de Realtors (NAR), las comisiones y compensaciones del agente se establecen mediante un acuerdo de representación por escrito claro y transparente antes de iniciar las visitas. En la mayoría de las compras, la compensación es negociada con el vendedor como parte de la oferta de compra.'
+  },
+  {
+    q: '¿Cuáles son los costos de cierre típicos en el condado de San Diego?',
+    a: 'Los costos de cierre para el comprador suelen oscilar entre el 1% y el 2.5% del precio total de compra. Incluyen tarifas de custodia (escrow), seguro de título del prestamista, avalúo bancario, inspecciones profesionales, seguro de vivienda prepagado e impuestos a la propiedad prorrateados.'
+  },
+  {
+    q: '¿Puedo comprar una casa si mi puntaje de crédito (FICO) no es perfecto?',
+    a: 'Sí. Los préstamos FHA respaldados por el gobierno federal aceptan puntajes crediticios a partir de 580 con el 3.5% de enganche. Además, trabajamos con prestamistas hipotecarios bilingües que ofrecen orientación gratuita para optimizar su puntaje crediticio antes de presentar ofertas.'
+  },
+  {
+    q: '¿Cómo funciona la regla del 70% para remodelaciones y reventa (Fix-and-Flip)?',
+    a: 'La regla del 70% dicta que un inversionista no debe pagar más del 70% del valor posterior a la reparación (ARV), restando el presupuesto estimado de remodelación: MAO = (ARV × 70%) − Costo de Obra. Esta fórmula proporciona un margen de seguridad vital para cubrir costos de retención, tarifas de financiamiento y fluctuaciones del mercado.'
+  },
+  {
+    q: '¿Qué inspecciones son obligatorias o recomendables al comprar una casa?',
+    a: 'En California, se recomienda contratar una inspección general de la vivienda (Home Inspection), una inspección de termitas y plagas (Wood Destroying Organisms / Pest Inspection), y en propiedades más antiguas, una inspección de tuberías por cámara (Sewer Scope) y de techo.'
+  }
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'mainEntity': faqs.map(item => ({
+    '@type': 'Question',
+    'name': item.q,
+    'acceptedAnswer': {
+      '@type': 'Answer',
+      'text': item.a
+    }
+  }))
+};
+---
+
+<Layout 
+  title="Preguntas Frecuentes sobre Bienes Raíces en San Diego | Edgar Valle"
+  description="Respuestas claras a dudas frecuentes sobre compra de vivienda, préstamos VA, enganches, comisiones y costos de cierre en San Diego con Edgar Valle."
+  canonicalUrl="/es/preguntas-frecuentes"
+  lang="es"
+  hreflangEn="/faq"
+  hreflangEs="/es/preguntas-frecuentes"
+  breadcrumbs={breadcrumbItems}
+  jsonLd={JSON.stringify(faqJsonLd)}
+>
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <!-- Hero Section -->
+  <section class="section" style="background: radial-gradient(circle at top right, #1f2937 0%, var(--bg-primary) 100%); padding: 3.5rem 0;">
+    <div class="container text-center" style="max-width: 780px;">
+      <span class="section-eyebrow" style="color: var(--color-gold-400);">TRANSPARENCIA &amp; CONOCIMIENTO</span>
+      <h1 style="color: #ffffff; font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.2; margin: 0.5rem 0 1rem 0;">
+        Preguntas Frecuentes sobre Bienes Raíces en San Diego
+      </h1>
+      <p class="lead" style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">
+        Resolvemos con honestidad y claridad las dudas más habituales sobre financiamiento, inspecciones y compraventa en California.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ Accordion / Grid -->
+  <section class="section">
+    <div class="container container-narrow">
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        {faqs.map((faq, index) => (
+          <div class="card" style="padding: 1.75rem;">
+            <h3 style="font-size: 1.15rem; color: #0f172a; margin: 0 0 0.65rem 0;">
+              {index + 1}. {faq.q}
+            </h3>
+            <p style="color: var(--text-secondary); line-height: 1.65; margin: 0; font-size: 0.95rem;">
+              {faq.a}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div class="card text-center" style="margin-top: 3rem; padding: 2.5rem; background: var(--bg-surface);">
+        <h3 style="margin: 0 0 0.5rem 0;">¿Tiene alguna pregunta específica sobre su caso?</h3>
+        <p style="color: var(--text-secondary); margin: 0 0 1.5rem 0;">
+          Cada familia y transacción es única. Contácteme hoy mismo para una conversación telefónica o por WhatsApp sin compromiso.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+          <a href="/es/contacto" class="btn btn-gold">Escribir a Edgar</a>
+          <a href="tel:6195550198" class="btn btn-outline">Llamar: (619) 555-0198</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

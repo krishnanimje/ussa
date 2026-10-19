@@ -3,6 +3,7 @@ import { validateLeadSubmission } from '../../lib/validation';
 import { submitLead } from '../../lib/store';
 import { checkLeadSubmissionRateLimit } from '../../lib/rateLimit';
 import { getClientIp } from '../../lib/auth';
+import { dispatchLeadNotification } from '../../lib/notifications';
 
 export const prerender = false;
 
@@ -103,6 +104,23 @@ export const POST: APIRoute = async ({ request }) => {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    // 5. Real-Time Webhook & Lead Alert Dispatch (Non-blocking)
+    dispatchLeadNotification({
+      id: persistenceResult.leadId,
+      full_name: validation.data.fullName,
+      email: validation.data.email,
+      phone: validation.data.phone,
+      lead_type: validation.data.leadType,
+      message: validation.data.message,
+      preferred_contact_method: validation.data.preferredContactMethod,
+      property_id: validation.data.propertyId,
+      property_address: validation.data.propertyAddress,
+      estimated_budget: validation.data.estimatedBudget,
+      timeframe: validation.data.timeframe,
+      is_preapproved: validation.data.isPreapproved,
+      language_preference: validation.data.languagePreference
+    }).catch(err => console.warn('Lead notification alert dispatch warning:', err));
 
     return new Response(JSON.stringify({ 
       success: true, 
