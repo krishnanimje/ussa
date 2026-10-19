@@ -82,17 +82,18 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     const body = await request.json();
-    const { action, leadId, note } = body;
+    const { action, leadId, id, note } = body;
+    const targetId = leadId || id;
 
     if (action === 'add_note') {
-      if (!leadId || !note || typeof note !== 'string') {
+      if (!targetId || !note || typeof note !== 'string') {
         return new Response(JSON.stringify({ error: 'Missing leadId or note' }), {
           status: 400,
           headers: { 'Content-Type': 'application/json' }
         });
       }
 
-      const res = await addLeadNote(leadId, note, 'edgar@yourrealtoredgar.com');
+      const res = await addLeadNote(targetId, note, 'edgar@yourrealtoredgar.com');
       return new Response(JSON.stringify(res), {
         status: res.success ? 200 : 400,
         headers: { 'Content-Type': 'application/json' }
@@ -120,8 +121,9 @@ export const PATCH: APIRoute = async ({ request }) => {
   }
 
   try {
-    const { leadId, status, admin_notes, follow_up_date, assigned_admin } = await request.json();
-    if (!leadId) {
+    const { leadId, id, status, admin_notes, follow_up_date, assigned_admin } = await request.json();
+    const targetId = leadId || id;
+    if (!targetId) {
       return new Response(JSON.stringify({ error: 'Missing leadId' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -134,7 +136,7 @@ export const PATCH: APIRoute = async ({ request }) => {
     if (follow_up_date !== undefined) updates.follow_up_date = follow_up_date;
     if (assigned_admin !== undefined) updates.assigned_admin = assigned_admin;
 
-    const updated = await updateLead(leadId, updates, 'edgar@yourrealtoredgar.com');
+    const updated = await updateLead(targetId, updates, 'edgar@yourrealtoredgar.com');
     return new Response(JSON.stringify({ success: updated }), {
       status: updated ? 200 : 404,
       headers: { 'Content-Type': 'application/json' }
