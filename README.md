@@ -3,10 +3,11 @@
 [![Astro](https://img.shields.io/badge/Astro-5.18-BC52EE.svg?style=flat&logo=astro)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20RLS-3ECF8E.svg?style=flat&logo=supabase)](https://supabase.com)
-[![Vitest](https://img.shields.io/badge/Vitest-44%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
+[![Vitest](https://img.shields.io/badge/Vitest-51%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
 [![Power BI](https://img.shields.io/badge/Analytics-Power%20BI%20Engine-F2C811.svg?style=flat)](https://edgarvalle.com/admin/analytics)
+[![SEO](https://img.shields.io/badge/SEO-7--Workstream%20Compliant-00C49F.svg?style=flat)](https://edgarvalle.com/sitemap.xml)
 
-A complete, enterprise-grade real estate web application, property CMS, and Business Intelligence CRM built for **Edgar Valle | Realtor** ([Full Circle Group](https://edgarvalle.com), **California DRE #02375273**) serving the San Diego, California real estate market.
+A complete, enterprise-grade real estate web application, property CMS, Business Intelligence CRM, and technical SEO architecture built for **Edgar Valle | Realtor** ([Full Circle Group](https://edgarvalle.com), **California DRE #02375273**) serving the San Diego, California real estate market.
 
 Instagram: [@yourrealtoredgar](https://www.instagram.com/yourrealtoredgar/) • Direct: `(619) 555-0198` • Email: `edgar@yourrealtoredgar.com`
 
@@ -14,7 +15,7 @@ Instagram: [@yourrealtoredgar](https://www.instagram.com/yourrealtoredgar/) • 
 
 ## 🌟 Architecture & System Scope
 
-The platform integrates three comprehensive core tiers:
+The platform integrates four comprehensive core tiers:
 
 ### 1. Public Marketing & Client Advisory Website (Master Prompt 01)
 - **Verified Branding**: Edgar Valle, Full Circle Group, California DRE #02375273, San Diego County market.
@@ -67,6 +68,37 @@ The platform integrates three comprehensive core tiers:
   - 8 Authorized Reports: Property Inventory, Daily Traffic, Property Views vs. Inquiries, CRM Leads by Date, Conversion Funnel, Traffic Sources, Listing Performance, and Open House Inquiries.
 - **Google Search Console Integration** (`src/lib/gsc.ts`):
   - Real configuration check; transparent status card with zero hallucinated ranking metrics when not configured.
+
+### 4. Complete Seven-Workstream SEO Implementation (Master Prompt 04)
+- **1. On-Page SEO**:
+  - Unique titles and meta descriptions tailored to San Diego real estate intent.
+  - Strict single H1 and clean H2/H3 semantic hierarchy across all pages.
+  - Reusable `<Breadcrumbs />` component with Schema.org `BreadcrumbList` microdata.
+  - Contextual internal linking between niche programs, neighborhood guides, and listings.
+  - Full bidirectional `hreflang` alternates (`en`, `es`, `x-default`) on paired pages with matching `lang` attribute.
+  - Open Graph and Twitter summary/large image cards.
+- **2. Technical SEO**:
+  - Dynamic, standards-compliant XML sitemap (`/sitemap.xml`) with `xmlns:xhtml` (hreflang alternates) and `xmlns:image` (high-res property imagery).
+  - Excludes drafts, private `/admin/`, API endpoints, and non-indexable properties from the sitemap.
+  - Hardened `robots.txt` blocking admin, APIs, and facet crawl bloat (`?search=*`, `?filter=*`, `?preview=*`).
+  - Canonical 301 redirects (`/listings` &rarr; `/properties`, `/fthb` &rarr; `/first-time-homebuyer`, `/military` &rarr; `/va-loans`).
+  - Strict `noindex, nofollow` on `/admin/*`, error pages (`404`, `500`), and draft listing previews.
+- **3. Local SEO**:
+  - Genuine San Diego County service-area targeting (North Park, La Jolla, Chula Vista, Mission Hills, Pacific Beach, Downtown). Zero doorway pages or fabricated addresses.
+  - Verified Google Business Profile (GBP) optimization SOP with strict NAP consistency matching California DRE records.
+- **4. Image and Video SEO**:
+  - Responsive WebP images with explicit `width` and `height` to eliminate Cumulative Layout Shift (CLS).
+  - Eager loading (`loading="eager" fetchpriority="high"`) for above-the-fold hero images; lazy loading for below-the-fold media.
+  - 16:9 video embeds with Schema.org `VideoObject` structured data and transcripts.
+- **5. Performance SEO**:
+  - Core Web Vitals optimization targets: LCP &le; 2.5s, INP &le; 200ms, CLS &le; 0.1.
+  - Zero heavy client-side JavaScript frameworks; native server-rendered Astro with CSS tokens.
+- **6. Structured Data SEO**:
+  - Fully validated JSON-LD schemas: `RealEstateAgent` (matching DRE #02375273 and Full Circle Group), `SingleFamilyResidence`/`Apartment`, `BreadcrumbList`, `Article`, `VideoObject`, `FAQPage`.
+  - Zero fabricated reviews or aggregate star ratings.
+- **7. Off-Page & Authority SEO**:
+  - Tier-1 regulatory citation playbook (California DRE, SDAR, CAR, NAR).
+  - Local authority link building, community sponsorship, and educational PR strategy.
 
 ---
 
@@ -198,7 +230,7 @@ Open [http://localhost:4321](http://localhost:4321) in your browser.
 
 ## 🧪 Testing & Verification
 
-### Run the Vitest Test Suite (44 Tests)
+### Run the Vitest Test Suite (51 Tests)
 ```bash
 npm test
 ```
@@ -207,31 +239,47 @@ npm test
 ✓ src/tests/auth.test.ts (5 tests)
 ✓ src/tests/mortgage.test.ts (4 tests)
 ✓ src/tests/filter.test.ts (5 tests)
-✓ src/tests/seo.test.ts (4 tests)
+✓ src/tests/seo.test.ts (11 tests)
 ✓ src/tests/cms.test.ts (9 tests)
 ✓ src/tests/bi-crm.test.ts (13 tests)
 
 Test Files  7 passed (7)
-     Tests  44 passed (44)
+     Tests  51 passed (51)
 ```
 
 ### Run Astro Diagnostic Check
 ```bash
 npx astro check
-# Result (85 files): 0 errors, 0 warnings, 0 hints
+# Result (86 files): 0 errors, 0 warnings, 0 hints
 ```
 
 ### Run Production Build
 ```bash
 npm run build
-# Compiles complete server bundle in ~5.1s
+# Compiles complete server bundle in ~5.2s
 ```
 
-### End-to-End Live HTTP Route Verification
-With the dev server running, verify all admin routes, APIs, CSV exports, and telemetry:
+### End-to-End Live HTTP Route & SEO Verifications
+With the dev server running, execute automated health checks across all routes, API endpoints, sitemaps, robots rules, and canonicals:
 ```bash
+# 1. Admin endpoints, CSV exports, CRM lead drawer, and analytics telemetry:
 node scripts/test-admin.cjs
+
+# 2. Live HTTP canonicals, hreflang alternates, XML sitemap, and robots headers:
+node scripts/test-endpoints.js
 ```
+
+---
+
+## 📚 Technical Documentation & Strategy Guides
+
+Comprehensive operational documentation and playbooks are located in [`docs/`](./docs/):
+
+1. **[Keyword Research & Mapping Matrix](docs/keyword-research-and-mapping.md)**: Target search queries, search intent, search volume estimates, and URL mapping across San Diego buyers, sellers, military relocations, fix-and-flip investors, and Spanish speakers.
+2. **[Google Business Profile & Local SEO Guide](docs/local-seo-and-gbp-guide.md)**: Service-area business (SAB) verification protocol, NAP consistency rules, review acquisition scripts, Apple Business Connect, and Bing Places synchronization.
+3. **[Off-Page Authority Strategy](docs/off-page-authority-strategy.md)**: Regulatory citation checklist (California DRE, SDAR, CAR, NAR), high-authority directory profiles, guest contributions, and educational PR outreach.
+4. **[Technical SEO Audit Report](docs/technical-seo-audit-report.md)**: In-depth audit of HTTP status codes, metadata coverage, canonical tags, schema validation, and Core Web Vitals targets.
+5. **[Monthly SEO Reporting SOP](docs/monthly-seo-reporting-process.md)**: Standard operating procedure and monthly reporting template for tracking organic impressions, keyword rankings, qualified lead conversions, and GBP phone calls.
 
 ---
 
