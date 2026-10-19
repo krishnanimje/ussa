@@ -120,4 +120,47 @@ describe('Spanish Parity, Open House Flyers & Lead Automation Test Suite', () =>
       expect(content).toContain('Print Feature Sheet');
     });
   });
+
+  // --------------------------------------------------------------------------
+  // 4. Observability: Structured Logger & PII Redaction
+  // --------------------------------------------------------------------------
+  describe('4. Structured Logging & PII Redaction Engine', () => {
+    it('redacts sensitive fields (passwords, tokens, emails, phone numbers, inquiry messages)', async () => {
+      const { redactSensitiveData } = await import('../lib/logger');
+      const payload = {
+        requestId: 'req-abc-123',
+        email: 'client@example.com',
+        phone: '619-555-0199',
+        password: 'SuperSecretPassword',
+        message: 'I want to purchase this property immediately with cash.',
+        nested: {
+          token: 'jwt.bearer.token',
+          auth: 'Basic credentials',
+          safeField: 'visible-metadata'
+        }
+      };
+
+      const redacted = redactSensitiveData(payload) as any;
+      expect(redacted.requestId).toBe('req-abc-123');
+      expect(redacted.email).toBe('[REDACTED]');
+      expect(redacted.phone).toBe('[REDACTED]');
+      expect(redacted.password).toBe('[REDACTED]');
+      expect(redacted.message).toBe('[REDACTED]');
+      expect(redacted.nested.token).toBe('[REDACTED]');
+      expect(redacted.nested.auth).toBe('[REDACTED]');
+      expect(redacted.nested.safeField).toBe('visible-metadata');
+    });
+
+    it('handles arrays and non-object values gracefully', async () => {
+      const { redactSensitiveData } = await import('../lib/logger');
+      expect(redactSensitiveData(null)).toBe(null);
+      expect(redactSensitiveData('test-string')).toBe('test-string');
+      expect(redactSensitiveData(12345)).toBe(12345);
+
+      const arrayData = [{ password: 'secret' }, { publicName: 'open-house' }];
+      const result = redactSensitiveData(arrayData) as any[];
+      expect(result[0].password).toBe('[REDACTED]');
+      expect(result[1].publicName).toBe('open-house');
+    });
+  });
 });

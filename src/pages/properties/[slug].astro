@@ -850,6 +850,9 @@ const pricePerSqFt = Math.round(property.price / property.square_feet);
 <script>
   function setupGallery() {
     const mainImg = document.getElementById('mainGalleryImg') as HTMLImageElement;
+    if (!mainImg) return;
+    if (mainImg.getAttribute('data-initialized')) return;
+    mainImg.setAttribute('data-initialized', 'true');
     const thumbBtns = document.querySelectorAll('.thumb-btn');
     const fsBtn = document.getElementById('fullscreenBtn');
     const modal = document.getElementById('lightboxModal');

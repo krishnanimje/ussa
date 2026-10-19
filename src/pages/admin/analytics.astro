@@ -3,7 +3,8 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getAnalyticsSummary } from '../../lib/analytics';
 import { getGSCMetrics } from '../../lib/gsc';
 import { checkAdminAuth } from '../../lib/auth';
-import type { DateRangeFilter } from '../../lib/types';
+import { logger } from '../../lib/logger';
+import type { DateRangeFilter, AnalyticsSummary, GSCMetrics } from '../../lib/types';
 
 export const prerender = false;
 
@@ -16,10 +17,19 @@ const currentRange = (url.searchParams.get('range') || '30d') as DateRangeFilter
 const customStart = url.searchParams.get('startDate') || undefined;
 const customEnd = url.searchParams.get('endDate') || undefined;
 
-const [summary, gsc] = await Promise.all([
-  getAnalyticsSummary(currentRange, customStart, customEnd),
-  getGSCMetrics()
-]);
+let summary: AnalyticsSummary;
+let gsc: GSCMetrics;
+
+try {
+  [summary, gsc] = await Promise.all([
+    getAnalyticsSummary(currentRange, customStart, customEnd),
+    getGSCMetrics()
+  ]);
+} catch (err: any) {
+  logger.error('Error fetching analytics summary for admin dashboard', { error: err.message });
+  summary = await getAnalyticsSummary('30d');
+  gsc = await getGSCMetrics();
+}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });

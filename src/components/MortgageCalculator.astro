@@ -355,6 +355,8 @@ const { initialPrice = 950000, initialHoa = 0, isVaEligible = false } = Astro.pr
   function initCalculator() {
     const root = document.getElementById('mortgageCalculator');
     if (!root) return;
+    if (root.getAttribute('data-initialized')) return;
+    root.setAttribute('data-initialized', 'true');
 
     const priceSlider = document.getElementById('calcPrice') as HTMLInputElement;
     const downSlider = document.getElementById('calcDownPercent') as HTMLInputElement;

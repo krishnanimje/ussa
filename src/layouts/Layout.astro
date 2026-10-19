@@ -101,6 +101,18 @@ const {
         });
       }
 
+      // Global Image Fallback for Broken/Missing Remote URLs
+      window.addEventListener('error', (event) => {
+        const target = event.target as HTMLElement | null;
+        if (target && target.tagName === 'IMG') {
+          const img = target as HTMLImageElement;
+          if (!img.dataset.fallbackApplied) {
+            img.dataset.fallbackApplied = 'true';
+            img.src = '/images/properties/north-park-spanish.svg';
+          }
+        }
+      }, true);
+
       document.addEventListener('astro:page-load', initScrollReveals);
       if (document.readyState === 'complete' || document.readyState === 'interactive') {
         initScrollReveals();

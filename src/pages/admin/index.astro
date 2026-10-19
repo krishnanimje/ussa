@@ -4,15 +4,27 @@ import { getPropertyStats, getAllLeads, getAuditLogs, SITE_SETTINGS } from '../.
 import { formatCurrency } from '../../lib/mortgage';
 import { checkAdminAuth } from '../../lib/auth';
 
+import { logger } from '../../lib/logger';
+
 export const prerender = false;
 
 if (!checkAdminAuth(Astro.request)) {
   return Astro.redirect('/admin/login');
 }
 
-const stats = await getPropertyStats();
-const leads = await getAllLeads();
-const auditLogs = await getAuditLogs(8);
+let stats = { total: 0, published: 0, draft: 0, pending: 0, archived: 0 };
+let leads: any[] = [];
+let auditLogs: any[] = [];
+
+try {
+  [stats, leads, auditLogs] = await Promise.all([
+    getPropertyStats(),
+    getAllLeads(),
+    getAuditLogs(8)
+  ]);
+} catch (err: any) {
+  logger.error('Failed to load executive dashboard data', { error: err.message });
+}
 
 const newLeadsCount = leads.filter(l => l.status === 'new').length;
 ---

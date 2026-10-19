@@ -1,11 +1,14 @@
 import { defineMiddleware } from 'astro:middleware';
 import { checkAdminAuth, getClientIp } from './lib/auth';
 import { checkAdminLoginRateLimit } from './lib/rateLimit';
+import { logger } from './lib/logger';
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  const startTime = Date.now();
   const url = new URL(context.request.url);
   const pathname = url.pathname;
   const clientIp = getClientIp(context.request);
+  const requestId = context.request.headers.get('x-request-id') || crypto.randomUUID();
 
   // 1. Rate limit protection on admin login to stop brute-force attacks
   if (context.request.method === 'POST' && (pathname === '/admin/login' || pathname === '/api/admin/login')) {
@@ -105,6 +108,20 @@ export const onRequest = defineMiddleware(async (context, next) => {
       // Public marketing and property catalog pages
       newHeaders.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400');
     }
+  }
+
+  // 7. Attach Correlation Request ID
+  newHeaders.set('X-Request-Id', requestId);
+
+  // 8. Lightweight Structured Access Log for API calls and error responses
+  if (pathname.startsWith('/api/') || response.status >= 400) {
+    logger.info(`${context.request.method} ${pathname}`, {
+      requestId,
+      method: context.request.method,
+      path: pathname,
+      statusCode: response.status,
+      durationMs: Date.now() - startTime
+    });
   }
 
   return new Response(response.body, {
