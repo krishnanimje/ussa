@@ -1,0 +1,371 @@
+---
+// Cookie and Privacy Consent Banner (CCPA / CPRA & ePrivacy Compliant)
+---
+
+<div 
+  id="valleCookieBanner" 
+  class="cookie-banner" 
+  role="region" 
+  aria-label="Cookie and Privacy Consent Banner"
+  style="display: none;"
+>
+  <div class="cookie-container">
+    <div class="cookie-content">
+      <div class="cookie-header">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c5a059" stroke-width="2" aria-hidden="true">
+          <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+          <path d="M8.5 8.5v.01"></path>
+          <path d="M7.5 15.5v.01"></path>
+          <path d="M12 18v.01"></path>
+          <path d="M11 13v.01"></path>
+          <path d="M16 13v.01"></path>
+        </svg>
+        <span class="cookie-title">Privacy &amp; Cookie Preferences</span>
+      </div>
+      <p class="cookie-desc">
+        We respect your privacy under California law (CCPA/CPRA). We use strictly necessary cookies to ensure secure site operation and privacy-preserving analytics to improve our San Diego real estate guides. Non-essential tracking requires your consent. Read our <a href="/cookie-policy" class="cookie-link">Cookie Policy</a> and <a href="/privacy-policy" class="cookie-link">Privacy Policy</a>.
+      </p>
+
+      <!-- Granular Preferences Panel -->
+      <div id="cookiePreferencesPanel" class="cookie-pref-panel" style="display: none;">
+        <div class="pref-item">
+          <div class="pref-info">
+            <span class="pref-label">Strictly Necessary Cookies</span>
+            <span class="pref-desc">Essential for website security, CSRF protection, and authorized admin sessions. Always active.</span>
+          </div>
+          <span class="pref-status required">Required</span>
+        </div>
+
+        <div class="pref-item">
+          <div class="pref-info">
+            <span class="pref-label">Analytics &amp; Performance</span>
+            <span class="pref-desc">Anonymous, privacy-preserving page view statistics and inquiry telemetry. Zero cross-site tracking.</span>
+          </div>
+          <label class="switch" aria-label="Toggle Analytics Cookies">
+            <input type="checkbox" id="consentAnalytics" checked />
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="pref-item">
+          <div class="pref-info">
+            <span class="pref-label">Preferences &amp; Language</span>
+            <span class="pref-desc">Remembers your English/Spanish language selection and mortgage calculator inputs.</span>
+          </div>
+          <label class="switch" aria-label="Toggle Preference Cookies">
+            <input type="checkbox" id="consentMarketing" checked />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="cookie-actions">
+      <button type="button" id="cookieAcceptAll" class="btn-cookie btn-gold-cookie">Accept All</button>
+      <button type="button" id="cookieRejectNonEssential" class="btn-cookie btn-outline-cookie">Essential Only</button>
+      <button type="button" id="cookieTogglePreferences" class="btn-cookie btn-text-cookie">Customize</button>
+      <button type="button" id="cookieSaveCustom" class="btn-cookie btn-gold-cookie" style="display: none;">Save Choices</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cookie-banner {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    max-width: 980px;
+    margin: 0 auto;
+    background: #0d1520;
+    border: 1px solid #233549;
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+    z-index: 99999;
+    padding: 1.25rem 1.5rem;
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    animation: cookieSlideUp 0.35s ease-out;
+  }
+
+  @keyframes cookieSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .cookie-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 860px) {
+    .cookie-container {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .cookie-content {
+    flex: 1;
+  }
+
+  .cookie-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .cookie-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff;
+  }
+
+  .cookie-desc {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .cookie-link {
+    color: #c5a059;
+    text-decoration: underline;
+  }
+
+  .cookie-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+
+  .btn-cookie {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-gold-cookie {
+    background: linear-gradient(135deg, #dfc26e 0%, #c5a059 100%);
+    color: #090e14;
+    border: none;
+  }
+
+  .btn-gold-cookie:hover {
+    filter: brightness(1.1);
+  }
+
+  .btn-outline-cookie {
+    background: transparent;
+    color: #cbd5e1;
+    border: 1px solid #334155;
+  }
+
+  .btn-outline-cookie:hover {
+    background: #1e293b;
+    color: #ffffff;
+    border-color: #475569;
+  }
+
+  .btn-text-cookie {
+    background: transparent;
+    color: #c5a059;
+    border: none;
+    text-decoration: underline;
+  }
+
+  .cookie-pref-panel {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #1e293b;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .pref-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: #080d14;
+    padding: 0.65rem 0.85rem;
+    border-radius: 6px;
+    border: 1px solid #1e293b;
+  }
+
+  .pref-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .pref-label {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+
+  .pref-desc {
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .pref-status.required {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #c5a059;
+    background: rgba(197, 160, 89, 0.15);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  /* Accessible Toggle Switch */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #334155;
+    transition: 0.3s;
+    border-radius: 24px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: #c5a059;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(20px);
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    var CONSENT_STORAGE_KEY = 'valle_cookie_consent';
+    var banner = document.getElementById('valleCookieBanner');
+    var acceptAllBtn = document.getElementById('cookieAcceptAll');
+    var rejectBtn = document.getElementById('cookieRejectNonEssential');
+    var togglePrefBtn = document.getElementById('cookieTogglePreferences');
+    var saveCustomBtn = document.getElementById('cookieSaveCustom');
+    var prefPanel = document.getElementById('cookiePreferencesPanel');
+    var analyticsToggle = document.getElementById('consentAnalytics');
+    var marketingToggle = document.getElementById('consentMarketing');
+
+    function getConsent() {
+      try {
+        var saved = localStorage.getItem(CONSENT_STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+      return null;
+    }
+
+    function saveConsent(consent) {
+      try {
+        localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(consent));
+        window.dispatchEvent(new CustomEvent('valle-consent-updated', { detail: consent }));
+      } catch (e) {}
+      if (banner) banner.style.display = 'none';
+    }
+
+    // Check existing consent on load
+    var existing = getConsent();
+    if (!existing) {
+      if (banner) banner.style.display = 'block';
+    }
+
+    if (acceptAllBtn) {
+      acceptAllBtn.addEventListener('click', function() {
+        saveConsent({
+          essential: true,
+          analytics: true,
+          marketing: true,
+          timestamp: Date.now()
+        });
+      });
+    }
+
+    if (rejectBtn) {
+      rejectBtn.addEventListener('click', function() {
+        saveConsent({
+          essential: true,
+          analytics: false,
+          marketing: false,
+          timestamp: Date.now()
+        });
+      });
+    }
+
+    if (togglePrefBtn && prefPanel && saveCustomBtn) {
+      togglePrefBtn.addEventListener('click', function() {
+        var isHidden = prefPanel.style.display === 'none';
+        prefPanel.style.display = isHidden ? 'flex' : 'none';
+        saveCustomBtn.style.display = isHidden ? 'inline-block' : 'none';
+        togglePrefBtn.textContent = isHidden ? 'Hide Options' : 'Customize';
+      });
+
+      saveCustomBtn.addEventListener('click', function() {
+        saveConsent({
+          essential: true,
+          analytics: analyticsToggle ? analyticsToggle.checked : false,
+          marketing: marketingToggle ? marketingToggle.checked : false,
+          timestamp: Date.now()
+        });
+      });
+    }
+
+    // Global listener to allow re-opening preferences from footer or policy page
+    window.addEventListener('valle-open-cookie-settings', function() {
+      if (banner) {
+        banner.style.display = 'block';
+        if (prefPanel) prefPanel.style.display = 'flex';
+        if (saveCustomBtn) saveCustomBtn.style.display = 'inline-block';
+        if (togglePrefBtn) togglePrefBtn.textContent = 'Hide Options';
+      }
+    });
+  })();
+</script>

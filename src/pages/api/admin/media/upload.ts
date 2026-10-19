@@ -1,26 +1,33 @@
 import type { APIRoute } from 'astro';
-import { checkAdminAuth } from '../../../../lib/auth';
+import { checkAdminAuth, getClientIp } from '../../../../lib/auth';
 import { getSupabaseAdmin } from '../../../../lib/supabase';
 import { addPropertyMedia } from '../../../../lib/store';
+import { validateImageBuffer } from '../../../../lib/validation';
+import { checkUploadRateLimit } from '../../../../lib/rateLimit';
 import type { PropertyMedia } from '../../../../lib/types';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
 export const prerender = false;
 
-const ALLOWED_MIME_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/avif',
-  'image/svg+xml'
-];
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
 export const POST: APIRoute = async ({ request }) => {
+  // 1. Enforce Server-Side Authorization
   if (!checkAdminAuth(request)) {
     return new Response(JSON.stringify({ error: 'Unauthorized: Admin privileges required.' }), {
       status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  // 2. Enforce Upload Rate Limiting
+  const clientIp = getClientIp(request);
+  const rateLimit = checkUploadRateLimit(clientIp);
+  if (!rateLimit.allowed) {
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: 'Upload rate limit reached. Please wait before uploading more files.' 
+    }), {
+      status: 429,
       headers: { 'Content-Type': 'application/json' }
     });
   }
@@ -39,43 +46,37 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // 1. Validate MIME type
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: `Invalid file format (${file.type}). Supported formats: JPEG, PNG, WebP, AVIF, SVG.` 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // 2. Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: `File is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Maximum allowed is 10MB.` 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
     const buffer = Buffer.from(await file.arrayBuffer());
-    const fileExt = path.extname(file.name) || (file.type === 'image/jpeg' ? '.jpg' : '.png');
-    const safeName = `prop_${Date.now()}_${Math.random().toString(36).substring(2, 8)}${fileExt}`;
+
+    // 3. Binary Magic Number, Extension Whitelist & Anti-XSS SVG Inspection
+    const validation = validateImageBuffer(buffer, file.name, file.type);
+    if (!validation.valid) {
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: validation.error || 'Invalid or unsafe file format detected.' 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const detectedMime = validation.detectedMime || file.type;
+    const fileExt = path.extname(file.name).toLowerCase() || (detectedMime === 'image/jpeg' ? '.jpg' : '.png');
+    
+    // Generate unpredictable cryptographically randomized filename preventing directory traversal
+    const safeName = `prop_${Date.now()}_${Math.random().toString(36).substring(2, 10)}${fileExt}`;
 
     let mediaUrl = '';
     let storagePath = '';
 
-    // 3. Try Supabase Storage first if configured
+    // 4. Try Supabase Storage first if configured
     const adminSupabase = getSupabaseAdmin();
     if (adminSupabase) {
       try {
         const { data: uploadData, error: uploadErr } = await adminSupabase.storage
           .from('property-media')
           .upload(safeName, buffer, {
-            contentType: file.type,
+            contentType: detectedMime,
             upsert: false
           });
 
@@ -92,7 +93,7 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    // 4. Local disk fallback
+    // 5. Local disk fallback
     if (!mediaUrl) {
       const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
       try {
@@ -100,54 +101,49 @@ export const POST: APIRoute = async ({ request }) => {
         const filePath = path.join(uploadsDir, safeName);
         await fs.writeFile(filePath, buffer);
         mediaUrl = `/uploads/${safeName}`;
-        storagePath = `uploads/${safeName}`;
-      } catch (e: any) {
-        return new Response(JSON.stringify({ success: false, error: `Filesystem error: ${e.message}` }), {
+        storagePath = `local:${safeName}`;
+      } catch (writeErr) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Failed to write media asset to persistent storage.' 
+        }), {
           status: 500,
           headers: { 'Content-Type': 'application/json' }
         });
       }
     }
 
-    // 5. If propertyId is provided, associate with listing in store
-    let mediaRecord: PropertyMedia = {
-      id: `m_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-      property_id: propertyId,
-      media_type: 'image',
-      url: mediaUrl,
-      storage_path: storagePath,
-      alt_text: altText || file.name,
-      display_order: 1,
-      is_primary: isPrimary,
-      file_size_bytes: file.size,
-      mime_type: file.type,
-      created_at: new Date().toISOString()
-    };
-
+    // 6. Record in media table if associated with property
+    let createdMedia: PropertyMedia | undefined;
     if (propertyId) {
-      mediaRecord = await addPropertyMedia(propertyId, {
+      createdMedia = await addPropertyMedia(propertyId, {
         media_type: 'image',
         url: mediaUrl,
         storage_path: storagePath,
-        alt_text: altText || file.name,
+        alt_text: altText || 'San Diego property photograph',
         display_order: 99,
         is_primary: isPrimary,
         file_size_bytes: file.size,
-        mime_type: file.type
+        mime_type: detectedMime
       });
     }
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      media: mediaRecord,
-      url: mediaUrl,
-      message: 'Photo uploaded successfully'
+    return new Response(JSON.stringify({
+      success: true,
+      mediaUrl,
+      storagePath,
+      mediaId: createdMedia?.id,
+      message: 'Media uploaded and verified successfully.'
     }), {
-      status: 201,
+      status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ success: false, error: err.message || 'Server upload failure' }), {
+
+  } catch (error) {
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: 'An internal server error occurred while processing the upload.' 
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });

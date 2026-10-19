@@ -1,26 +1,31 @@
 ---
 export const prerender = false;
+import { verifyAdminCredentials, createAdminSessionCookie } from '../../lib/auth';
 
-const adminSecret = process.env.ADMIN_SECRET_KEY || import.meta.env.ADMIN_SECRET_KEY || 'dev-secret-valle-admin-session-key-2026';
 let errorMessage = '';
 
 if (Astro.request.method === 'POST') {
   try {
     const data = await Astro.request.formData();
-    const key = data.get('secretKey');
+    const keyOrPassword = (data.get('secretKey') as string) || '';
+    const email = (data.get('email') as string) || undefined;
 
-    if (key === adminSecret) {
-      // Set secure HTTP-only / path cookie
-      Astro.response.headers.set(
-        'Set-Cookie',
-        `valle_admin_session=${adminSecret}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
-      );
-      return Astro.redirect('/admin');
+    if (!keyOrPassword) {
+      errorMessage = 'Please enter your administrator passphrase or password.';
     } else {
-      errorMessage = 'Invalid access credentials. Please enter the authorized Realtor secret.';
+      const authResult = await verifyAdminCredentials(keyOrPassword, email);
+
+      if (authResult.success) {
+        // Set secure HTTP-only session cookie
+        const isProd = import.meta.env.PROD || process.env.NODE_ENV === 'production';
+        Astro.response.headers.set('Set-Cookie', createAdminSessionCookie(isProd));
+        return Astro.redirect('/admin');
+      } else {
+        errorMessage = authResult.error || 'Invalid credentials. Access is restricted to authorized personnel.';
+      }
     }
   } catch (err) {
-    errorMessage = 'An error occurred while authenticating.';
+    errorMessage = 'An error occurred during authentication. Please retry.';
   }
 }
 ---
@@ -123,6 +128,20 @@ if (Astro.request.method === 'POST') {
         color: #64748b;
         text-align: center;
       }
+      .auth-options {
+        margin-top: 1rem;
+        text-align: center;
+        font-size: 0.8rem;
+      }
+      .auth-toggle {
+        background: none;
+        border: none;
+        color: #c5a059;
+        cursor: pointer;
+        font-size: 0.8rem;
+        padding: 0;
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -131,24 +150,67 @@ if (Astro.request.method === 'POST') {
       <h2>Agent Portal Login</h2>
       <p>Authorized access for Edgar Valle &amp; Brokerage Staff</p>
 
-      {errorMessage && <div class="error-alert">{errorMessage}</div>}
+      {errorMessage && <div class="error-alert" role="alert">{errorMessage}</div>}
 
-      <form method="POST">
-        <label for="secretKey">Administrator Secret Key</label>
+      <form method="POST" id="adminLoginForm">
+        <div id="emailField" style="display: none;">
+          <label for="adminEmail">Staff Email</label>
+          <input 
+            type="email" 
+            id="adminEmail" 
+            name="email" 
+            placeholder="edgar@yourrealtoredgar.com" 
+            autocomplete="username"
+          />
+        </div>
+
+        <label for="secretKey" id="secretKeyLabel">Administrator Passphrase</label>
         <input 
           type="password" 
           id="secretKey" 
           name="secretKey" 
-          value={adminSecret}
-          placeholder="Enter admin authorization passphrase" 
+          placeholder="Enter authorized administrator key" 
           required 
+          autocomplete="current-password"
         />
-        <button type="submit">Authenticate Session</button>
+        <button type="submit" id="authSubmitBtn">Authenticate Session</button>
       </form>
 
+      <div class="auth-options">
+        <button type="button" id="toggleAuthMode" class="auth-toggle">Switch to Supabase Email / Password</button>
+      </div>
+
       <div class="hint">
-        Protected by California Real Estate data privacy policies.
+        Protected by California DRE security compliance standards. Public registration is disabled.
       </div>
     </div>
+
+    <script is:inline>
+      var toggleBtn = document.getElementById('toggleAuthMode');
+      var emailField = document.getElementById('emailField');
+      var secretLabel = document.getElementById('secretKeyLabel');
+      var secretInput = document.getElementById('secretKey');
+      var emailInput = document.getElementById('adminEmail');
+      var isSupabaseMode = false;
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+          isSupabaseMode = !isSupabaseMode;
+          if (isSupabaseMode) {
+            emailField.style.display = 'block';
+            emailInput.setAttribute('required', 'true');
+            secretLabel.textContent = 'Account Password';
+            secretInput.placeholder = 'Enter Supabase password';
+            toggleBtn.textContent = 'Switch to Admin Secret Passphrase';
+          } else {
+            emailField.style.display = 'none';
+            emailInput.removeAttribute('required');
+            secretLabel.textContent = 'Administrator Passphrase';
+            secretInput.placeholder = 'Enter authorized administrator key';
+            toggleBtn.textContent = 'Switch to Supabase Email / Password';
+          }
+        });
+      }
+    </script>
   </body>
 </html>

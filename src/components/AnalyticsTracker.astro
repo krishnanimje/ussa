@@ -1,5 +1,6 @@
 ---
 // Privacy-conscious, consent-aware client visitor tracker
+// Strictly complies with Master Prompt 05: "Do not load nonessential tracking before required consent."
 interface Props {
   propertyId?: string;
 }
@@ -9,93 +10,128 @@ const { propertyId } = Astro.props;
 
 <script is:inline define:vars={{ pagePropertyId: propertyId || null }}>
   (function() {
-    // Respect Global Do-Not-Track
+    // 1. Respect Global Do-Not-Track
     if (navigator.doNotTrack === '1' || window.doNotTrack === '1') {
       return;
     }
 
-    // Anonymous Session Management (sessionStorage only, no invasive cross-site tracking)
-    var SESSION_KEY = 'valle_anon_sid';
-    var sid = sessionStorage.getItem(SESSION_KEY);
-    var isNewSession = false;
+    var CONSENT_KEY = 'valle_cookie_consent';
+    var isTrackerActive = false;
 
-    if (!sid) {
-      sid = 'sid_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
-      sessionStorage.setItem(SESSION_KEY, sid);
-      isNewSession = true;
-    }
-
-    // Extract UTM parameters
-    var urlParams = new URLSearchParams(window.location.search);
-    var utmSource = urlParams.get('utm_source') || undefined;
-    var utmMedium = urlParams.get('utm_medium') || undefined;
-    var utmCampaign = urlParams.get('utm_campaign') || undefined;
-
-    function sendEvent(eventName, extraMeta, propId) {
-      var payload = {
-        event_name: eventName,
-        session_id: sid,
-        page_path: window.location.pathname,
-        property_id: propId || pagePropertyId || undefined,
-        referrer: document.referrer || undefined,
-        utm_source: utmSource,
-        utm_medium: utmMedium,
-        utm_campaign: utmCampaign,
-        metadata: extraMeta || {}
-      };
-
+    function hasAnalyticsConsent() {
       try {
-        if (navigator.sendBeacon) {
-          var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-          navigator.sendBeacon('/api/analytics/track', blob);
-        } else {
-          fetch('/api/analytics/track', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            keepalive: true
-          }).catch(function() {});
-        }
-      } catch (e) {}
-    }
-
-    // 1. Session Start Event
-    if (isNewSession) {
-      sendEvent('session_started');
-    }
-
-    // 2. Page View Event
-    sendEvent('page_view');
-
-    // 3. Property View Event (if viewing a property)
-    if (pagePropertyId || window.location.pathname.startsWith('/properties/')) {
-      sendEvent('property_view');
-    }
-
-    // 4. Form Started Event Tracking
-    var formStarted = false;
-    document.addEventListener('focusin', function(e) {
-      if (formStarted) return;
-      var target = e.target;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
-        var form = target.closest('form');
-        if (form && !form.classList.contains('search-form')) {
-          formStarted = true;
-          sendEvent('inquiry_form_started');
-        }
+        var raw = localStorage.getItem(CONSENT_KEY);
+        if (!raw) return false;
+        var consent = JSON.parse(raw);
+        return Boolean(consent && consent.analytics === true);
+      } catch (e) {
+        return false;
       }
-    });
+    }
 
-    // 5. Contact Clicks and Outbound Link Clicks
-    document.addEventListener('click', function(e) {
-      var link = e.target && e.target.closest('a');
-      if (!link || !link.href) return;
+    function initTracking() {
+      if (isTrackerActive) return;
+      if (!hasAnalyticsConsent()) return;
+      isTrackerActive = true;
 
-      var href = link.href;
-      if (href.startsWith('tel:') || href.startsWith('mailto:') || href.includes('wa.me')) {
-        sendEvent('contact_click', { contact_target: href.split(':')[0] });
-      } else if (link.host && link.host !== window.location.host) {
-        sendEvent('outbound_link_click', { destination_host: link.host });
+      // Anonymous Session Management (sessionStorage only, no cross-site tracking)
+      var SESSION_KEY = 'valle_anon_sid';
+      var sid = sessionStorage.getItem(SESSION_KEY);
+      var isNewSession = false;
+
+      if (!sid) {
+        sid = 'sid_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+        sessionStorage.setItem(SESSION_KEY, sid);
+        isNewSession = true;
+      }
+
+      // Extract UTM parameters safely without PII
+      var urlParams = new URLSearchParams(window.location.search);
+      var utmSource = urlParams.get('utm_source') || undefined;
+      var utmMedium = urlParams.get('utm_medium') || undefined;
+      var utmCampaign = urlParams.get('utm_campaign') || undefined;
+
+      function sendEvent(eventName, extraMeta, propId) {
+        // Double-check consent before each dispatch
+        if (!hasAnalyticsConsent()) return;
+
+        var payload = {
+          event_name: eventName,
+          session_id: sid,
+          page_path: window.location.pathname,
+          property_id: propId || pagePropertyId || undefined,
+          referrer: document.referrer || undefined,
+          utm_source: utmSource,
+          utm_medium: utmMedium,
+          utm_campaign: utmCampaign,
+          metadata: extraMeta || {}
+        };
+
+        try {
+          if (navigator.sendBeacon) {
+            var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+            navigator.sendBeacon('/api/analytics/track', blob);
+          } else {
+            fetch('/api/analytics/track', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+              keepalive: true
+            }).catch(function() {});
+          }
+        } catch (e) {}
+      }
+
+      // 1. Session Start Event
+      if (isNewSession) {
+        sendEvent('session_started');
+      }
+
+      // 2. Page View Event
+      sendEvent('page_view');
+
+      // 3. Property View Event (if viewing a property)
+      if (pagePropertyId || window.location.pathname.startsWith('/properties/')) {
+        sendEvent('property_view');
+      }
+
+      // 4. Form Started Event Tracking
+      var formStarted = false;
+      document.addEventListener('focusin', function(e) {
+        if (formStarted) return;
+        var target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+          var form = target.closest('form');
+          if (form && !form.classList.contains('search-form')) {
+            formStarted = true;
+            sendEvent('inquiry_form_started');
+          }
+        }
+      });
+
+      // 5. Contact Clicks and Outbound Link Clicks
+      document.addEventListener('click', function(e) {
+        var link = e.target && e.target.closest('a');
+        if (!link || !link.href) return;
+
+        var href = link.href;
+        if (href.startsWith('tel:') || href.startsWith('mailto:') || href.includes('wa.me')) {
+          sendEvent('contact_click', { contact_target: href.split(':')[0] });
+        } else if (link.host && link.host !== window.location.host) {
+          sendEvent('outbound_link_click', { destination_host: link.host });
+        }
+      });
+    }
+
+    // Attempt initialization if consent already granted
+    if (hasAnalyticsConsent()) {
+      initTracking();
+    }
+
+    // Listen for real-time user consent update from CookieConsent component
+    window.addEventListener('valle-consent-updated', function(event) {
+      if (event.detail && event.detail.analytics === true) {
+        initTracking();
       }
     });
   })();

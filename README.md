@@ -3,11 +3,12 @@
 [![Astro](https://img.shields.io/badge/Astro-5.18-BC52EE.svg?style=flat&logo=astro)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20RLS-3ECF8E.svg?style=flat&logo=supabase)](https://supabase.com)
-[![Vitest](https://img.shields.io/badge/Vitest-51%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
+[![Vitest](https://img.shields.io/badge/Vitest-75%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
 [![Power BI](https://img.shields.io/badge/Analytics-Power%20BI%20Engine-F2C811.svg?style=flat)](https://edgarvalle.com/admin/analytics)
 [![SEO](https://img.shields.io/badge/SEO-7--Workstream%20Compliant-00C49F.svg?style=flat)](https://edgarvalle.com/sitemap.xml)
+[![Security](https://img.shields.io/badge/Security-OWASP%20%2B%20DRE%20Compliant-3B82F6.svg?style=flat)](docs/security-audit-and-compliance-report.md)
 
-A complete, enterprise-grade real estate web application, property CMS, Business Intelligence CRM, and technical SEO architecture built for **Edgar Valle | Realtor** ([Full Circle Group](https://edgarvalle.com), **California DRE #02375273**) serving the San Diego, California real estate market.
+A complete, enterprise-grade real estate web application, property CMS, Business Intelligence CRM, technical SEO architecture, and hardened California DRE compliance system built for **Edgar Valle | Realtor** ([Full Circle Group](https://edgarvalle.com), **California DRE #02375273**) serving the San Diego, California real estate market.
 
 Instagram: [@yourrealtoredgar](https://www.instagram.com/yourrealtoredgar/) • Direct: `(619) 555-0198` • Email: `edgar@yourrealtoredgar.com`
 
@@ -15,7 +16,7 @@ Instagram: [@yourrealtoredgar](https://www.instagram.com/yourrealtoredgar/) • 
 
 ## 🌟 Architecture & System Scope
 
-The platform integrates four comprehensive core tiers:
+The platform integrates five comprehensive core tiers:
 
 ### 1. Public Marketing & Client Advisory Website (Master Prompt 01)
 - **Verified Branding**: Edgar Valle, Full Circle Group, California DRE #02375273, San Diego County market.
@@ -100,6 +101,37 @@ The platform integrates four comprehensive core tiers:
   - Tier-1 regulatory citation playbook (California DRE, SDAR, CAR, NAR).
   - Local authority link building, community sponsorship, and educational PR strategy.
 
+### 5. Security, Privacy & California Real Estate Compliance (Master Prompt 05)
+- **1. Authentication & Authorization**:
+  - Dual support for Supabase Auth (email/password) and cryptographically secured server session cookies.
+  - Server-side route authorization in `src/middleware.ts` protecting all `/admin/*` and `/api/admin/*` endpoints.
+  - Public administrator registration is strictly disabled.
+  - Server-side logout endpoint (`/admin/logout.ts` & `/api/admin/logout.ts`) actively clearing `HttpOnly` cookies via `Max-Age=0`.
+- **2. Application Security (OWASP Top 10)**:
+  - OWASP HTTP security headers injected on every response: `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Strict-Transport-Security`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy`.
+  - IP-based sliding window rate limiter (`src/lib/rateLimit.ts`): throttles lead inquiries (5 per 15 min), admin login attempts (5 per 15 min), and file uploads (30 per 10 min).
+  - Anti-spam defenses: hidden honeypot field (`_hp`) and unnatural completion speed detection (`_t`).
+  - Secure file upload validation (`validateImageBuffer`): enforces magic byte signatures (JPEG, PNG, WebP, AVIF), strict extension whitelisting, and anti-XSS inspection for SVG vectors.
+  - Zero secrets in client assets, public HTML attributes, or source code.
+- **3. Database Security & Least Privilege**:
+  - Supabase PostgreSQL migration (`20261019000006_security_privacy_and_compliance.sql`) enforcing strict RLS.
+  - Anonymous callers can never read leads, lead notes, analytics events, or audit logs.
+  - Draft properties and soft-deleted listings are completely isolated from public queries.
+- **4. Privacy & Consent Controls (CCPA/CPRA)**:
+  - Accessible, granular `<CookieConsent />` component with persistent preferences (Essential, Analytics, Marketing).
+  - Telemetry beacon (`<AnalyticsTracker />`) strictly gated on active user analytics consent.
+  - California Consumer Privacy Act rights disclosure with dedicated Data Subject Access Request (DSAR) procedures on `/privacy-policy`.
+- **5. California Real Estate DRE Compliance**:
+  - Agent and broker identification: Edgar Valle, Full Circle Group, California DRE #02375273 (First-Point-of-Contact disclosure).
+  - Brokerage identity displayed with equal or greater prominence (Cal. Bus. & Prof. Code §§ 10159.5–10159.7).
+  - Equal Housing Opportunity and Fair Housing Act compliance statement.
+  - Truth in Lending Act (TILA) / Regulation Z mortgage advertising disclaimers.
+  - Digitally altered and virtually staged property photography disclosures.
+  - 3-year mandatory transaction record retention schedule disclosure (Cal. Bus. & Prof. Code § 10148).
+- **6. Standard Branded Error Pages**:
+  - Correct HTTP status codes returned for 403, 404, 429, 500, 502, 503, 504, and 505.
+  - Zero stack trace or internal path leakage.
+
 ---
 
 ## 🛠️ Technology Stack
@@ -108,7 +140,7 @@ The platform integrates four comprehensive core tiers:
 - **Rendering & Server**: Modern hybrid SSR with `@astrojs/node` standalone adapter.
 - **Styling**: Curated **Vanilla CSS design system** using design tokens (`tokens.css`, `global.css`, `admin.css`), CSS grid, flexbox, micro-animations, and responsive breakpoints. **Zero bloated UI frameworks or Next.js dependencies.**
 - **Database & Storage**: [Supabase](https://supabase.com) PostgreSQL with **Row Level Security (RLS)**, storage bucket policies, automated audit triggers, and input sanitization (`validation.ts`). Includes a zero-downtime runtime repository fallback for development.
-- **Testing**: [Vitest](https://vitest.dev) (44 automated tests across 7 test suites).
+- **Testing**: [Vitest](https://vitest.dev) (75 automated tests across 8 test suites).
 
 ---
 
@@ -230,43 +262,47 @@ Open [http://localhost:4321](http://localhost:4321) in your browser.
 
 ## 🧪 Testing & Verification
 
-### Run the Vitest Test Suite (51 Tests)
+### Run the Vitest Test Suite (75 Tests)
 ```bash
 npm test
 ```
 ```bash
 ✓ src/tests/validation.test.ts (4 tests)
-✓ src/tests/auth.test.ts (5 tests)
 ✓ src/tests/mortgage.test.ts (4 tests)
-✓ src/tests/filter.test.ts (5 tests)
+✓ src/tests/auth.test.ts (5 tests)
 ✓ src/tests/seo.test.ts (11 tests)
 ✓ src/tests/cms.test.ts (9 tests)
+✓ src/tests/security.test.ts (24 tests)
 ✓ src/tests/bi-crm.test.ts (13 tests)
+✓ src/tests/filter.test.ts (5 tests)
 
-Test Files  7 passed (7)
-     Tests  51 passed (51)
+Test Files  8 passed (8)
+     Tests  75 passed (75)
 ```
 
 ### Run Astro Diagnostic Check
 ```bash
 npx astro check
-# Result (86 files): 0 errors, 0 warnings, 0 hints
+# Result (91 files): 0 errors, 0 warnings, 0 hints
 ```
 
 ### Run Production Build
 ```bash
 npm run build
-# Compiles complete server bundle in ~5.2s
+# Compiles complete server bundle in ~2.9s
 ```
 
-### End-to-End Live HTTP Route & SEO Verifications
-With the dev server running, execute automated health checks across all routes, API endpoints, sitemaps, robots rules, and canonicals:
+### End-to-End Live HTTP Route, SEO & Security Verifications
+With the dev server running, execute automated health checks across all routes, API endpoints, sitemaps, robots rules, canonicals, and OWASP security controls:
 ```bash
 # 1. Admin endpoints, CSV exports, CRM lead drawer, and analytics telemetry:
 node scripts/test-admin.cjs
 
 # 2. Live HTTP canonicals, hreflang alternates, XML sitemap, and robots headers:
 node scripts/test-endpoints.js
+
+# 3. Live OWASP security headers, 401/403/429/500 status codes, anti-spam, and DRE disclosures:
+node scripts/test-security.js
 ```
 
 ---
@@ -275,11 +311,12 @@ node scripts/test-endpoints.js
 
 Comprehensive operational documentation and playbooks are located in [`docs/`](./docs/):
 
-1. **[Keyword Research & Mapping Matrix](docs/keyword-research-and-mapping.md)**: Target search queries, search intent, search volume estimates, and URL mapping across San Diego buyers, sellers, military relocations, fix-and-flip investors, and Spanish speakers.
-2. **[Google Business Profile & Local SEO Guide](docs/local-seo-and-gbp-guide.md)**: Service-area business (SAB) verification protocol, NAP consistency rules, review acquisition scripts, Apple Business Connect, and Bing Places synchronization.
-3. **[Off-Page Authority Strategy](docs/off-page-authority-strategy.md)**: Regulatory citation checklist (California DRE, SDAR, CAR, NAR), high-authority directory profiles, guest contributions, and educational PR outreach.
-4. **[Technical SEO Audit Report](docs/technical-seo-audit-report.md)**: In-depth audit of HTTP status codes, metadata coverage, canonical tags, schema validation, and Core Web Vitals targets.
-5. **[Monthly SEO Reporting SOP](docs/monthly-seo-reporting-process.md)**: Standard operating procedure and monthly reporting template for tracking organic impressions, keyword rankings, qualified lead conversions, and GBP phone calls.
+1. **[Security Audit, Privacy & Real Estate Compliance Report](docs/security-audit-and-compliance-report.md)**: OWASP Top 10 matrix, California DRE statutory rules, CCPA/CPRA DSAR procedures, branded error status codes, and remediation log.
+2. **[Keyword Research & Mapping Matrix](docs/keyword-research-and-mapping.md)**: Target search queries, search intent, search volume estimates, and URL mapping across San Diego buyers, sellers, military relocations, fix-and-flip investors, and Spanish speakers.
+3. **[Google Business Profile & Local SEO Guide](docs/local-seo-and-gbp-guide.md)**: Service-area business (SAB) verification protocol, NAP consistency rules, review acquisition scripts, Apple Business Connect, and Bing Places synchronization.
+4. **[Off-Page Authority Strategy](docs/off-page-authority-strategy.md)**: Regulatory citation checklist (California DRE, SDAR, CAR, NAR), high-authority directory profiles, guest contributions, and educational PR outreach.
+5. **[Technical SEO Audit Report](docs/technical-seo-audit-report.md)**: In-depth audit of HTTP status codes, metadata coverage, canonical tags, schema validation, and Core Web Vitals targets.
+6. **[Monthly SEO Reporting SOP](docs/monthly-seo-reporting-process.md)**: Standard operating procedure and monthly reporting template for tracking organic impressions, keyword rankings, qualified lead conversions, and GBP phone calls.
 
 ---
 

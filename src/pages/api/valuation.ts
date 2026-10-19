@@ -1,16 +1,63 @@
 import type { APIRoute } from 'astro';
 import { validateLeadSubmission } from '../../lib/validation';
 import { submitLead } from '../../lib/store';
+import { checkLeadSubmissionRateLimit } from '../../lib/rateLimit';
+import { getClientIp } from '../../lib/auth';
 
 export const prerender = false;
+const MAX_PAYLOAD_BYTES = 50 * 1024;
 
 export const POST: APIRoute = async ({ request }) => {
+  const clientIp = getClientIp(request);
+
+  // 1. Rate limiting
+  const rateLimit = checkLeadSubmissionRateLimit(clientIp);
+  if (!rateLimit.allowed) {
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: 'Too many requests. Please wait a few minutes before submitting another valuation request.',
+      retryAfter: rateLimit.retryAfterSeconds
+    }), {
+      status: 429,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Retry-After': String(rateLimit.retryAfterSeconds)
+      }
+    });
+  }
+
+  // 2. Payload size check
+  const contentLength = Number(request.headers.get('content-length') || '0');
+  if (contentLength > MAX_PAYLOAD_BYTES) {
+    return new Response(JSON.stringify({ success: false, error: 'Payload exceeds limit' }), {
+      status: 413,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
   try {
-    const body = await request.json();
+    let body: Record<string, unknown>;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response(JSON.stringify({ success: false, error: 'Invalid JSON request' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     body.leadType = 'seller_valuation';
 
+    // 3. Validation & Anti-Spam
     const validation = validateLeadSubmission(body);
     if (!validation.success || !validation.data) {
+      if (validation.isSpam) {
+        return new Response(JSON.stringify({ success: false, error: 'Automated submission blocked.' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
       return new Response(JSON.stringify({ 
         success: false, 
         error: 'Please fill in all required fields including your property address.', 
@@ -21,7 +68,6 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    const clientIp = request.headers.get('x-forwarded-for') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     const result = await submitLead({
@@ -47,8 +93,7 @@ export const POST: APIRoute = async ({ request }) => {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('API /valuation error:', error);
-    return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
+    return new Response(JSON.stringify({ success: false, error: 'An unexpected server error occurred.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });

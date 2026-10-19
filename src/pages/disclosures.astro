@@ -10,8 +10,8 @@ const breadcrumbItems = [
 ---
 
 <Layout 
-  title="Real Estate & Brokerage Disclosures"
-  description="Mandatory California real estate, Equal Housing Opportunity, and Full Circle Group brokerage disclosures for Edgar Valle | Realtor."
+  title="California Real Estate & Brokerage Disclosures"
+  description="Mandatory California DRE advertising rules, Equal Housing Opportunity, TILA-RESPA mortgage disclaimers, and Full Circle Group brokerage disclosures."
   canonicalUrl="/disclosures"
   breadcrumbs={breadcrumbItems}
 >
@@ -19,53 +19,88 @@ const breadcrumbItems = [
   <div class="section">
     <div class="container container-narrow">
       <div class="section-header" style="text-align: left; margin-bottom: 2.5rem;">
-        <span class="section-eyebrow">REGULATORY COMPLIANCE</span>
-        <h1>Real Estate &amp; Brokerage Disclosures</h1>
+        <span class="section-eyebrow">REGULATORY &amp; DRE COMPLIANCE</span>
+        <h1>California Real Estate Disclosures</h1>
         <p class="lead">
-          Transparency, ethical integrity, and adherence to California Department of Real Estate regulations are foundational to our practice.
+          Transparency, regulatory compliance, and consumer protection under the California Department of Real Estate (DRE) and federal statutes.
         </p>
       </div>
 
       <div class="card" style="padding: 2.5rem; margin-bottom: 2.5rem;">
-        <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">1. California DRE License Verification</h2>
+        <!-- 1. Brokerage and DRE Identification -->
+        <h2 style="font-size: 1.4rem; margin-bottom: 1rem;">1. Agent &amp; Responsible Broker Identification (Cal. Bus. &amp; Prof. Code §§ 10159.5, 10159.6, 10159.7)</h2>
         <p>
-          <strong>Edgar Valle</strong> is a licensed real estate agent in the State of California under California Department of Real Estate (DRE) License <strong>#02375273</strong>. Edgar Valle is proudly affiliated with <strong>{SITE_SETTINGS.brokerage_name}</strong>. Consumers may verify licensing status directly at the official California DRE public licensing portal at <a href="https://www.dre.ca.gov" target="_blank" rel="noopener noreferrer" style="color: var(--color-gold-700); text-decoration: underline;">dre.ca.gov</a>.
+          In strict compliance with California Department of Real Estate advertising regulations:
+        </p>
+        <ul style="margin: 0 0 1.25rem 1.5rem; color: var(--text-secondary);">
+          <li><strong>Agent Name:</strong> Edgar Valle</li>
+          <li><strong>California DRE License Number:</strong> <strong>#02375273</strong> (First-Point-of-Contact Solicitation Disclosure)</li>
+          <li><strong>Responsible Brokerage:</strong> <strong>{SITE_SETTINGS.brokerage_name}</strong></li>
+          <li><strong>Market Area:</strong> San Diego County, California</li>
+        </ul>
+        <p>
+          Pursuant to California DRE rules, the identity of the responsible broker ({SITE_SETTINGS.brokerage_name}) is displayed with equal or greater prominence across all advertising and marketing materials. Consumers may independently verify current licensing status through the California DRE Public License Information portal at <a href="https://www.dre.ca.gov" target="_blank" rel="noopener noreferrer" style="color: var(--color-gold-700); text-decoration: underline;">dre.ca.gov</a>.
         </p>
 
-        <h2 style="font-size: 1.5rem; margin: 2rem 0 1rem 0;">2. Equal Housing Opportunity</h2>
+        <!-- 2. Fair Housing Act & FEHA -->
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem 0;">2. Equal Housing Opportunity &amp; Fair Housing Act</h2>
         <div style="display: flex; gap: 1.25rem; align-items: flex-start; background: #fdfbf7; border: 1px solid var(--border-light); padding: 1.25rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
-          <svg viewBox="0 0 64 64" width="48" height="48" fill="#c5a059" style="flex-shrink: 0;">
+          <svg viewBox="0 0 64 64" width="48" height="48" fill="#c5a059" style="flex-shrink: 0;" aria-hidden="true">
             <path d="M32 6 L6 28 L14 28 L14 56 L50 56 L50 28 L58 28 Z M32 18 L44 28 L20 28 Z M22 34 L42 34 L42 40 L22 40 Z M22 44 L42 44 L42 50 L22 50 Z" />
           </svg>
           <div>
-            <h4 style="margin: 0 0 0.4rem 0;">Fair Housing Act Statement</h4>
-            <p style="font-size: 0.92rem; margin: 0;">
-              We strictly adhere to the federal Fair Housing Act (Title VIII of the Civil Rights Act of 1968, as amended) and the California Fair Employment and Housing Act (FEHA). We do not discriminate on the basis of race, color, religion, sex, disability, familial status, national origin, sexual orientation, gender identity, source of income, or ancestry.
+            <h4 style="margin: 0 0 0.4rem 0;">Fair Housing Policy Commitment</h4>
+            <p style="font-size: 0.92rem; margin: 0; color: #1e293b;">
+              We are pledged to the letter and spirit of U.S. policy for the achievement of equal housing opportunity. We fully comply with the federal <strong>Fair Housing Act</strong> (Title VIII of the Civil Rights Act of 1968, as amended) and the <strong>California Fair Employment and Housing Act (FEHA)</strong>. We do not discriminate on the basis of race, color, religion, sex, handicap/disability, familial status, national origin, sexual orientation, gender identity, marital status, ancestry, or source of income.
             </p>
           </div>
         </div>
 
-        <h2 style="font-size: 1.5rem; margin: 2rem 0 1rem 0;">3. Property Information Accuracy &amp; Disclaimers</h2>
+        <!-- 3. Mortgage Advertising & TILA-RESPA -->
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem 0;">3. Mortgage-Related Advertising Disclosures (TILA-RESPA / Regulation Z)</h2>
         <p>
-          All material presented on this website is intended for informational purposes only. Information is compiled from sources deemed reliable, including local Multiple Listing Services (MLS), county records, tax assessors, and sellers, but is not guaranteed as to accuracy, completeness, or timeliness.
+          <strong>Edgar Valle is a licensed Real Estate Agent, NOT a licensed mortgage lender or Mortgage Loan Originator (MLO).</strong>
         </p>
         <p>
-          Square footage, room dimensions, lot boundaries, homeowners association dues, property taxes, school attendance zones, and potential future zoning/SB9 entitlements are estimates and must be verified by the prospective buyer through personal inspection, appraisal, surveys, and appropriate licensed professionals (e.g., structural engineers, licensed general contractors, land surveyors, and CPAs).
+          Any mortgage loan calculators, estimated monthly payments, down payment percentages, interest rate illustrations, VA loan funding fee charts, or California Housing Finance Agency (CalHFA) program summaries provided on this site are for <strong>educational and informational purposes only</strong>. They do not constitute an offer of credit, a loan pre-approval, an interest rate lock, or a commitment to lend under the Truth in Lending Act (TILA), Real Estate Settlement Procedures Act (RESPA), or Federal Reserve Regulation Z.
+        </p>
+        <p>
+          All financing terms, interest rates, and loan qualifications are subject to independent credit underwriting and approval by an NMLS-licensed mortgage lender of your choice.
         </p>
 
-        <h2 style="font-size: 1.5rem; margin: 2rem 0 1rem 0;">4. No Existing Agency Solicitation</h2>
+        <!-- 4. Virtually Staged & Altered Images -->
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem 0;">4. Digitally Altered &amp; Virtually Staged Media Disclosure</h2>
         <p>
-          If your property is currently listed with an active exclusive right-to-sell listing agreement with another real estate broker, please disregard any marketing content on this site. This website is not intended as a solicitation of properties currently under contract with other brokerages.
+          Certain property photographs and virtual tours displayed on this website may include <strong>digital staging, virtual renovation, architectural rendering, or drone-captured photography</strong>.
+        </p>
+        <p>
+          Virtually staged images represent potential furniture arrangements and aesthetic concepts. They do not depict the actual furnishings or fixtures included in the purchase price unless explicitly agreed upon in a written Purchase and Sale Agreement. Prospective purchasers are strongly advised to physically tour the property and conduct thorough professional home inspections.
         </p>
 
-        <h2 style="font-size: 1.5rem; margin: 2rem 0 1rem 0;">5. Investment &amp; Fix-and-Flip Projections</h2>
+        <!-- 5. Multiple Listing Service (MLS) Content -->
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem 0;">5. Property Information &amp; MLS Syndication Accuracy</h2>
         <p>
-          Any After Repair Value (ARV) figures, gross margin calculations, rental yields, or rehab estimates shown for fixer-upper properties are for illustrative and educational discussion purposes only. Past performance does not guarantee future financial results. Real estate investing carries inherent market, economic, and construction risks.
+          Property information is derived from sources deemed reliable—including local Multiple Listing Services (San Diego MLS / CRMLS), county tax assessor records, architectural plans, and sellers—but has not been independently verified and is not guaranteed.
+        </p>
+        <p>
+          Square footage, lot boundaries, bedroom/bathroom counts, zoning entitlements (including California SB9 ADU potential), HOA covenants, and tax estimates must be confirmed through your independent appraisal, boundary survey, and licensed professional inspections.
+        </p>
+
+        <!-- 6. Legal & Tax Disclaimer -->
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem 0;">6. No Legal, Architectural, or Tax Advice Disclaimer</h2>
+        <p>
+          <em>Legal Notice:</em> The information presented on this website does not constitute legal, tax, CPA, structural engineering, or architectural advice. Real estate laws and tax rules (including California Prop 19 and 1031 exchanges) are complex and subject to change. Parties to any transaction must consult their own qualified legal counsel, certified public accountants, and licensed general contractors.
+        </p>
+
+        <!-- 7. Active Agency Solicitation Notice -->
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem 0;">7. Non-Solicitation of Existing Brokerage Agreements</h2>
+        <p>
+          If your property is currently listed under an exclusive right-to-sell agreement with another licensed real estate brokerage, please disregard any marketing messages on this site. This website is not intended as a solicitation of clients currently represented by other brokerages.
         </p>
       </div>
 
       <div style="text-align: center;">
-        <a href="/contact" class="btn btn-gold">Contact Edgar for Representation</a>
+        <a href="/contact" class="btn btn-gold btn-lg">Connect with Edgar Valle | Realtor</a>
       </div>
     </div>
   </div>
