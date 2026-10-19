@@ -3,10 +3,11 @@
 [![Astro](https://img.shields.io/badge/Astro-5.18-BC52EE.svg?style=flat&logo=astro)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20RLS-3ECF8E.svg?style=flat&logo=supabase)](https://supabase.com)
-[![Vitest](https://img.shields.io/badge/Vitest-93%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
+[![Vitest](https://img.shields.io/badge/Vitest-112%20Tests%20Passing-6E9F18.svg?style=flat&logo=vitest)](https://vitest.dev)
 [![Power BI](https://img.shields.io/badge/Analytics-Power%20BI%20Engine-F2C811.svg?style=flat)](https://edgarvalle.com/admin/analytics)
 [![SEO](https://img.shields.io/badge/SEO-7--Workstream%20Compliant-00C49F.svg?style=flat)](https://edgarvalle.com/sitemap.xml)
 [![Security](https://img.shields.io/badge/Security-OWASP%20%2B%20DRE%20Compliant-3B82F6.svg?style=flat)](docs/security-audit-and-compliance-report.md)
+[![Accessibility](https://img.shields.io/badge/Accessibility-WCAG%202.2%20AA-success.svg?style=flat)](docs/performance-responsiveness-and-accessibility-report.md)
 
 A complete, enterprise-grade real estate web application, property CMS, Business Intelligence CRM, technical SEO architecture, and hardened California DRE compliance system built for **Edgar Valle | Realtor** ([Full Circle Group](https://edgarvalle.com), **California DRE #02375273**) serving the San Diego, California real estate market.
 
@@ -134,6 +135,29 @@ The platform integrates five comprehensive core tiers:
   - Correct HTTP status codes returned for 403, 404, 429, 500, 502, 503, 504, and 505.
   - Zero stack trace or internal path leakage.
 
+### 6. Performance, Animations, Responsiveness & Accessibility (Master Prompt 06)
+- **1. Performance Optimization & Public Caching**:
+  - Font preconnection handshakes (`fonts.googleapis.com` and `fonts.gstatic.com`) in `<head>` and removal of blocking `@import`.
+  - Context-aware `Cache-Control` strategy in [`src/middleware.ts`](src/middleware.ts): private `no-store, no-cache, must-revalidate` for admin and API requests; public `max-age=300, stale-while-revalidate=86400` for marketing pages; `max-age=31536000, immutable` for static assets.
+  - Layout stability (CLS &le; 0.1) enforced with explicit image dimensions, aspect-ratios, eager hero loading, and lazy below-the-fold media.
+- **2. Modern CSS Animations & Reduced-Motion**:
+  - Hardware-accelerated CSS `transform` and `opacity` entrance animations (`.hero-stagger-1` through `.hero-stagger-4`).
+  - Zero-dependency scroll reveals (`.reveal-on-scroll`) using lightweight IntersectionObserver with automatic unobserving.
+  - Interactive property card hover zoom (`transform: scale(1.05)`) and gallery crossfade transitions.
+  - Animated mobile hamburger toggle transforming into an active geometric "X".
+  - Full `@media (prefers-reduced-motion: reduce)` compliance instantly disabling transitions and animations across public and admin interfaces.
+- **3. Multi-Device Responsiveness (320px to 4K)**:
+  - Small-screen safeguards for 320px/360px phones: responsive 2-column specs ribbon, single-column search card, horizontal table scrolling.
+  - Interactive touch targets padded to minimum 44px x 44px (`touch-action: manipulation`).
+  - Fluid typography scaling with `clamp()`.
+- **4. WCAG 2.2 AA Accessibility**:
+  - Semantic landmarks throughout: `<header role="banner">`, `<main id="mainContent">`, `<footer role="contentinfo">`, `<nav aria-label="...">`.
+  - Visible focus indicators (`:focus-visible` with high-contrast gold outline ring).
+  - Accessible mobile drawer modal dialog (`role="dialog"`, `aria-modal="true"`, `aria-expanded`, `aria-controls`, Escape key closing).
+  - Screen reader announcements (`aria-live="polite"` and `role="alert"` for form feedback).
+  - WCAG AA compliant text contrast ratios (&ge; 4.5:1 for normal text, &ge; 3:1 for large text).
+  - Zero keyboard traps and zero dependence on third-party overlay widgets.
+
 ---
 
 ## 🛠️ Technology Stack
@@ -142,7 +166,7 @@ The platform integrates five comprehensive core tiers:
 - **Rendering & Server**: Modern hybrid SSR with `@astrojs/node` standalone adapter.
 - **Styling**: Curated **Vanilla CSS design system** using design tokens (`tokens.css`, `global.css`, `admin.css`), CSS grid, flexbox, micro-animations, and responsive breakpoints. **Zero bloated UI frameworks or Next.js dependencies.**
 - **Database & Storage**: [Supabase](https://supabase.com) PostgreSQL with **Row Level Security (RLS)**, storage bucket policies, automated audit triggers, and input sanitization (`validation.ts`). Includes a zero-downtime runtime repository fallback for development.
-- **Testing**: [Vitest](https://vitest.dev) (93 automated tests across 9 test suites).
+- **Testing**: [Vitest](https://vitest.dev) (112 automated tests across 10 test suites).
 
 ---
 
@@ -264,7 +288,7 @@ Open [http://localhost:4321](http://localhost:4321) in your browser.
 
 ## 🧪 Testing & Verification
 
-### Run the Vitest Test Suite (93 Tests)
+### Run the Vitest Test Suite (112 Tests)
 ```bash
 npm test
 ```
@@ -272,21 +296,22 @@ npm test
 ✓ src/tests/validation.test.ts (4 tests)
 ✓ src/tests/mortgage.test.ts (4 tests)
 ✓ src/tests/auth.test.ts (5 tests)
-✓ src/tests/seo.test.ts (11 tests)
-✓ src/tests/suite-extensions.test.ts (18 tests)
-✓ src/tests/cms.test.ts (9 tests)
-✓ src/tests/security.test.ts (24 tests)
-✓ src/tests/bi-crm.test.ts (13 tests)
 ✓ src/tests/filter.test.ts (5 tests)
+✓ src/tests/cms.test.ts (9 tests)
+✓ src/tests/seo.test.ts (11 tests)
+✓ src/tests/bi-crm.test.ts (13 tests)
+✓ src/tests/suite-extensions.test.ts (18 tests)
+✓ src/tests/perf-a11y.test.ts (19 tests)
+✓ src/tests/security.test.ts (24 tests)
 
-Test Files  9 passed (9)
-     Tests  93 passed (93)
+Test Files  10 passed (10)
+     Tests  112 passed (112)
 ```
 
 ### Run Astro Diagnostic Check
 ```bash
 npx astro check
-# Result (99 files): 0 errors, 0 warnings, 0 hints
+# Result (100 files): 0 errors, 0 warnings, 0 hints
 ```
 
 ### Run Production Build
@@ -306,6 +331,9 @@ node scripts/test-endpoints.js
 
 # 3. Live OWASP security headers, 401/403/429/500 status codes, anti-spam, and DRE disclosures:
 node scripts/test-security.js
+
+# 4. Live performance, public/private caching, landmarks, and WCAG 2.2 accessibility:
+node scripts/test-perf-a11y.js
 ```
 
 ---
@@ -314,12 +342,13 @@ node scripts/test-security.js
 
 Comprehensive operational documentation and playbooks are located in [`docs/`](./docs/):
 
-1. **[Security Audit, Privacy & Real Estate Compliance Report](docs/security-audit-and-compliance-report.md)**: OWASP Top 10 matrix, California DRE statutory rules, CCPA/CPRA DSAR procedures, branded error status codes, and remediation log.
-2. **[Keyword Research & Mapping Matrix](docs/keyword-research-and-mapping.md)**: Target search queries, search intent, search volume estimates, and URL mapping across San Diego buyers, sellers, military relocations, fix-and-flip investors, and Spanish speakers.
-3. **[Google Business Profile & Local SEO Guide](docs/local-seo-and-gbp-guide.md)**: Service-area business (SAB) verification protocol, NAP consistency rules, review acquisition scripts, Apple Business Connect, and Bing Places synchronization.
-4. **[Off-Page Authority Strategy](docs/off-page-authority-strategy.md)**: Regulatory citation checklist (California DRE, SDAR, CAR, NAR), high-authority directory profiles, guest contributions, and educational PR outreach.
-5. **[Technical SEO Audit Report](docs/technical-seo-audit-report.md)**: In-depth audit of HTTP status codes, metadata coverage, canonical tags, schema validation, and Core Web Vitals targets.
-6. **[Monthly SEO Reporting SOP](docs/monthly-seo-reporting-process.md)**: Standard operating procedure and monthly reporting template for tracking organic impressions, keyword rankings, qualified lead conversions, and GBP phone calls.
+1. **[Performance, Animation, Responsiveness and Accessibility Audit Report](docs/performance-responsiveness-and-accessibility-report.md)**: Core Web Vitals targets, font optimization, public/private caching matrix, modern CSS animations, reduced-motion compliance, 320px-4K responsiveness, and WCAG 2.2 AA audit.
+2. **[Security Audit, Privacy & Real Estate Compliance Report](docs/security-audit-and-compliance-report.md)**: OWASP Top 10 matrix, California DRE statutory rules, CCPA/CPRA DSAR procedures, branded error status codes, and remediation log.
+3. **[Keyword Research & Mapping Matrix](docs/keyword-research-and-mapping.md)**: Target search queries, search intent, search volume estimates, and URL mapping across San Diego buyers, sellers, military relocations, fix-and-flip investors, and Spanish speakers.
+4. **[Google Business Profile & Local SEO Guide](docs/local-seo-and-gbp-guide.md)**: Service-area business (SAB) verification protocol, NAP consistency rules, review acquisition scripts, Apple Business Connect, and Bing Places synchronization.
+5. **[Off-Page Authority Strategy](docs/off-page-authority-strategy.md)**: Regulatory citation checklist (California DRE, SDAR, CAR, NAR), high-authority directory profiles, guest contributions, and educational PR outreach.
+6. **[Technical SEO Audit Report](docs/technical-seo-audit-report.md)**: In-depth audit of HTTP status codes, metadata coverage, canonical tags, schema validation, and Core Web Vitals targets.
+7. **[Monthly SEO Reporting SOP](docs/monthly-seo-reporting-process.md)**: Standard operating procedure and monthly reporting template for tracking organic impressions, keyword rankings, qualified lead conversions, and GBP phone calls.
 
 ---
 

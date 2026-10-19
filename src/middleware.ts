@@ -81,6 +81,32 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Cross-Origin isolation protections
   newHeaders.set('Cross-Origin-Opener-Policy', 'same-origin');
 
+  // 6. Caching Strategy: Optimize public caching, protect private responses (Master Prompt 06)
+  const isPrivateRequest = 
+    pathname.startsWith('/admin') || 
+    pathname.startsWith('/api/admin') || 
+    pathname.startsWith('/api/leads') || 
+    pathname.startsWith('/api/valuation') ||
+    (context.request.method !== 'GET' && context.request.method !== 'HEAD') ||
+    Boolean(context.request.headers.get('cookie')?.includes('edgar_admin_session'));
+
+  if (isPrivateRequest) {
+    // Strictly isolate private responses from public CDNs/proxies/browsers
+    newHeaders.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    newHeaders.set('Pragma', 'no-cache');
+  } else if (!newHeaders.has('Cache-Control') || newHeaders.get('Cache-Control') === 'no-cache') {
+    if (pathname.startsWith('/_astro/')) {
+      // Hashed immutable static assets
+      newHeaders.set('Cache-Control', 'public, max-age=31536000, immutable');
+    } else if (pathname.startsWith('/images/') || pathname === '/favicon.svg' || pathname === '/site.webmanifest') {
+      // Public static media
+      newHeaders.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+    } else {
+      // Public marketing and property catalog pages
+      newHeaders.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400');
+    }
+  }
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,

@@ -18,21 +18,21 @@ const properties = await getFeaturedProperties();
   <!-- Hero en Español -->
   <section class="section section-secondary hero-es">
     <div class="container text-center">
-      <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+      <div class="hero-stagger-1" style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
         <span class="badge badge-emerald">🇲🇽 100% EN TU IDIOMA</span>
         <span class="badge badge-gold">SAN DIEGO, CALIFORNIA</span>
         <span class="badge badge-dark">DRE #{SITE_SETTINGS.dre_license}</span>
       </div>
 
-      <h1 style="font-size: clamp(2.4rem, 5vw, 4rem); max-width: 900px; margin: 0 auto 1.25rem auto;">
+      <h1 class="hero-stagger-2" style="font-size: clamp(2.4rem, 5vw, 4rem); max-width: 900px; margin: 0 auto 1.25rem auto;">
         Tu Hogar en San Diego en Manos de <span style="color: var(--color-gold-600);">Tu Agente de Confianza</span>
       </h1>
 
-      <p class="lead" style="max-width: 760px; margin: 0 auto 2.5rem auto;">
+      <p class="lead hero-stagger-3" style="max-width: 760px; margin: 0 auto 2.5rem auto;">
         Asesoría inmobiliaria transparente, profesional y completamente en español para familias latinas, primeros compradores y veteranos en todo el condado de San Diego.
       </p>
 
-      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+      <div class="hero-stagger-4" style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
         <a href="#contactoEs" class="btn btn-gold btn-lg">Consulta Gratuita en Español</a>
         <a href="/properties" class="btn btn-navy btn-lg">Ver Propiedades Disponibles</a>
         <a href="tel:6195550198" class="btn btn-outline btn-lg">Llamar a Edgar: (619) 555-0198</a>
@@ -41,7 +41,7 @@ const properties = await getFeaturedProperties();
   </section>
 
   <!-- Pilares de Servicio en Español -->
-  <section class="section">
+  <section class="section reveal-on-scroll">
     <div class="container">
       <div class="section-header">
         <span class="section-eyebrow">NUESTROS SERVICIOS</span>
@@ -75,7 +75,7 @@ const properties = await getFeaturedProperties();
   </section>
 
   <!-- Propiedades Destacadas -->
-  <section class="section section-secondary">
+  <section class="section section-secondary reveal-on-scroll">
     <div class="container">
       <div class="section-header">
         <span class="section-eyebrow">OPORTUNIDADES DE VIVIENDA</span>
@@ -92,7 +92,7 @@ const properties = await getFeaturedProperties();
   </section>
 
   <!-- Formulario en Español -->
-  <section class="section" id="contactoEs">
+  <section class="section reveal-on-scroll" id="contactoEs">
     <div class="container container-narrow">
       <LeadCaptureForm 
         language="es"

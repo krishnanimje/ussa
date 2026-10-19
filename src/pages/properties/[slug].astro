@@ -787,6 +787,64 @@ const pricePerSqFt = Math.round(property.price / property.square_feet);
     display: flex;
     gap: 0.5rem;
   }
+
+  /* Accessible Lightbox Modal */
+  .lightbox-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background: rgba(10, 17, 24, 0.93);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 88vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-content img {
+    max-width: 100%;
+    max-height: 84vh;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: -46px;
+    right: 0;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-size: 1.75rem;
+    line-height: 1;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-fast), color var(--transition-fast);
+  }
+
+  .lightbox-close:hover {
+    background: var(--color-gold-500);
+    color: #0f1822;
+  }
 </style>
 
 <script>
@@ -836,25 +894,46 @@ const pricePerSqFt = Math.round(property.price / property.square_feet);
         btn.classList.add('active');
         const newSrc = btn.getAttribute('data-img');
         if (newSrc && mainImg) {
+          mainImg.style.transition = 'opacity 0.2s ease';
+          mainImg.style.opacity = '0.35';
           mainImg.src = newSrc;
+          mainImg.onload = () => {
+            mainImg.style.opacity = '1';
+          };
         }
       });
     });
 
     if (fsBtn && modal && modalImg) {
-      fsBtn.addEventListener('click', () => {
+      function openLightbox() {
+        if (!modal || !modalImg || !mainImg) return;
         modalImg.src = mainImg.src;
         modal.style.display = 'flex';
-      });
+        document.body.style.overflow = 'hidden';
+        closeBtn?.focus();
+      }
+
+      function closeLightbox() {
+        if (!modal) return;
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        fsBtn?.focus();
+      }
+
+      fsBtn.addEventListener('click', openLightbox);
 
       if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-          modal.style.display = 'none';
-        });
+        closeBtn.addEventListener('click', closeLightbox);
       }
 
       modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
+        if (e.target === modal) closeLightbox();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+          closeLightbox();
+        }
       });
     }
   }

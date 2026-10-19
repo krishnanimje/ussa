@@ -406,3 +406,59 @@
     opacity: 1;
   }
 }
+
+/* Mobile & Tablet Responsiveness for Admin Portal */
+@media (max-width: 900px) {
+  .admin-body {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--admin-border);
+    padding: 1rem 1.25rem;
+  }
+
+  .admin-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .admin-nav-item {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    border-left: none !important;
+    border-bottom: 2px solid transparent;
+  }
+
+  .admin-nav-item.active {
+    border-bottom-color: var(--color-gold-500);
+  }
+
+  .admin-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .admin-kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Reduced Motion Compliance */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .admin-toast {
+    animation: none !important;
+  }
+}

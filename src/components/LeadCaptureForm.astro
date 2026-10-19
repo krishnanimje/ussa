@@ -31,8 +31,8 @@ const formId = `leadForm_${Math.random().toString(36).substring(2, 8)}`;
   </div>
 
   <!-- Success Notification Box (Initially Hidden) -->
-  <div class="form-success-alert" style="display: none;" role="alert">
-    <div class="success-icon">
+  <div class="form-success-alert" style="display: none;" role="status" aria-live="polite">
+    <div class="success-icon" aria-hidden="true">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
     </div>
     <div class="success-text">
@@ -42,7 +42,7 @@ const formId = `leadForm_${Math.random().toString(36).substring(2, 8)}`;
   </div>
 
   <!-- Form Error Alert (Initially Hidden) -->
-  <div class="form-error-alert" style="display: none;" role="alert">
+  <div class="form-error-alert" style="display: none;" role="alert" aria-live="assertive">
     <span class="error-msg"></span>
   </div>
 
@@ -53,43 +53,49 @@ const formId = `leadForm_${Math.random().toString(36).substring(2, 8)}`;
     <input type="hidden" name="languagePreference" value={language} />
 
     <div class="form-group">
-      <label class="form-label" for={`${formId}_name`}>Full Name <span class="required">*</span></label>
+      <label class="form-label" for={`${formId}_name`}>Full Name <span class="required" aria-hidden="true">*</span></label>
       <input 
         type="text" 
         id={`${formId}_name`} 
         name="fullName" 
         class="form-input" 
         placeholder="e.g. Elena Rodriguez" 
+        aria-describedby={`${formId}_name_err`}
+        aria-required="true"
         required 
       />
-      <div class="field-error" id={`${formId}_name_err`}></div>
+      <div class="field-error" id={`${formId}_name_err`} role="alert" aria-live="polite"></div>
     </div>
 
     <div class="grid-2" style="gap: 1rem;">
       <div class="form-group">
-        <label class="form-label" for={`${formId}_email`}>Email Address <span class="required">*</span></label>
+        <label class="form-label" for={`${formId}_email`}>Email Address <span class="required" aria-hidden="true">*</span></label>
         <input 
           type="email" 
           id={`${formId}_email`} 
           name="email" 
           class="form-input" 
           placeholder="elena@example.com" 
+          aria-describedby={`${formId}_email_err`}
+          aria-required="true"
           required 
         />
-        <div class="field-error" id={`${formId}_email_err`}></div>
+        <div class="field-error" id={`${formId}_email_err`} role="alert" aria-live="polite"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for={`${formId}_phone`}>Phone Number <span class="required">*</span></label>
+        <label class="form-label" for={`${formId}_phone`}>Phone Number <span class="required" aria-hidden="true">*</span></label>
         <input 
           type="tel" 
           id={`${formId}_phone`} 
           name="phone" 
           class="form-input" 
           placeholder="(619) 555-0123" 
+          aria-describedby={`${formId}_phone_err`}
+          aria-required="true"
           required 
         />
-        <div class="field-error" id={`${formId}_phone_err`}></div>
+        <div class="field-error" id={`${formId}_phone_err`} role="alert" aria-live="polite"></div>
       </div>
     </div>
 
@@ -131,7 +137,10 @@ const formId = `leadForm_${Math.random().toString(36).substring(2, 8)}`;
 
     <button type="submit" class="btn btn-gold btn-lg submit-btn" style="width: 100%; margin-top: 1rem;">
       <span class="btn-text">{buttonText}</span>
-      <span class="btn-spinner" style="display: none;">Saving to Database...</span>
+      <span class="btn-spinner" style="display: none; align-items: center; justify-content: center; gap: 0.5rem;">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Sending securely...</span>
+      </span>
     </button>
   </form>
 </div>
@@ -286,7 +295,7 @@ const formId = `leadForm_${Math.random().toString(36).substring(2, 8)}`;
         // Disable button and show spinner
         submitBtn.disabled = true;
         if (btnText) btnText.style.display = 'none';
-        if (btnSpinner) btnSpinner.style.display = 'inline-block';
+        if (btnSpinner) btnSpinner.style.display = 'inline-flex';
 
         try {
           const response = await fetch('/api/leads', {
