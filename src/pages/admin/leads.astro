@@ -132,6 +132,20 @@ const overdueCount = leads.filter(l => l.follow_up_date && new Date(l.follow_up_
         </tr>
       </thead>
       <tbody>
+        {leads.length === 0 && (
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3.5rem 1rem; color: #94a3b8;">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 0.75rem auto; display: block; opacity: 0.4;">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <div style="font-size: 1.15rem; color: #ffffff; font-weight: 600; margin-bottom: 0.35rem;">No Client Inquiries Yet</div>
+              <div style="font-size: 0.85rem; max-width: 480px; margin: 0 auto; color: #64748b;">When buyers, sellers, or open house attendees submit inquiry or valuation forms, they will automatically appear here.</div>
+            </td>
+          </tr>
+        )}
         {leads.map(lead => {
           const isOverdue = lead.follow_up_date && new Date(lead.follow_up_date).getTime() < nowTime && lead.status !== 'converted' && lead.status !== 'lost' && lead.status !== 'spam';
           return (

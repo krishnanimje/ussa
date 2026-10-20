@@ -110,6 +110,7 @@ async function run() {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Origin': BASE_URL,
         'X-Forwarded-For': testLoginIp
       },
       body: loginFormData.toString(),

@@ -1050,7 +1050,9 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
 
 // In-memory runtime state for development and fallback
 let runtimeProperties: Property[] = [...INITIAL_PROPERTIES];
-let runtimeLeads: Lead[] = [
+
+// Demo leads preserved strictly for automated test suites
+export const DEMO_LEADS: Lead[] = [
   {
     id: 'lead-001',
     full_name: 'Marcus & Jessica Vance',
@@ -1264,6 +1266,16 @@ let runtimeLeads: Lead[] = [
     created_at: new Date(Date.now() - 12 * 86400000).toISOString()
   }
 ];
+
+// In production and dev, start with clean zero leads so admin dashboard has no fake data
+let runtimeLeads: Lead[] = (typeof process !== 'undefined' && process.env.NODE_ENV === 'test')
+  ? [...DEMO_LEADS]
+  : [];
+
+export function clearRuntimeLeads(): void {
+  runtimeLeads = [];
+}
+
 let runtimeAuditLogs: AuditLog[] = [...INITIAL_AUDIT_LOGS];
 
 // -------------------------------------------------------------

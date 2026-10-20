@@ -10,6 +10,9 @@ export default defineConfig({
   output: 'server',
   adapter: isVercel ? vercel() : node({ mode: 'standalone' }),
   site: 'https://edgarvalle.com',
+  security: {
+    checkOrigin: false
+  },
   server: {
     port: 4321,
     host: true
