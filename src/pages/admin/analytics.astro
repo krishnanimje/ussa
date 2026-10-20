@@ -3,6 +3,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getAnalyticsSummary } from '../../lib/analytics';
 import { getGSCMetrics } from '../../lib/gsc';
 import { checkAdminAuth } from '../../lib/auth';
+import { isSupabaseConfigured } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
 import type { DateRangeFilter, AnalyticsSummary, GSCMetrics } from '../../lib/types';
 
@@ -47,6 +48,9 @@ const prevDateSpan = `${formatDate(summary.previousStartDate)} – ${formatDate(
         <h1 style="font-size: 1.85rem; margin: 0; color: #ffffff;">Business Intelligence &amp; Analytics</h1>
         <span class="badge badge-gold" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;">
           Power BI Engine
+        </span>
+        <span class={isSupabaseConfigured ? 'badge badge-emerald' : 'badge badge-blue'} style="font-size: 0.72rem;">
+          {isSupabaseConfigured ? '● Live Supabase Cloud' : '● Verified Local Engine'}
         </span>
       </div>
       <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.88rem;">

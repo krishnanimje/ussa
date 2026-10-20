@@ -3,7 +3,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getPropertyStats, getAllLeads, getAuditLogs, SITE_SETTINGS } from '../../lib/store';
 import { formatCurrency } from '../../lib/mortgage';
 import { checkAdminAuth } from '../../lib/auth';
-
+import { isSupabaseConfigured } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
 
 export const prerender = false;
@@ -33,7 +33,12 @@ const newLeadsCount = leads.filter(l => l.status === 'new').length;
   <!-- Header -->
   <div class="admin-header">
     <div>
-      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: #ffffff;">Executive Dashboard</h1>
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem;">
+        <h1 style="font-size: 1.85rem; margin: 0; color: #ffffff;">Executive Dashboard</h1>
+        <span class={isSupabaseConfigured ? 'badge badge-emerald' : 'badge badge-blue'} style="font-size: 0.72rem;">
+          {isSupabaseConfigured ? '● Live Supabase Cloud' : '● Verified Local Store'}
+        </span>
+      </div>
       <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.9rem;">
         Edgar Valle Real Estate • {SITE_SETTINGS.brokerage_name} • DRE #{SITE_SETTINGS.dre_license}
       </p>

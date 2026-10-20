@@ -18,8 +18,13 @@ if (Astro.request.method === 'POST') {
       if (authResult.success) {
         // Set secure HTTP-only session cookie
         const isProd = import.meta.env.PROD || process.env.NODE_ENV === 'production';
-        Astro.response.headers.set('Set-Cookie', createAdminSessionCookie(isProd));
-        return Astro.redirect('/admin');
+        return new Response(null, {
+          status: 302,
+          headers: {
+            'Location': '/admin',
+            'Set-Cookie': createAdminSessionCookie(isProd)
+          }
+        });
       } else {
         errorMessage = authResult.error || 'Invalid credentials. Access is restricted to authorized personnel.';
       }

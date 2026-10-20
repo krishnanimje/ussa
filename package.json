@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "node scripts/test-e2e.js",
+    "test:journeys": "node scripts/verify-all-journeys.js",
     "audit": "node scripts/audit-master-07.js"
   },
   "dependencies": {
