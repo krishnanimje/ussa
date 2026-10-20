@@ -1276,7 +1276,9 @@ export function clearRuntimeLeads(): void {
   runtimeLeads = [];
 }
 
-let runtimeAuditLogs: AuditLog[] = [...INITIAL_AUDIT_LOGS];
+let runtimeAuditLogs: AuditLog[] = (typeof process !== 'undefined' && process.env.NODE_ENV === 'test')
+  ? [...INITIAL_AUDIT_LOGS]
+  : [];
 
 // -------------------------------------------------------------
 // PROPERTIES QUERY METHODS
