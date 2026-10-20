@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Edgar Valle | Realtor - Premium San Diego Real Estate Platform",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "node ./dist/server/entry.mjs",
