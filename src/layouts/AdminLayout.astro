@@ -2,6 +2,7 @@
 import '../styles/tokens.css';
 import '../styles/admin.css';
 import { SITE_SETTINGS } from '../lib/store';
+import { getAdminSecret } from '../lib/auth';
 
 export const prerender = false;
 
@@ -13,7 +14,7 @@ interface Props {
 const { title = 'Admin Portal', activeNav = 'dashboard' } = Astro.props;
 
 // Server-side session verification
-const adminSecret = process.env.ADMIN_SECRET_KEY || import.meta.env.ADMIN_SECRET_KEY || 'dev-secret-valle-admin-session-key-2026';
+const adminSecret = getAdminSecret();
 const cookie = Astro.request.headers.get('cookie') || '';
 const isAuthenticated = cookie.includes(`valle_admin_session=${adminSecret}`);
 

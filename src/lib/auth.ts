@@ -4,7 +4,11 @@
 import { getSupabaseAdmin, isSupabaseConfigured } from './supabase';
 
 export function getAdminSecret(): string {
-  return process.env.ADMIN_SECRET_KEY || import.meta.env.ADMIN_SECRET_KEY || 'dev-secret-valle-admin-session-key-2026';
+  return process.env.ADMIN_SECRET_KEY || 
+    process.env.SESSION_SECRET || 
+    import.meta.env.ADMIN_SECRET_KEY || 
+    import.meta.env.SESSION_SECRET || 
+    'dev-secret-valle-admin-session-key-2026';
 }
 
 export function getClientIp(request: Request): string {
