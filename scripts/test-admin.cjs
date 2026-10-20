@@ -63,8 +63,8 @@ async function run() {
   console.log(`[GET /admin/properties/new] Status: ${newPropPage.status}, HTML Bytes: ${newPropPage.body.length}`);
 
   // 4. Edit Property Form Page
-  const editPropPage = await get('/admin/properties/edit?id=p0000000-0000-0000-0000-000000000001');
-  console.log(`[GET /admin/properties/edit?id=p0000...0001] Status: ${editPropPage.status}, HTML Bytes: ${editPropPage.body.length}`);
+  const editPropPage = await get('/admin/properties/edit?id=a0000000-0000-0000-0000-000000000001');
+  console.log(`[GET /admin/properties/edit?id=a0000...0001] Status: ${editPropPage.status}, HTML Bytes: ${editPropPage.body.length}`);
 
   // 5. Analytics & Power BI Dashboard
   const analyticsPage = await get('/admin/analytics');

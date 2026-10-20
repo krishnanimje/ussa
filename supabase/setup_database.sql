@@ -846,7 +846,7 @@ INSERT INTO properties (
   mls_number
 ) VALUES
 (
-  'p0000000-0000-0000-0000-000000000001',
+  'a0000000-0000-0000-0000-000000000001',
   'north-park-spanish-revival',
   'Restored Spanish Revival with Courtyard & ADU Potential',
   'Timeless San Diego character with modern bespoke renovations in vibrant North Park',
@@ -879,7 +879,7 @@ INSERT INTO properties (
   'SD26-90412'
 ),
 (
-  'p0000000-0000-0000-0000-000000000002',
+  'a0000000-0000-0000-0000-000000000002',
   'pacific-beach-coastal-condo',
   'Modern Coastal Condo with Private Sunset Balcony',
   'Blocks from Sail Bay and the Pacific surf with resort-style amenities',
@@ -912,7 +912,7 @@ INSERT INTO properties (
   'SD26-88104'
 ),
 (
-  'p0000000-0000-0000-0000-000000000003',
+  'a0000000-0000-0000-0000-000000000003',
   'eastlake-greens-chula-vista-pool-home',
   'Luxury Chula Vista Estate with Heated Pool & 3-Car Garage',
   'Suburban paradise with resort backyard, custom rock waterfall pool, and owned solar',
@@ -945,7 +945,7 @@ INSERT INTO properties (
   'CV26-44219'
 ),
 (
-  'p0000000-0000-0000-0000-000000000004',
+  'a0000000-0000-0000-0000-000000000004',
   'oceanside-va-friendly-turnkey-ranch',
   'Turnkey Oceanside Single-Story Near Camp Pendleton',
   'Zero-down VA loan approved, spacious RV parking, and expansive private yard',
@@ -978,7 +978,7 @@ INSERT INTO properties (
   'OC26-31902'
 ),
 (
-  'p0000000-0000-0000-0000-000000000005',
+  'a0000000-0000-0000-0000-000000000005',
   'clairemont-mesa-fixer-investor-opportunity',
   'Prime Clairemont Fixer-Upper with Massive ARV Spread',
   'High-upside investment opportunity on a flat 8,500 sq ft canyon-adjacent lot',
@@ -1011,7 +1011,7 @@ INSERT INTO properties (
   'SD26-11984'
 ),
 (
-  'p0000000-0000-0000-0000-000000000006',
+  'a0000000-0000-0000-0000-000000000006',
   'san-carlos-cowles-mountain-starter-home',
   'Sunlit San Carlos Starter Home with Mountain Views',
   'First-time homebuyer friendly with scenic trail access and mature fruit trees',
@@ -1044,7 +1044,7 @@ INSERT INTO properties (
   'SD26-77312'
 ),
 (
-  'p0000000-0000-0000-0000-000000000007',
+  'a0000000-0000-0000-0000-000000000007',
   'la-jolla-village-contemporary-townhome',
   'Architectural Contemporary Townhome Near Windansea',
   'Steps to the La Jolla shoreline with private rooftop deck and ocean breezes',
@@ -1077,7 +1077,7 @@ INSERT INTO properties (
   'LJ26-99214'
 ),
 (
-  'p0000000-0000-0000-0000-000000000008',
+  'a0000000-0000-0000-0000-000000000008',
   'golden-hill-multi-family-duplex',
   'Income Generating Golden Hill Duplex with Downtown Skyline Views',
   'Two detached residences on one lot with high cash-flow potential',
@@ -1121,8 +1121,8 @@ INSERT INTO open_houses (
   special_instructions
 ) VALUES 
 (
-  'oh000000-0000-0000-0000-000000000001',
-  'p0000000-0000-0000-0000-000000000001',
+  'c0000000-0000-0000-0000-000000000001',
+  'a0000000-0000-0000-0000-000000000001',
   NOW() + INTERVAL '2 days' + INTERVAL '13 hours',
   NOW() + INTERVAL '2 days' + INTERVAL '16 hours',
   'Edgar Valle',
@@ -1130,8 +1130,8 @@ INSERT INTO open_houses (
   'Saturday Open House: Hosted by Edgar Valle. Espresso bar and artisan pastries served in the courtyard. All buyers and agents welcome!'
 ),
 (
-  'oh000000-0000-0000-0000-000000000002',
-  'p0000000-0000-0000-0000-000000000001',
+  'c0000000-0000-0000-0000-000000000002',
+  'a0000000-0000-0000-0000-000000000001',
   NOW() + INTERVAL '3 days' + INTERVAL '13 hours',
   NOW() + INTERVAL '3 days' + INTERVAL '16 hours',
   'Edgar Valle',
@@ -1139,8 +1139,8 @@ INSERT INTO open_houses (
   'Sunday Twilight Tour: Sunset refreshments and property walkthrough. Ask Edgar about the ADU floorplan & financing options.'
 ),
 (
-  'oh000000-0000-0000-0000-000000000003',
-  'p0000000-0000-0000-0000-000000000003',
+  'c0000000-0000-0000-0000-000000000003',
+  'a0000000-0000-0000-0000-000000000003',
   NOW() + INTERVAL '2 days' + INTERVAL '12 hours',
   NOW() + INTERVAL '2 days' + INTERVAL '15 hours',
   'Edgar Valle',
@@ -1162,7 +1162,7 @@ INSERT INTO neighborhoods (
   hero_image
 ) VALUES
 (
-  'n0000000-0000-0000-0000-000000000001',
+  'd0000000-0000-0000-0000-000000000001',
   'north-park',
   'North Park',
   'Historic Charm Meets Urban Energy',
@@ -1174,7 +1174,7 @@ INSERT INTO neighborhoods (
   '/images/neighborhoods/north-park.svg'
 ),
 (
-  'n0000000-0000-0000-0000-000000000002',
+  'd0000000-0000-0000-0000-000000000002',
   'pacific-beach',
   'Pacific Beach',
   'Iconic California Beach Lifestyle',
@@ -1186,7 +1186,7 @@ INSERT INTO neighborhoods (
   '/images/neighborhoods/pacific-beach.svg'
 ),
 (
-  'n0000000-0000-0000-0000-000000000003',
+  'd0000000-0000-0000-0000-000000000003',
   'chula-vista',
   'Chula Vista & Eastlake',
   'Family Communities, Mountain Vistas & Resort Living',
@@ -1198,7 +1198,7 @@ INSERT INTO neighborhoods (
   '/images/neighborhoods/chula-vista.svg'
 ),
 (
-  'n0000000-0000-0000-0000-000000000004',
+  'd0000000-0000-0000-0000-000000000004',
   'oceanside',
   'Oceanside',
   'Coastal Community with Strong Military Roots',
@@ -1210,7 +1210,7 @@ INSERT INTO neighborhoods (
   '/images/neighborhoods/oceanside.svg'
 ),
 (
-  'n0000000-0000-0000-0000-000000000005',
+  'd0000000-0000-0000-0000-000000000005',
   'la-jolla',
   'La Jolla',
   'World-Class Luxury & Dramatic Ocean Cliffs',

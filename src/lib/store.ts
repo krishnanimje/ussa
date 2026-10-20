@@ -27,7 +27,7 @@ export function slugify(text: string): string {
 // Seed data constants representing Edgar Valle's San Diego listings & specialties
 export const INITIAL_PROPERTIES: Property[] = [
   {
-    id: 'p0000000-0000-0000-0000-000000000001',
+    id: 'a0000000-0000-0000-0000-000000000001',
     slug: 'north-park-spanish-revival',
     title: 'Restored Spanish Revival with Courtyard & ADU Potential',
     tagline: 'Timeless San Diego character with modern bespoke renovations in vibrant North Park',
@@ -87,7 +87,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-np-01',
-        property_id: 'p0000000-0000-0000-0000-000000000001',
+        property_id: 'a0000000-0000-0000-0000-000000000001',
         media_type: 'image',
         url: '/images/properties/north-park-spanish.svg',
         alt_text: 'Spanish revival facade with terracotta tiled roof and landscaping',
@@ -97,7 +97,7 @@ export const INITIAL_PROPERTIES: Property[] = [
       },
       {
         id: 'm-np-02',
-        property_id: 'p0000000-0000-0000-0000-000000000001',
+        property_id: 'a0000000-0000-0000-0000-000000000001',
         media_type: 'image',
         url: '/images/properties/interior-living.svg',
         alt_text: 'Open-concept living room with coved ceilings and hardwood flooring',
@@ -107,7 +107,7 @@ export const INITIAL_PROPERTIES: Property[] = [
       },
       {
         id: 'm-np-03',
-        property_id: 'p0000000-0000-0000-0000-000000000001',
+        property_id: 'a0000000-0000-0000-0000-000000000001',
         media_type: 'image',
         url: '/images/properties/kitchen-luxury.svg',
         alt_text: 'Designer chef kitchen with waterfall quartz island and custom pendant lighting',
@@ -117,7 +117,7 @@ export const INITIAL_PROPERTIES: Property[] = [
       },
       {
         id: 'm-np-04',
-        property_id: 'p0000000-0000-0000-0000-000000000001',
+        property_id: 'a0000000-0000-0000-0000-000000000001',
         media_type: 'image',
         url: '/images/properties/courtyard-patio.svg',
         alt_text: 'Private central terracotta courtyard with string lights and drought-tolerant succulents',
@@ -136,7 +136,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     updated_at: new Date(Date.now() - 1 * 86400000).toISOString()
   },
   {
-    id: 'p0000000-0000-0000-0000-000000000002',
+    id: 'a0000000-0000-0000-0000-000000000002',
     slug: 'pacific-beach-coastal-condo',
     title: 'Modern Coastal Condo with Private Sunset Balcony',
     tagline: 'Blocks from Sail Bay and the Pacific surf with resort-style amenities',
@@ -192,7 +192,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-pb-01',
-        property_id: 'p0000000-0000-0000-0000-000000000002',
+        property_id: 'a0000000-0000-0000-0000-000000000002',
         media_type: 'image',
         url: '/images/properties/pacific-beach-condo.svg',
         alt_text: 'Pacific Beach modern condo exterior with glass balconies and coastal palms',
@@ -202,7 +202,7 @@ export const INITIAL_PROPERTIES: Property[] = [
       },
       {
         id: 'm-pb-02',
-        property_id: 'p0000000-0000-0000-0000-000000000002',
+        property_id: 'a0000000-0000-0000-0000-000000000002',
         media_type: 'image',
         url: '/images/properties/pool-resort.svg',
         alt_text: 'Community heated swimming pool with lounge cabanas',
@@ -220,7 +220,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     created_at: new Date(Date.now() - 5 * 86400000).toISOString()
   },
   {
-    id: 'p0000000-0000-0000-0000-000000000003',
+    id: 'a0000000-0000-0000-0000-000000000003',
     slug: 'chula-vista-pool-home-eastlake',
     title: 'Resort Living: Eastlake Family Home with Saltwater Pool & Solar',
     tagline: 'Expansive 4-bedroom executive estate with panoramic mountain views and resort backyard',
@@ -277,7 +277,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-cv-01',
-        property_id: 'p0000000-0000-0000-0000-000000000003',
+        property_id: 'a0000000-0000-0000-0000-000000000003',
         media_type: 'image',
         url: '/images/properties/chula-vista-pool.svg',
         alt_text: 'Chula Vista Eastlake estate with pool and palm landscaping',
@@ -295,7 +295,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     created_at: new Date(Date.now() - 7 * 86400000).toISOString()
   },
   {
-    id: 'p0000000-0000-0000-0000-000000000004',
+    id: 'a0000000-0000-0000-0000-000000000004',
     slug: 'oceanside-va-approved-ranch-home',
     title: 'Turnkey Coastal Ranch Minutes to Camp Pendleton Main Gate',
     tagline: 'Ideal for military buyers utilizing 0% down VA financing with private RV parking',
@@ -351,7 +351,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-oc-01',
-        property_id: 'p0000000-0000-0000-0000-000000000004',
+        property_id: 'a0000000-0000-0000-0000-000000000004',
         media_type: 'image',
         url: '/images/properties/oceanside-ranch.svg',
         alt_text: 'Oceanside single-story coastal ranch with RV driveway',
@@ -369,7 +369,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     created_at: new Date(Date.now() - 10 * 86400000).toISOString()
   },
   {
-    id: 'p0000000-0000-0000-0000-000000000005',
+    id: 'a0000000-0000-0000-0000-000000000005',
     slug: 'clairemont-fixer-investor-special',
     title: 'High-Upside Fixer with Canyon Views & 8,400 Sq Ft Lot (SB 9 / ADU)',
     tagline: '70% ARV Rule Investor Opportunity: Large lot primed for remodel and detached dual ADU build',
@@ -427,7 +427,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-cm-01',
-        property_id: 'p0000000-0000-0000-0000-000000000005',
+        property_id: 'a0000000-0000-0000-0000-000000000005',
         media_type: 'image',
         url: '/images/properties/clairemont-fixer.svg',
         alt_text: 'Clairemont mid-century single-story fixer with canyon lot',
@@ -445,7 +445,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     created_at: new Date(Date.now() - 12 * 86400000).toISOString()
   },
   {
-    id: 'p0000000-0000-0000-0000-000000000006',
+    id: 'a0000000-0000-0000-0000-000000000006',
     slug: 'san-carlos-lake-murray-view-home',
     title: 'San Carlos Modernized Mid-Century Near Lake Murray & Cowles Mountain',
     tagline: 'Ideal for first-time buyers wanting space, top schools, and mountain views',
@@ -501,7 +501,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-sc-01',
-        property_id: 'p0000000-0000-0000-0000-000000000006',
+        property_id: 'a0000000-0000-0000-0000-000000000006',
         media_type: 'image',
         url: '/images/properties/san-carlos-home.svg',
         alt_text: 'San Carlos family home with Cowles mountain backdrop',
@@ -519,7 +519,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     created_at: new Date(Date.now() - 15 * 86400000).toISOString()
   },
   {
-    id: 'p0000000-0000-0000-0000-000000000007',
+    id: 'a0000000-0000-0000-0000-000000000007',
     slug: 'la-jolla-village-luxury-townhome',
     title: 'Architectural Townhome in the Village of La Jolla with Rooftop Ocean Peeks',
     tagline: 'Sophisticated coastal living steps from Girard Avenue fine dining and beaches',
@@ -574,7 +574,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-lj-01',
-        property_id: 'p0000000-0000-0000-0000-000000000007',
+        property_id: 'a0000000-0000-0000-0000-000000000007',
         media_type: 'image',
         url: '/images/properties/la-jolla-townhome.svg',
         alt_text: 'La Jolla architectural multi-level townhome with rooftop deck',
@@ -592,7 +592,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     created_at: new Date(Date.now() - 18 * 86400000).toISOString()
   },
   {
-    id: 'p0000000-0000-0000-0000-000000000008',
+    id: 'a0000000-0000-0000-0000-000000000008',
     slug: 'golden-hill-multi-family-duplex',
     title: 'Income Generating Golden Hill Duplex with Downtown Skyline Views',
     tagline: 'Two detached residences on one lot with high cash-flow potential',
@@ -647,7 +647,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-gh-01',
-        property_id: 'p0000000-0000-0000-0000-000000000008',
+        property_id: 'a0000000-0000-0000-0000-000000000008',
         media_type: 'image',
         url: '/images/properties/golden-hill-duplex.svg',
         alt_text: 'Golden Hill Craftsman duplex exterior with downtown skyline peeks',
@@ -665,7 +665,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     created_at: new Date(Date.now() - 20 * 86400000).toISOString()
   },
   {
-    id: 'p0000000-0000-0000-0000-000000000009',
+    id: 'a0000000-0000-0000-0000-000000000009',
     slug: 'mission-hills-spanish-draft',
     title: 'Historic Mission Hills Spanish Colonial Revival (Coming Soon)',
     tagline: 'Private canyon estate with original 1926 architectural tilework and views',
@@ -713,7 +713,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-mh-01',
-        property_id: 'p0000000-0000-0000-0000-000000000009',
+        property_id: 'a0000000-0000-0000-0000-000000000009',
         media_type: 'image',
         url: '/images/properties/north-park-spanish.svg',
         alt_text: 'Mission Hills Spanish colonial front exterior',
@@ -731,7 +731,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     created_at: new Date(Date.now() - 2 * 86400000).toISOString()
   },
   {
-    id: 'p0000000-0000-0000-0000-000000000010',
+    id: 'a0000000-0000-0000-0000-000000000010',
     slug: 'south-park-craftsman-archived',
     title: 'Historic South Park Craftsman with Detached Studio (Closed Escrow)',
     tagline: 'Sold over asking price in 7 days by Edgar Valle & Full Circle Group',
@@ -777,7 +777,7 @@ export const INITIAL_PROPERTIES: Property[] = [
     media: [
       {
         id: 'm-sp-01',
-        property_id: 'p0000000-0000-0000-0000-000000000010',
+        property_id: 'a0000000-0000-0000-0000-000000000010',
         media_type: 'image',
         url: '/images/properties/north-park-spanish.svg',
         alt_text: 'South Park Craftsman front elevation',
@@ -798,8 +798,8 @@ export const INITIAL_PROPERTIES: Property[] = [
 
 export const INITIAL_OPEN_HOUSES: OpenHouse[] = [
   {
-    id: 'oh000000-0000-0000-0000-000000000001',
-    property_id: 'p0000000-0000-0000-0000-000000000001',
+    id: 'c0000000-0000-0000-0000-000000000001',
+    property_id: 'a0000000-0000-0000-0000-000000000001',
     property: INITIAL_PROPERTIES[0],
     start_time: '2026-10-24T13:00:00-07:00',
     end_time: '2026-10-24T16:00:00-07:00',
@@ -808,11 +808,11 @@ export const INITIAL_OPEN_HOUSES: OpenHouse[] = [
     refreshments_provided: true,
     special_instructions: 'Saturday Open House: Hosted personally by Edgar Valle. Espresso bar and artisan pastries served in the courtyard. All buyers and brokers welcome!',
     is_cancelled: false,
-    rsvp_link: '/contact?type=open_house_rsvp&prop=p0000000-0000-0000-0000-000000000001'
+    rsvp_link: '/contact?type=open_house_rsvp&prop=a0000000-0000-0000-0000-000000000001'
   },
   {
-    id: 'oh000000-0000-0000-0000-000000000002',
-    property_id: 'p0000000-0000-0000-0000-000000000001',
+    id: 'c0000000-0000-0000-0000-000000000002',
+    property_id: 'a0000000-0000-0000-0000-000000000001',
     property: INITIAL_PROPERTIES[0],
     start_time: '2026-10-25T13:00:00-07:00',
     end_time: '2026-10-25T16:00:00-07:00',
@@ -821,13 +821,13 @@ export const INITIAL_OPEN_HOUSES: OpenHouse[] = [
     refreshments_provided: true,
     special_instructions: 'Sunday Open House: Afternoon showing with Edgar Valle. Wine & sparkling water with local gourmet charcuterie.',
     is_cancelled: false,
-    rsvp_link: '/contact?type=open_house_rsvp&prop=p0000000-0000-0000-0000-000000000001'
+    rsvp_link: '/contact?type=open_house_rsvp&prop=a0000000-0000-0000-0000-000000000001'
   }
 ];
 
 export const INITIAL_NEIGHBORHOODS: Neighborhood[] = [
   {
-    id: 'n0000000-0000-0000-0000-000000000001',
+    id: 'd0000000-0000-0000-0000-000000000001',
     slug: 'north-park',
     name: 'North Park',
     tagline: 'Historic Craftsman Charm & Thriving Culinary Scene',
@@ -844,7 +844,7 @@ export const INITIAL_NEIGHBORHOODS: Neighborhood[] = [
     hero_image: '/images/neighborhoods/north-park.svg'
   },
   {
-    id: 'n0000000-0000-0000-0000-000000000002',
+    id: 'd0000000-0000-0000-0000-000000000002',
     slug: 'pacific-beach',
     name: 'Pacific Beach',
     tagline: 'Sun-Drenched Coastal Energy & Oceanfront Living',
@@ -861,7 +861,7 @@ export const INITIAL_NEIGHBORHOODS: Neighborhood[] = [
     hero_image: '/images/neighborhoods/pacific-beach.svg'
   },
   {
-    id: 'n0000000-0000-0000-0000-000000000003',
+    id: 'd0000000-0000-0000-0000-000000000003',
     slug: 'chula-vista',
     name: 'Chula Vista & Eastlake',
     tagline: 'Family Communities, Mountain Vistas & Resort Living',
@@ -878,7 +878,7 @@ export const INITIAL_NEIGHBORHOODS: Neighborhood[] = [
     hero_image: '/images/neighborhoods/chula-vista.svg'
   },
   {
-    id: 'n0000000-0000-0000-0000-000000000004',
+    id: 'd0000000-0000-0000-0000-000000000004',
     slug: 'oceanside',
     name: 'Oceanside',
     tagline: 'Coastal Community with Strong Military Roots',
@@ -895,7 +895,7 @@ export const INITIAL_NEIGHBORHOODS: Neighborhood[] = [
     hero_image: '/images/neighborhoods/oceanside.svg'
   },
   {
-    id: 'n0000000-0000-0000-0000-000000000005',
+    id: 'd0000000-0000-0000-0000-000000000005',
     slug: 'la-jolla',
     name: 'La Jolla',
     tagline: 'World-Class Luxury & Dramatic Ocean Cliffs',
@@ -1021,7 +1021,7 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
     actor_email: 'edgar@yourrealtoredgar.com',
     action: 'publish_property',
     entity_type: 'property',
-    entity_id: 'p0000000-0000-0000-0000-000000000001',
+    entity_id: 'a0000000-0000-0000-0000-000000000001',
     details: { title: 'Restored Spanish Revival with Courtyard & ADU Potential', status: 'published' },
     ip_address: '127.0.0.1',
     created_at: new Date(Date.now() - 3 * 86400000).toISOString()
@@ -1031,7 +1031,7 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
     actor_email: 'edgar@yourrealtoredgar.com',
     action: 'update_price',
     entity_type: 'property',
-    entity_id: 'p0000000-0000-0000-0000-000000000001',
+    entity_id: 'a0000000-0000-0000-0000-000000000001',
     details: { old_price: 1225000, new_price: 1185000, title: 'Restored Spanish Revival' },
     ip_address: '127.0.0.1',
     created_at: new Date(Date.now() - 1 * 86400000).toISOString()
@@ -1041,7 +1041,7 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
     actor_email: 'edgar@yourrealtoredgar.com',
     action: 'create_property',
     entity_type: 'property',
-    entity_id: 'p0000000-0000-0000-0000-000000000009',
+    entity_id: 'a0000000-0000-0000-0000-000000000009',
     details: { title: 'Historic Mission Hills Spanish Colonial Revival (Coming Soon)', status: 'draft' },
     ip_address: '127.0.0.1',
     created_at: new Date(Date.now() - 2 * 86400000).toISOString()
@@ -1119,7 +1119,7 @@ let runtimeLeads: Lead[] = [
     phone: '(858) 555-0176',
     lead_type: 'investor_flip',
     message: 'Interested in the Clairemont canyon fixer. Ready with all-cash offer and 10-day close. Want to verify SB9 ADU allowance.',
-    property_id: 'p0000000-0000-0000-0000-000000000005',
+    property_id: 'a0000000-0000-0000-0000-000000000005',
     property_address: '4920 Mount Alifan Dr, San Diego, CA',
     preferred_contact_method: 'text',
     estimated_budget: '$750k - $800k',
@@ -1150,7 +1150,7 @@ let runtimeLeads: Lead[] = [
     phone: '(858) 555-0922',
     lead_type: 'tour_request',
     message: 'Requesting private Saturday walkthrough for the La Jolla Village luxury townhome.',
-    property_id: 'p0000000-0000-0000-0000-000000000007',
+    property_id: 'a0000000-0000-0000-0000-000000000007',
     property_address: '7435 Draper Ave #2, La Jolla, CA',
     preferred_contact_method: 'email',
     estimated_budget: '$1.8M - $2.0M',
@@ -1213,7 +1213,7 @@ let runtimeLeads: Lead[] = [
     phone: '(858) 555-0455',
     lead_type: 'tour_request',
     message: 'Closed escrow on our Torrey Pines luxury condo. Excellent guidance throughout the escrow process.',
-    property_id: 'p0000000-0000-0000-0000-000000000004',
+    property_id: 'a0000000-0000-0000-0000-000000000004',
     property_address: '4560 Ocean Blvd #401, San Diego, CA',
     preferred_contact_method: 'email',
     estimated_budget: '$1.25M',
@@ -2007,7 +2007,7 @@ export async function submitLead(leadInput: Omit<Lead, 'id' | 'created_at' | 'st
         lead_type: newLead.lead_type,
         message: newLead.message,
         preferred_contact_method: newLead.preferred_contact_method,
-        property_id: newLead.property_id,
+        property_id: newLead.property_id || null,
         property_address: newLead.property_address,
         estimated_budget: newLead.estimated_budget,
         timeframe: newLead.timeframe,

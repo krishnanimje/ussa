@@ -21,6 +21,8 @@ for (const file of files) {
   fullSql += fs.readFileSync(filePath, 'utf-8') + '\n';
 }
 
-const outputPath = path.join(process.cwd(), 'supabase', 'complete_setup.sql');
-fs.writeFileSync(outputPath, fullSql, 'utf-8');
-console.log('Successfully generated complete_setup.sql, total size:', (fullSql.length / 1024).toFixed(1), 'KB');
+const outputPath1 = path.join(process.cwd(), 'supabase', 'complete_setup.sql');
+const outputPath2 = path.join(process.cwd(), 'supabase', 'setup_database.sql');
+fs.writeFileSync(outputPath1, fullSql, 'utf-8');
+fs.writeFileSync(outputPath2, fullSql, 'utf-8');
+console.log('Successfully generated complete_setup.sql & setup_database.sql, total size:', (fullSql.length / 1024).toFixed(1), 'KB');
