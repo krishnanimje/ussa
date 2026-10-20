@@ -114,6 +114,18 @@ const prevDateSpan = `${formatDate(summary.previousStartDate)} – ${formatDate(
     </div>
   </div>
 
+  {summary.page_views.current === 0 && (
+    <div class="card" style="padding: 1rem 1.25rem; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.85rem;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <div>
+        <div style="font-weight: 600; font-size: 0.9rem; color: #ffffff;">Live Analytics Engine Active — Clean Production State</div>
+        <div style="font-size: 0.82rem; color: #94a3b8; margin-top: 0.15rem;">
+          All simulated dummy traffic has been purged. Real page visits, search filters, and lead inquiries will automatically track and update these charts in real-time.
+        </div>
+      </div>
+    </div>
+  )}
+
   <!-- Executive KPI Grid (11 Power BI Metrics with Deltas) -->
   <div class="admin-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 2rem;">
     <!-- 1. Page Views -->

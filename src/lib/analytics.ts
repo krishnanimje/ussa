@@ -14,7 +14,7 @@ import type {
   LandingPagePerformance,
   FunnelStage
 } from './types';
-import { isSupabaseConfigured, getSupabase } from './supabase';
+import { isSupabaseConfigured, getSupabase, getSupabaseAdmin } from './supabase';
 import { getProperties, getAllLeads } from './store';
 
 // In-Memory store for analytics events (persisted during runtime & fallback)
@@ -339,8 +339,10 @@ function seedHistoricalEvents() {
   }
 }
 
-// Ensure baseline events are populated
-seedHistoricalEvents();
+// Seed historical baseline events strictly in test environments for automated test suites
+if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+  seedHistoricalEvents();
+}
 
 /**
  * Calculates date boundaries for a given date filter.
@@ -456,13 +458,29 @@ export async function getAnalyticsSummary(
   const prevStartTime = prevStart.getTime();
   const prevEndTime = prevEnd.getTime();
 
+  let allEvents = inMemoryEvents;
+  const adminClient = getSupabaseAdmin();
+  if (adminClient && (typeof process === 'undefined' || process.env.NODE_ENV !== 'test')) {
+    try {
+      const { data, error } = await adminClient.from('analytics_events')
+        .select('*')
+        .gte('created_at', prevStart.toISOString())
+        .lte('created_at', end.toISOString());
+      if (!error && data) {
+        allEvents = data as AnalyticsEvent[];
+      }
+    } catch (err) {
+      console.warn('Could not query analytics from Supabase, using local memory:', err);
+    }
+  }
+
   // Filter current period and previous period events
-  const currentEvents = inMemoryEvents.filter(e => {
+  const currentEvents = allEvents.filter(e => {
     const t = new Date(e.created_at).getTime();
     return t >= startTime && t <= endTime;
   });
 
-  const previousEvents = inMemoryEvents.filter(e => {
+  const previousEvents = allEvents.filter(e => {
     const t = new Date(e.created_at).getTime();
     return t >= prevStartTime && t <= prevEndTime;
   });
@@ -756,5 +774,7 @@ export function getInMemoryEventsCount(): number {
  */
 export function resetInMemoryEvents(): void {
   inMemoryEvents = [];
-  seedHistoricalEvents();
+  if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+    seedHistoricalEvents();
+  }
 }
