@@ -1,7 +1,26 @@
 // Server-side authentication & authorization utilities for Edgar Valle Admin Portal
 // Supports both Supabase Auth and cryptographically secured server secret sessions
 
+import crypto from 'node:crypto';
 import { getSupabaseAdmin, isSupabaseConfigured } from './supabase';
+
+/**
+ * Constant-time string equality comparison using crypto.timingSafeEqual.
+ * Protects against side-channel timing attacks attempting to brute-force or deduce secrets.
+ */
+export function constantTimeCompare(a: string, b: string): boolean {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length === 0 || b.length === 0) {
+    return false;
+  }
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) {
+    // Avoid timing leakage on length mismatch by comparing bufA against bufA before returning false
+    crypto.timingSafeEqual(bufA, bufA);
+    return false;
+  }
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 export function getAdminSecret(): string {
   return process.env.ADMIN_SECRET_KEY || 
@@ -23,19 +42,25 @@ export function getClientIp(request: Request): string {
 
 /**
  * Synchronous check for cookie or Bearer token matching server admin secret.
+ * Enforces constant-time comparison against side-channel timing attacks.
  */
 export function checkAdminAuth(request: Request): boolean {
   const secret = getAdminSecret();
   const cookie = request.headers.get('cookie') || '';
   const authHeader = request.headers.get('authorization') || '';
 
-  // 1. Check server session cookie
-  if (cookie.includes(`valle_admin_session=${secret}`)) {
+  // 1. Check server session cookie (extract token strictly)
+  const cookieMatch = cookie.match(/valle_admin_session=([^;]+)/);
+  if (cookieMatch && constantTimeCompare(cookieMatch[1].trim(), secret.trim())) {
     return true;
   }
 
   // 2. Check Bearer token header
-  if (authHeader === `Bearer ${secret}` || authHeader === secret) {
+  if (authHeader.startsWith('Bearer ')) {
+    if (constantTimeCompare(authHeader.substring(7).trim(), secret.trim())) {
+      return true;
+    }
+  } else if (constantTimeCompare(authHeader.trim(), secret.trim())) {
     return true;
   }
 
@@ -114,8 +139,8 @@ export async function verifyAdminCredentials(
 ): Promise<{ success: boolean; userEmail?: string; error?: string }> {
   const adminSecret = getAdminSecret();
 
-  // 1. Direct admin secret passphrase match
-  if (keyOrPassword.trim() === adminSecret.trim()) {
+  // 1. Direct admin secret passphrase match (timing-attack resistant)
+  if (constantTimeCompare(keyOrPassword.trim(), adminSecret.trim())) {
     return { success: true, userEmail: 'edgar@yourrealtoredgar.com' };
   }
 

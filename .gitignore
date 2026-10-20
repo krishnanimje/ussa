@@ -4,10 +4,17 @@ dist/
 .astro/
 .vercel/
 
-# Environment Variables
+# Environment Variables & Secrets
 .env
-.env.production
-.env.local
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.id_rsa
 
 # Operating System & Logs
 .DS_Store

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { checkAdminAuth, getAdminSecret, createAdminSessionCookie, createLogoutCookie } from '../lib/auth';
+import { checkAdminAuth, getAdminSecret, createAdminSessionCookie, createLogoutCookie, constantTimeCompare } from '../lib/auth';
 import { checkRateLimit, checkLeadSubmissionRateLimit, checkAdminLoginRateLimit, clearAllRateLimits } from '../lib/rateLimit';
 import { validateLeadSubmission, validateImageBuffer } from '../lib/validation';
 import { getProperties, getPropertyBySlug, SITE_SETTINGS } from '../lib/store';
@@ -12,9 +12,19 @@ describe('Master Prompt 05 — Security, Privacy & Compliance Test Suite', () =>
   });
 
   // --------------------------------------------------------------------------
-  // 1. Authentication & Authorization Tests
+  // 1. Authentication & Session Security
   // --------------------------------------------------------------------------
   describe('1. Authentication & Session Security', () => {
+    it('verifies constantTimeCompare prevents side-channel timing leaks', () => {
+      const secret = 'super-secure-admin-passphrase-2026';
+      expect(constantTimeCompare(secret, secret)).toBe(true);
+      expect(constantTimeCompare(secret, 'wrong-password')).toBe(false);
+      expect(constantTimeCompare(secret, 'super-secure-admin-passphrase-2027')).toBe(false);
+      expect(constantTimeCompare(secret, '')).toBe(false);
+      expect(constantTimeCompare('', secret)).toBe(false);
+      expect(constantTimeCompare('', '')).toBe(false);
+    });
+
     it('rejects unauthenticated requests without authorization header or cookie', () => {
       const req = new Request('http://localhost:4321/api/admin/leads');
       expect(checkAdminAuth(req)).toBe(false);

@@ -52,6 +52,39 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
 
+  // 3b. Anti-CSRF Origin Validation for state-changing mutation requests
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(context.request.method)) {
+    const origin = context.request.headers.get('origin');
+    if (origin) {
+      try {
+        const originUrl = new URL(origin);
+        const hostUrl = new URL(context.request.url);
+        const isSameOrigin = originUrl.origin === hostUrl.origin;
+        const isLocal = originUrl.hostname === 'localhost' || originUrl.hostname === '127.0.0.1';
+        const isOfficialDomain = originUrl.hostname === 'edgarvalle.com' || originUrl.hostname.endsWith('.edgarvalle.com');
+        const isVercelPreview = originUrl.hostname.endsWith('.vercel.app');
+
+        if (!isSameOrigin && !isLocal && !isOfficialDomain && !isVercelPreview) {
+          logger.warn('Untrusted Cross-Origin Request Blocked (Anti-CSRF)', {
+            origin,
+            targetPath: pathname,
+            method: context.request.method,
+            ip: clientIp
+          });
+          return new Response(JSON.stringify({ error: 'Forbidden: Cross-site request rejected.' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+      } catch {
+        return new Response(JSON.stringify({ error: 'Forbidden: Malformed origin header.' }), {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
+  }
+
   // 4. Execute request
   const response = await next();
 
@@ -84,6 +117,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Cross-Origin isolation protections
   newHeaders.set('Cross-Origin-Opener-Policy', 'same-origin');
 
+  // Anti-XSS and file download protection
+  newHeaders.set('X-XSS-Protection', '1; mode=block');
+  newHeaders.set('X-Permitted-Cross-Domain-Policies', 'none');
+  newHeaders.set('X-Download-Options', 'noopen');
+
   // 6. Caching Strategy: Optimize public caching, protect private responses (Master Prompt 06)
   const isPrivateRequest = 
     pathname.startsWith('/admin') || 
@@ -91,6 +129,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     pathname.startsWith('/api/leads') || 
     pathname.startsWith('/api/valuation') ||
     (context.request.method !== 'GET' && context.request.method !== 'HEAD') ||
+    Boolean(context.request.headers.get('cookie')?.includes('valle_admin_session')) ||
     Boolean(context.request.headers.get('cookie')?.includes('edgar_admin_session'));
 
   if (isPrivateRequest) {
