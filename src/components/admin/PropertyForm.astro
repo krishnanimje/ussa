@@ -18,1080 +18,539 @@ const initialProperty = property || {
   property_type: 'Single Family',
   status: 'draft',
   listing_status: 'for_sale',
-  publication_status: 'draft',
+  publication_status: 'published',
   price: 850000,
-  currency: 'USD',
-  previous_price: undefined,
   bedrooms: 3,
   bathrooms: 2.0,
   square_feet: 1600,
-  lot_size_sqft: 5000,
-  lot_size_unit: 'sqft',
-  year_built: 2000,
+  year_built: 2020,
   garage_spaces: 2,
-  parking_spaces: 2,
   has_pool: false,
   has_spa: false,
   is_featured: false,
   is_va_eligible: true,
   is_fixer_upper: false,
-  renovation_status: 'updated',
-  arv_estimate: undefined,
   address_street: '',
-  address_unit: '',
   address_city: 'San Diego',
   address_state: 'CA',
   address_zip: '92101',
-  address_country: 'USA',
-  address_visibility: 'full',
   neighborhood: 'North Park',
-  latitude: 32.7483,
-  longitude: -117.1328,
   description: '',
-  features: [],
-  amenities: [],
-  hoa_fee_monthly: 0,
-  hoa_fee_frequency: 'none',
-  property_tax_rate: 1.25,
-  virtual_tour_url: '',
-  video_url: '',
-  mls_number: '',
   primary_image: '/images/properties/north-park-spanish.svg',
-  gallery_images: ['/images/properties/north-park-spanish.svg'],
-  media: [],
-  seo_title: '',
-  seo_description: '',
-  og_image: '',
-  is_indexable: true
+  gallery_images: ['/images/properties/north-park-spanish.svg']
 } as Partial<Property>;
 
-// Neighborhood list for dropdown
-const neighborhoods = INITIAL_NEIGHBORHOODS.map(n => n.name).concat(['Clairemont', 'San Carlos', 'Golden Hill', 'Mission Hills', 'South Park', 'Downtown', 'Del Mar', 'Coronado']);
-const uniqueNeighborhoods = Array.from(new Set(neighborhoods)).sort();
+const neighborhoods = Array.from(new Set(
+  INITIAL_NEIGHBORHOODS.map(n => n.name).concat([
+    'Clairemont', 'San Carlos', 'Golden Hill', 'Mission Hills', 
+    'South Park', 'Downtown', 'Del Mar', 'Coronado', 'La Jolla',
+    'Pacific Beach', 'Ocean Beach', 'North Park', 'Little Italy', 'Hillcrest'
+  ])
+)).sort();
 
-const initialMediaJson = JSON.stringify(initialProperty.media || (initialProperty.gallery_images?.map((url, idx) => ({
-  id: `m-init-${idx}`,
-  property_id: initialProperty.id || '',
-  media_type: 'image',
-  url,
-  alt_text: `${initialProperty.title || 'Property'} Photo ${idx + 1}`,
-  display_order: idx + 1,
-  is_primary: idx === 0,
-  created_at: new Date().toISOString()
-})) || []));
+const sampleImages = [
+  { label: 'Spanish Craftsman', url: '/images/properties/north-park-spanish.svg' },
+  { label: 'Coastal Modern', url: '/images/properties/la-jolla-coastal.svg' },
+  { label: 'Urban Loft', url: '/images/properties/little-italy-loft.svg' },
+  { label: 'Beach Duplex', url: '/images/properties/pacific-beach-duplex.svg' }
+];
 ---
 
-<div class="property-form-wrapper" data-mode={mode} data-id={initialProperty.id}>
-  <!-- Top Action Bar -->
-  <div class="form-action-bar">
+<div class="property-form-wrapper" data-mode={mode}>
+  <!-- Header Bar -->
+  <div class="admin-header" style="flex-wrap: wrap; gap: 1rem;">
     <div>
-      <h2 style="font-size: 1.5rem; margin: 0 0 0.25rem 0; color: #ffffff;">
-        {isEdit ? `Editing: ${initialProperty.title}` : 'Create New San Diego Property Listing'}
-      </h2>
-      <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.85rem;">
-        {isEdit ? `ID: ${initialProperty.id} • Slug: /properties/${initialProperty.slug}` : 'Draft or publish a verified residential, coastal, or investment listing.'}
+      <h1 style="font-size: 1.75rem; margin: 0 0 0.25rem 0; color: #ffffff;">
+        {isEdit ? `Edit: ${initialProperty.title}` : 'Add New Property'}
+      </h1>
+      <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.88rem;">
+        {isEdit ? `Property ID: ${initialProperty.id} • /properties/${initialProperty.slug}` : 'Fill in the basic property details below and save.'}
       </p>
     </div>
-    <div style="display: flex; gap: 0.75rem; align-items: center;">
+    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
       <a href="/admin/properties" class="btn btn-outline-white btn-sm">Cancel</a>
       {isEdit && (
-        <a href={`/properties/${initialProperty.slug}?preview=true`} target="_blank" class="btn btn-outline-white btn-sm">
+        <a href={`/properties/${initialProperty.slug}`} target="_blank" class="btn btn-outline-white btn-sm">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: -2px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-          Live Preview
+          View on Site
         </a>
       )}
-      <button type="button" id="saveDraftBtn" class="btn btn-outline-gold btn-sm">Save as Draft</button>
-      <button type="button" id="savePublishBtn" class="btn btn-gold btn-sm">
-        {isEdit && initialProperty.publication_status === 'published' ? 'Save & Update' : 'Save & Publish'}
+      <button type="button" id="btnSaveDraft" class="btn btn-outline-gold btn-sm">Save as Draft</button>
+      <button type="button" id="btnSavePublish" class="btn btn-gold btn-sm">
+        {isEdit ? 'Save Changes' : 'Save & Publish'}
       </button>
     </div>
   </div>
 
-  <!-- Form Section Tabs -->
-  <nav class="admin-tabs" id="propertyFormTabs" aria-label="Property Form Sections">
-    <button type="button" class="admin-tab-btn active" data-tab="tab-identity">1. Identity &amp; State</button>
-    <button type="button" class="admin-tab-btn" data-tab="tab-pricing">2. Pricing &amp; Fees</button>
-    <button type="button" class="admin-tab-btn" data-tab="tab-location">3. Location &amp; Map</button>
-    <button type="button" class="admin-tab-btn" data-tab="tab-details">4. Property Specs</button>
-    <button type="button" class="admin-tab-btn" data-tab="tab-media">5. Photos &amp; Media</button>
-    <button type="button" class="admin-tab-btn" data-tab="tab-openhouse">6. Open Houses</button>
-    <button type="button" class="admin-tab-btn" data-tab="tab-seo">7. SEO &amp; Social</button>
-  </nav>
-
-  <form id="propertyMasterForm" novalidate>
+  <form id="simplePropertyForm" novalidate style="max-width: 900px;">
     <input type="hidden" name="id" value={initialProperty.id} />
-    <input type="hidden" name="initialMediaJson" id="initialMediaInput" value={initialMediaJson} />
+    <input type="hidden" name="mode" value={mode} />
 
-    <!-- TAB 1: IDENTITY -->
-    <div class="tab-pane active" id="tab-identity">
-      <div class="admin-form-section">
-        <h3 class="admin-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          Listing Identity &amp; Public Lifecycle
-        </h3>
-        <p class="admin-section-desc">Define listing classification, public headline, and publishing publication state.</p>
+    <!-- 1. Basic Information -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h2 class="admin-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-400)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          1. Basic Information
+        </h2>
+        <span class="badge badge-gold">Required Details</span>
+      </div>
 
+      <div class="form-group">
+        <label class="form-label" for="propTitle">Property Title / Headline <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="propTitle" 
+          name="title" 
+          class="form-input" 
+          value={initialProperty.title} 
+          placeholder="e.g. Modern Spanish Craftsman with Private Pool" 
+          required 
+        />
+        <div class="form-hint">A clear title that buyers will see on the website.</div>
+      </div>
+
+      <div class="form-row">
         <div class="form-group">
-          <label class="form-label" for="propTitle">Property Headline / Title <span class="required">*</span></label>
+          <label class="form-label" for="propPrice">Asking Price ($ USD) <span class="required">*</span></label>
           <input 
-            type="text" 
-            id="propTitle" 
-            name="title" 
+            type="number" 
+            id="propPrice" 
+            name="price" 
             class="form-input" 
-            value={initialProperty.title} 
-            placeholder="e.g. Restored Spanish Revival with Courtyard & ADU Potential" 
+            value={initialProperty.price} 
+            placeholder="850000" 
+            min="1000" 
+            step="1000" 
             required 
           />
-          <div class="field-hint" style="color: var(--admin-text-muted); font-size: 0.78rem; margin-top: 4px;">A compelling title highlighting architecture, location, and key features.</div>
-        </div>
-
-        <div class="grid-2" style="gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label" for="propSlug">URL Slug <span class="required">*</span></label>
-            <input 
-              type="text" 
-              id="propSlug" 
-              name="slug" 
-              class="form-input" 
-              value={initialProperty.slug} 
-              placeholder="e.g. north-park-spanish-revival" 
-              required 
-            />
-            <div class="field-hint" style="color: var(--admin-text-muted); font-size: 0.78rem; margin-top: 4px;">Public URL: https://edgarvalle.com/properties/<strong>slug</strong></div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propMls">MLS # / License ID</label>
-            <input 
-              type="text" 
-              id="propMls" 
-              name="mls_number" 
-              class="form-input" 
-              value={initialProperty.mls_number} 
-              placeholder="e.g. SD26-90412" 
-            />
-          </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="propTagline">Marketing Tagline</label>
+          <label class="form-label" for="propType">Property Type</label>
+          <select id="propType" name="property_type" class="form-select">
+            <option value="Single Family" selected={initialProperty.property_type === 'Single Family'}>Single Family</option>
+            <option value="Condo" selected={initialProperty.property_type === 'Condo'}>Condo</option>
+            <option value="Townhome" selected={initialProperty.property_type === 'Townhome'}>Townhome</option>
+            <option value="Multi-Family" selected={initialProperty.property_type === 'Multi-Family'}>Multi-Family</option>
+            <option value="Fixer-Upper" selected={initialProperty.property_type === 'Fixer-Upper'}>Fixer-Upper</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="propListingStatus">Listing Status</label>
+          <select id="propListingStatus" name="listing_status" class="form-select">
+            <option value="for_sale" selected={initialProperty.listing_status === 'for_sale'}>For Sale</option>
+            <option value="pending" selected={initialProperty.listing_status === 'pending'}>Pending / Under Contract</option>
+            <option value="sold" selected={initialProperty.listing_status === 'sold'}>Sold</option>
+            <option value="for_rent" selected={initialProperty.listing_status === 'for_rent'}>For Rent</option>
+            <option value="coming_soon" selected={initialProperty.listing_status === 'coming_soon'}>Coming Soon</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top: 0.5rem;">
+        <div class="form-group">
+          <label class="form-label" for="propPubStatus">Publication</label>
+          <select id="propPubStatus" name="publication_status" class="form-select">
+            <option value="published" selected={initialProperty.publication_status === 'published'}>Published (Live on Website)</option>
+            <option value="draft" selected={initialProperty.publication_status === 'draft'}>Draft (Hidden / In Preparation)</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: flex-end; padding-bottom: 0.5rem;">
+          <label class="form-checkbox-label" style="width: 100%;">
+            <input 
+              type="checkbox" 
+              name="is_featured" 
+              value="true" 
+              checked={initialProperty.is_featured} 
+            />
+            <span>🌟 Feature on Homepage</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Location -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h2 class="admin-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-400)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          2. Location &amp; Address
+        </h2>
+        <span class="badge badge-blue">San Diego, CA</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex: 2;">
+          <label class="form-label" for="propStreet">Street Address</label>
           <input 
             type="text" 
-            id="propTagline" 
-            name="tagline" 
+            id="propStreet" 
+            name="address_street" 
             class="form-input" 
-            value={initialProperty.tagline} 
-            placeholder="e.g. Timeless San Diego character with modern bespoke renovations in vibrant North Park" 
+            value={initialProperty.address_street} 
+            placeholder="e.g. 3542 Granada Ave" 
           />
         </div>
 
-        <div class="grid-3" style="gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label" for="propType">Property Type <span class="required">*</span></label>
-            <select id="propType" name="property_type" class="form-input" required>
-              <option value="Single Family" selected={initialProperty.property_type === 'Single Family'}>Single Family</option>
-              <option value="Condo" selected={initialProperty.property_type === 'Condo'}>Condo</option>
-              <option value="Townhome" selected={initialProperty.property_type === 'Townhome'}>Townhome</option>
-              <option value="Multi-Family" selected={initialProperty.property_type === 'Multi-Family'}>Multi-Family</option>
-              <option value="Fixer-Upper" selected={initialProperty.property_type === 'Fixer-Upper'}>Fixer-Upper</option>
-              <option value="Commercial" selected={initialProperty.property_type === 'Commercial'}>Commercial</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propListingStatus">Market Listing State <span class="required">*</span></label>
-            <select id="propListingStatus" name="listing_status" class="form-input" required>
-              <option value="for_sale" selected={initialProperty.listing_status === 'for_sale'}>For Sale</option>
-              <option value="for_rent" selected={initialProperty.listing_status === 'for_rent'}>For Rent</option>
-              <option value="pending" selected={initialProperty.listing_status === 'pending'}>Pending Escrow</option>
-              <option value="sold" selected={initialProperty.listing_status === 'sold'}>Sold / Closed</option>
-              <option value="coming_soon" selected={initialProperty.listing_status === 'coming_soon'}>Coming Soon</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propPublicationStatus">Publication State <span class="required">*</span></label>
-            <select id="propPublicationStatus" name="publication_status" class="form-input" required>
-              <option value="draft" selected={initialProperty.publication_status === 'draft'}>Draft (Hidden from Public)</option>
-              <option value="published" selected={initialProperty.publication_status === 'published'}>Published (Live Online)</option>
-              <option value="archived" selected={initialProperty.publication_status === 'archived'}>Archived (Internal Only)</option>
-            </select>
-          </div>
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label" for="propNeighborhood">Neighborhood</label>
+          <select id="propNeighborhood" name="neighborhood" class="form-select">
+            {neighborhoods.map(name => (
+              <option value={name} selected={initialProperty.neighborhood === name}>{name}</option>
+            ))}
+          </select>
         </div>
+      </div>
 
-        <div class="form-group" style="margin-top: 1rem;">
-          <label class="form-label" for="propDescription">Comprehensive Property Narrative <span class="required">*</span></label>
-          <textarea 
-            id="propDescription" 
-            name="description" 
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="propCity">City</label>
+          <input 
+            type="text" 
+            id="propCity" 
+            name="address_city" 
             class="form-input" 
-            rows="6" 
-            placeholder="Describe the architectural provenance, interior appointments, natural lighting, outdoor entertaining spaces, and neighborhood appeal..." 
-            required
-          >{initialProperty.description}</textarea>
+            value={initialProperty.address_city || 'San Diego'} 
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="propState">State</label>
+          <input 
+            type="text" 
+            id="propState" 
+            name="address_state" 
+            class="form-input" 
+            value={initialProperty.address_state || 'CA'} 
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="propZip">Zip Code</label>
+          <input 
+            type="text" 
+            id="propZip" 
+            name="address_zip" 
+            class="form-input" 
+            value={initialProperty.address_zip || '92101'} 
+            placeholder="92101" 
+          />
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: PRICING -->
-    <div class="tab-pane" id="tab-pricing" style="display: none;">
-      <div class="admin-form-section">
-        <h3 class="admin-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-          Pricing, Verified HOA &amp; Tax Structure
-        </h3>
-        <p class="admin-section-desc">Accurate California pricing numbers used in the mortgage calculator and closing cost estimates.</p>
+    <!-- 3. Specs & Details -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h2 class="admin-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-400)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          3. Property Specs &amp; Amenities
+        </h2>
+      </div>
 
-        <div class="grid-3" style="gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label" for="propPrice">Asking Price (USD) <span class="required">*</span></label>
-            <input 
-              type="number" 
-              id="propPrice" 
-              name="price" 
-              class="form-input" 
-              value={initialProperty.price} 
-              min="10000" 
-              step="1000" 
-              required 
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propPreviousPrice">Previous / Original Price (Optional)</label>
-            <input 
-              type="number" 
-              id="propPreviousPrice" 
-              name="previous_price" 
-              class="form-input" 
-              value={initialProperty.previous_price || initialProperty.original_price || ''} 
-              placeholder="Displays strikethrough price if discounted" 
-              step="1000" 
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propCurrency">Currency</label>
-            <input 
-              type="text" 
-              id="propCurrency" 
-              name="currency" 
-              class="form-input" 
-              value={initialProperty.currency || 'USD'} 
-              readonly 
-            />
-          </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="propBedrooms">Bedrooms</label>
+          <input 
+            type="number" 
+            id="propBedrooms" 
+            name="bedrooms" 
+            class="form-input" 
+            value={initialProperty.bedrooms ?? 3} 
+            min="0" 
+            max="30" 
+          />
         </div>
 
-        <div class="grid-3" style="gap: 1.25rem; margin-top: 1rem;">
-          <div class="form-group">
-            <label class="form-label" for="propHoa">Monthly HOA Fee ($)</label>
-            <input 
-              type="number" 
-              id="propHoa" 
-              name="hoa_fee_monthly" 
-              class="form-input" 
-              value={initialProperty.hoa_fee_monthly ?? 0} 
-              min="0" 
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propHoaFreq">HOA Billing Frequency</label>
-            <select id="propHoaFreq" name="hoa_fee_frequency" class="form-input">
-              <option value="none" selected={initialProperty.hoa_fee_frequency === 'none'}>None ($0 HOA)</option>
-              <option value="monthly" selected={initialProperty.hoa_fee_frequency === 'monthly'}>Monthly</option>
-              <option value="quarterly" selected={initialProperty.hoa_fee_frequency === 'quarterly'}>Quarterly</option>
-              <option value="annually" selected={initialProperty.hoa_fee_frequency === 'annually'}>Annually</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propTaxRate">Annual CA Property Tax Rate (%)</label>
-            <input 
-              type="number" 
-              id="propTaxRate" 
-              name="property_tax_rate" 
-              class="form-input" 
-              value={initialProperty.property_tax_rate ?? 1.25} 
-              step="0.01" 
-              min="1.0" 
-              max="2.5" 
-            />
-            <div class="field-hint" style="color: var(--admin-text-muted); font-size: 0.75rem; margin-top: 2px;">San Diego baseline: ~1.20% - 1.28%</div>
-          </div>
+        <div class="form-group">
+          <label class="form-label" for="propBathrooms">Bathrooms</label>
+          <input 
+            type="number" 
+            id="propBathrooms" 
+            name="bathrooms" 
+            class="form-input" 
+            value={initialProperty.bathrooms ?? 2.0} 
+            step="0.5" 
+            min="0" 
+            max="30" 
+          />
         </div>
 
-        <!-- Fixer-Upper ARV Estimate -->
-        <div class="form-group" style="margin-top: 1.5rem; padding: 1.25rem; background: #0c131a; border: 1px solid var(--admin-border); border-radius: var(--radius-sm);">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-            <label class="form-label" style="margin: 0; font-weight: 700; color: var(--color-gold-400);">Investor Fix &amp; Flip Metrics</label>
-            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer;">
-              <input type="checkbox" name="is_fixer_upper" value="true" checked={initialProperty.is_fixer_upper} id="checkIsFixer" />
-              <span>Flag as Fix &amp; Flip / Distressed</span>
-            </label>
-          </div>
-          <div class="grid-2" style="gap: 1rem;">
-            <div>
-              <label class="form-label" for="propArv" style="font-size: 0.82rem;">Estimated ARV (After Repair Value)</label>
-              <input 
-                type="number" 
-                id="propArv" 
-                name="arv_estimate" 
-                class="form-input" 
-                value={initialProperty.arv_estimate || ''} 
-                placeholder="e.g. 1150000" 
-              />
-            </div>
-            <div style="font-size: 0.8rem; color: var(--admin-text-muted); display: flex; align-items: center;">
-              Enables the 70% Rule investor calculator on the public property page.
-            </div>
-          </div>
+        <div class="form-group">
+          <label class="form-label" for="propSqFt">Square Feet</label>
+          <input 
+            type="number" 
+            id="propSqFt" 
+            name="square_feet" 
+            class="form-input" 
+            value={initialProperty.square_feet ?? 1500} 
+            min="100" 
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="propYear">Year Built</label>
+          <input 
+            type="number" 
+            id="propYear" 
+            name="year_built" 
+            class="form-input" 
+            value={initialProperty.year_built ?? 2020} 
+            min="1800" 
+            max={new Date().getFullYear() + 1} 
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="propGarage">Garage Spaces</label>
+          <input 
+            type="number" 
+            id="propGarage" 
+            name="garage_spaces" 
+            class="form-input" 
+            value={initialProperty.garage_spaces ?? 2} 
+            min="0" 
+            max="20" 
+          />
+        </div>
+      </div>
+
+      <div style="margin-top: 1rem;">
+        <label class="form-label">Special Features &amp; Programs</label>
+        <div class="form-checkbox-row">
+          <label class="form-checkbox-label">
+            <input type="checkbox" name="has_pool" value="true" checked={initialProperty.has_pool} />
+            <span>🏊 Swimming Pool</span>
+          </label>
+          <label class="form-checkbox-label">
+            <input type="checkbox" name="has_spa" value="true" checked={initialProperty.has_spa} />
+            <span>🛁 Spa / Hot Tub</span>
+          </label>
+          <label class="form-checkbox-label">
+            <input type="checkbox" name="is_va_eligible" value="true" checked={initialProperty.is_va_eligible !== false} />
+            <span>🎖️ VA Loan (0% Down) Eligible</span>
+          </label>
+          <label class="form-checkbox-label">
+            <input type="checkbox" name="is_fixer_upper" value="true" checked={initialProperty.is_fixer_upper} />
+            <span>🔨 Fixer-Upper / Value-Add</span>
+          </label>
         </div>
       </div>
     </div>
 
-    <!-- TAB 3: LOCATION -->
-    <div class="tab-pane" id="tab-location" style="display: none;">
-      <div class="admin-form-section">
-        <h3 class="admin-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          San Diego Location &amp; Map Coordinates
-        </h3>
-        <p class="admin-section-desc">Ensure precise geographic positioning for map navigation and neighborhood guides.</p>
+    <!-- 4. Photos & Description -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h2 class="admin-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-400)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          4. Photos &amp; Description
+        </h2>
+      </div>
 
-        <div class="grid-2" style="gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label" for="propStreet">Street Address <span class="required">*</span></label>
+      <!-- Main Photo -->
+      <div class="form-group">
+        <label class="form-label" for="propPrimaryImage">Main Photo URL</label>
+        <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 250px;">
             <input 
               type="text" 
-              id="propStreet" 
-              name="address_street" 
+              id="propPrimaryImage" 
+              name="primary_image" 
               class="form-input" 
-              value={initialProperty.address_street} 
-              placeholder="e.g. 3428 Herman Ave" 
-              required 
+              value={initialProperty.primary_image || '/images/properties/north-park-spanish.svg'} 
+              placeholder="/images/properties/north-park-spanish.svg or https://..." 
             />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propUnit">Unit / Suite (Optional)</label>
-            <input 
-              type="text" 
-              id="propUnit" 
-              name="address_unit" 
-              class="form-input" 
-              value={initialProperty.address_unit} 
-              placeholder="e.g. #3B" 
-            />
-          </div>
-        </div>
-
-        <div class="grid-3" style="gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label" for="propNeighborhood">San Diego Neighborhood <span class="required">*</span></label>
-            <select id="propNeighborhood" name="neighborhood" class="form-input" required>
-              {uniqueNeighborhoods.map(hood => (
-                <option value={hood} selected={initialProperty.neighborhood === hood}>{hood}</option>
+            <div class="form-hint" style="margin-bottom: 0.75rem;">
+              Paste image URL or click one of the quick presets below:
+            </div>
+            <!-- Quick Preset Photos -->
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              {sampleImages.map(sample => (
+                <button 
+                  type="button" 
+                  class="btn btn-outline-white btn-sm btn-quick-image" 
+                  data-url={sample.url}
+                  style="font-size: 0.75rem; padding: 0.3rem 0.6rem;"
+                >
+                  {sample.label}
+                </button>
               ))}
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propCity">City</label>
-            <input 
-              type="text" 
-              id="propCity" 
-              name="address_city" 
-              class="form-input" 
-              value={initialProperty.address_city || 'San Diego'} 
-              required 
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propZip">ZIP Code <span class="required">*</span></label>
-            <input 
-              type="text" 
-              id="propZip" 
-              name="address_zip" 
-              class="form-input" 
-              value={initialProperty.address_zip} 
-              placeholder="92104" 
-              required 
-            />
-          </div>
-        </div>
-
-        <div class="grid-3" style="gap: 1.25rem; margin-top: 1rem;">
-          <div class="form-group">
-            <label class="form-label" for="propLat">Latitude</label>
-            <input 
-              type="number" 
-              id="propLat" 
-              name="latitude" 
-              class="form-input" 
-              value={initialProperty.latitude} 
-              step="0.0001" 
-              placeholder="32.7483" 
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propLng">Longitude</label>
-            <input 
-              type="number" 
-              id="propLng" 
-              name="longitude" 
-              class="form-input" 
-              value={initialProperty.longitude} 
-              step="0.0001" 
-              placeholder="-117.1328" 
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propVisibility">Public Address Visibility</label>
-            <select id="propVisibility" name="address_visibility" class="form-input">
-              <option value="full" selected={initialProperty.address_visibility === 'full'}>Full Address (Public)</option>
-              <option value="neighborhood_only" selected={initialProperty.address_visibility === 'neighborhood_only'}>Neighborhood Only (Street Hidden)</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Map Coordinate Preview -->
-        <div style="margin-top: 1.5rem; background: #0c131a; border: 1px solid var(--admin-border); border-radius: var(--radius-sm); padding: 1.25rem;">
-          <div style="font-size: 0.82rem; color: var(--admin-text-muted); margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
-            <span>Interactive Map Target Preview</span>
-            <span id="mapCoordDisplay" style="color: var(--color-gold-400); font-family: monospace;">{initialProperty.latitude}, {initialProperty.longitude}</span>
-          </div>
-          <div style="height: 140px; background: #141e2a; border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-500)" stroke-width="2" style="filter: drop-shadow(0 2px 8px rgba(197, 160, 89, 0.4));"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            <div style="position: absolute; bottom: 8px; right: 8px; font-size: 0.72rem; color: var(--admin-text-muted);">
-              San Diego Geo-Engine
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 4: PROPERTY DETAILS -->
-    <div class="tab-pane" id="tab-details" style="display: none;">
-      <div class="admin-form-section">
-        <h3 class="admin-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-          Interior, Exterior &amp; Architectural Specifications
-        </h3>
-        <p class="admin-section-desc">Room counts, living area, parking arrangements, and premium amenities.</p>
-
-        <div class="grid-4" style="gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label" for="propBeds">Bedrooms <span class="required">*</span></label>
-            <input type="number" id="propBeds" name="bedrooms" class="form-input" value={initialProperty.bedrooms} min="0" required />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propBaths">Bathrooms <span class="required">*</span></label>
-            <input type="number" id="propBaths" name="bathrooms" class="form-input" value={initialProperty.bathrooms} min="0" step="0.5" required />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propSqft">Interior Sq Ft <span class="required">*</span></label>
-            <input type="number" id="propSqft" name="square_feet" class="form-input" value={initialProperty.square_feet} min="100" required />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propYear">Year Built</label>
-            <input type="number" id="propYear" name="year_built" class="form-input" value={initialProperty.year_built} min="1800" max="2030" />
-          </div>
-        </div>
-
-        <div class="grid-4" style="gap: 1.25rem; margin-top: 1rem;">
-          <div class="form-group">
-            <label class="form-label" for="propLot">Lot Size</label>
-            <input type="number" id="propLot" name="lot_size_sqft" class="form-input" value={initialProperty.lot_size_sqft} min="0" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propLotUnit">Lot Unit</label>
-            <select id="propLotUnit" name="lot_size_unit" class="form-input">
-              <option value="sqft" selected={initialProperty.lot_size_unit === 'sqft'}>Square Feet (sq ft)</option>
-              <option value="acres" selected={initialProperty.lot_size_unit === 'acres'}>Acres</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propGarage">Garage Spaces</label>
-            <input type="number" id="propGarage" name="garage_spaces" class="form-input" value={initialProperty.garage_spaces ?? 2} min="0" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propRenovation">Renovation Condition</label>
-            <select id="propRenovation" name="renovation_status" class="form-input">
-              <option value="turnkey" selected={initialProperty.renovation_status === 'turnkey'}>Turnkey / Move-In Ready</option>
-              <option value="updated" selected={initialProperty.renovation_status === 'updated'}>Updated / Modernized</option>
-              <option value="original" selected={initialProperty.renovation_status === 'original'}>Original Condition</option>
-              <option value="fixer_upper" selected={initialProperty.renovation_status === 'fixer_upper'}>Fixer-Upper</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Amenities Checkboxes -->
-        <div style="margin-top: 1.5rem;">
-          <label class="form-label" style="margin-bottom: 0.75rem;">Property Features &amp; Highlights</label>
-          <div class="grid-3" style="gap: 0.75rem;">
-            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer;">
-              <input type="checkbox" name="has_pool" value="true" checked={initialProperty.has_pool} />
-              <span>Swimming Pool</span>
-            </label>
-            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer;">
-              <input type="checkbox" name="has_spa" value="true" checked={initialProperty.has_spa} />
-              <span>Hot Tub / Spa</span>
-            </label>
-            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer;">
-              <input type="checkbox" name="is_va_eligible" value="true" checked={initialProperty.is_va_eligible} />
-              <span>VA Loan Pre-Eligible</span>
-            </label>
-            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer;">
-              <input type="checkbox" name="is_featured" value="true" checked={initialProperty.is_featured} />
-              <span>Feature on Homepage Carousel</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Comma-separated features -->
-        <div class="form-group" style="margin-top: 1.25rem;">
-          <label class="form-label" for="propFeatures">Key Features (One per line or comma-separated)</label>
-          <textarea 
-            id="propFeatures" 
-            name="features_text" 
-            class="form-input" 
-            rows="3" 
-            placeholder="Quartz Waterfall Kitchen, ADU Potential with Alley Access, Central HVAC, Walk to Dining"
-          >{(initialProperty.features || []).join(', ')}</textarea>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 5: MEDIA MANAGEMENT -->
-    <div class="tab-pane" id="tab-media" style="display: none;">
-      <div class="admin-form-section">
-        <h3 class="admin-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-          Photo Gallery &amp; Virtual Media
-        </h3>
-        <p class="admin-section-desc">Upload multiple photos, reorder gallery display, designate cover photo, and edit accessibility alt text.</p>
-
-        <!-- Dropzone Uploader -->
-        <div class="admin-dropzone" id="mediaDropzone">
-          <input type="file" id="mediaFileInput" multiple accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" style="display: none;" />
-          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-400)" stroke-width="1.75" style="margin-bottom: 0.75rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-          <h4 style="margin: 0 0 0.35rem 0; color: #ffffff;">Drag &amp; Drop Photos Here or Click to Browse</h4>
-          <p style="margin: 0; font-size: 0.8rem; color: var(--admin-text-muted);">
-            Accepts JPEG, PNG, WebP, AVIF, SVG up to 10MB each. Server validates MIME and stores securely.
-          </p>
-          <div id="uploadProgress" style="display: none; margin-top: 1rem; width: 100%; max-width: 300px; margin-left: auto; margin-right: auto;">
-            <div style="background: var(--admin-border); height: 6px; border-radius: 3px; overflow: hidden;">
-              <div id="uploadProgressBar" style="width: 0%; height: 100%; background: var(--color-gold-500); transition: width 0.2s;"></div>
-            </div>
-            <span id="uploadProgressText" style="font-size: 0.75rem; color: var(--color-gold-400); margin-top: 4px; display: block;">Uploading...</span>
-          </div>
-        </div>
-
-        <!-- Video & Virtual Tour Links -->
-        <div class="grid-2" style="gap: 1.25rem; margin-top: 1.5rem;">
-          <div class="form-group">
-            <label class="form-label" for="propVideo">Video Walkthrough URL (YouTube / Vimeo / Matterport)</label>
-            <input 
-              type="url" 
-              id="propVideo" 
-              name="video_url" 
-              class="form-input" 
-              value={initialProperty.video_url} 
-              placeholder="https://www.youtube.com/watch?v=..." 
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="propVirtualTour">3D Virtual Tour URL</label>
-            <input 
-              type="url" 
-              id="propVirtualTour" 
-              name="virtual_tour_url" 
-              class="form-input" 
-              value={initialProperty.virtual_tour_url} 
-              placeholder="https://my.matterport.com/show/?m=..." 
+          <!-- Live Preview -->
+          <div style="width: 140px; height: 95px; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--admin-border); flex-shrink: 0;">
+            <img 
+              id="previewImg" 
+              src={initialProperty.primary_image || '/images/properties/north-park-spanish.svg'} 
+              alt="Listing preview" 
+              style="width: 100%; height: 100%; object-fit: cover;" 
             />
           </div>
         </div>
+      </div>
 
-        <!-- Photo Grid Container -->
-        <div style="margin-top: 2rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-            <h4 style="margin: 0; color: #ffffff; font-size: 1rem;">Managed Photos (<span id="photoCountDisplay">0</span>)</h4>
-            <span style="font-size: 0.78rem; color: var(--admin-text-muted);">Use Move buttons to reorder gallery display</span>
-          </div>
-          
-          <div class="admin-photo-grid" id="photoGridContainer">
-            <!-- Rendered by client script using initialMediaJson -->
-          </div>
-        </div>
+      <!-- Tagline -->
+      <div class="form-group">
+        <label class="form-label" for="propTagline">Short Tagline (Optional)</label>
+        <input 
+          type="text" 
+          id="propTagline" 
+          name="tagline" 
+          class="form-input" 
+          value={initialProperty.tagline || ''} 
+          placeholder="e.g. Rare architectural find with entertainer's courtyard" 
+        />
+      </div>
+
+      <!-- Full Description -->
+      <div class="form-group">
+        <label class="form-label" for="propDescription">Property Description</label>
+        <textarea 
+          id="propDescription" 
+          name="description" 
+          class="form-textarea" 
+          rows="5"
+          placeholder="Describe the property features, neighborhood vibes, kitchen, yard, and architectural highlights..."
+        >{initialProperty.description || ''}</textarea>
+      </div>
+
+      <!-- Additional Gallery Images -->
+      <div class="form-group">
+        <label class="form-label" for="propGallery">Additional Gallery Photo URLs (Optional)</label>
+        <textarea 
+          id="propGallery" 
+          name="gallery_text" 
+          class="form-textarea" 
+          rows="2"
+          placeholder="Paste additional image URLs (one per line)"
+        >{(initialProperty.gallery_images || []).join('\n')}</textarea>
+        <div class="form-hint">Enter one photo URL per line for the listing photo slider.</div>
       </div>
     </div>
 
-    <!-- TAB 6: OPEN HOUSES -->
-    <div class="tab-pane" id="tab-openhouse" style="display: none;">
-      <div class="admin-form-section">
-        <h3 class="admin-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-          Weekend Open House Showings
-        </h3>
-        <p class="admin-section-desc">Publish scheduled public showings hosted personally by Edgar Valle.</p>
-
-        <div class="grid-3" style="gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label" for="ohDate">Date of Open House</label>
-            <input type="date" id="ohDate" name="oh_date" class="form-input" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="ohStart">Start Time (PST)</label>
-            <input type="time" id="ohStart" name="oh_start" class="form-input" value="13:00" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="ohEnd">End Time (PST)</label>
-            <input type="time" id="ohEnd" name="oh_end" class="form-input" value="16:00" />
-          </div>
-        </div>
-
-        <div class="grid-2" style="gap: 1.25rem; margin-top: 1rem;">
-          <div class="form-group">
-            <label class="form-label" for="ohHost">Host Name</label>
-            <input type="text" id="ohHost" name="oh_host" class="form-input" value={SITE_SETTINGS.agent_name} />
-          </div>
-
-          <div class="form-group" style="display: flex; align-items: center; padding-top: 1.75rem;">
-            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
-              <input type="checkbox" name="oh_refreshments" value="true" checked />
-              <span>Refreshments Provided (Coffee / Pastries)</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="ohNotes">Special Instructions / Host Notes</label>
-          <input 
-            type="text" 
-            id="ohNotes" 
-            name="oh_notes" 
-            class="form-input" 
-            placeholder="Hosted by Edgar Valle. All buyers and broker partners welcome!" 
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 7: SEO & SOCIAL SHARING -->
-    <div class="tab-pane" id="tab-seo" style="display: none;">
-      <div class="admin-form-section">
-        <h3 class="admin-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-          Search Engine Optimization (SEO) &amp; Social Previews
-        </h3>
-        <p class="admin-section-desc">Control Google search snippets, Open Graph social share cards, and sitemap inclusion.</p>
-
-        <div class="form-group">
-          <label class="form-label" for="propSeoTitle">SEO Title Tag (50-60 characters)</label>
-          <input 
-            type="text" 
-            id="propSeoTitle" 
-            name="seo_title" 
-            class="form-input" 
-            value={initialProperty.seo_title} 
-            placeholder="e.g. 3428 Herman Ave — Restored Spanish Revival in North Park | Edgar Valle" 
-          />
-          <div id="seoTitleCounter" style="font-size: 0.75rem; color: var(--admin-text-muted); margin-top: 2px;">0 / 60 characters</div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="propSeoDesc">Meta Description (140-160 characters)</label>
-          <textarea 
-            id="propSeoDesc" 
-            name="seo_description" 
-            class="form-input" 
-            rows="3" 
-            placeholder="e.g. 3 Bed, 2 Bath Spanish Revival home in North Park, San Diego with private courtyard and permitted ADU potential. Offered at $1,185,000."
-          >{initialProperty.seo_description}</textarea>
-          <div id="seoDescCounter" style="font-size: 0.75rem; color: var(--admin-text-muted); margin-top: 2px;">0 / 160 characters</div>
-        </div>
-
-        <div class="grid-2" style="gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label" for="propOgImage">Social Sharing Preview Image (OG Image)</label>
-            <input 
-              type="text" 
-              id="propOgImage" 
-              name="og_image" 
-              class="form-input" 
-              value={initialProperty.og_image || initialProperty.primary_image} 
-              placeholder="/images/properties/north-park-spanish.svg" 
-            />
-          </div>
-
-          <div class="form-group" style="padding-top: 1.5rem;">
-            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
-              <input type="checkbox" name="is_indexable" value="true" checked={initialProperty.is_indexable !== false} />
-              <span>Allow Search Engine Indexing (Include in sitemap.xml)</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Google SERP Live Preview Box -->
-        <div style="margin-top: 2rem; background: #ffffff; border-radius: 8px; padding: 1.5rem; color: #1e293b; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 700; margin-bottom: 0.75rem;">
-            Google Search Preview
-          </div>
-          <div style="font-size: 0.85rem; color: #202124; margin-bottom: 2px;">https://edgarvalle.com &gt; properties &gt; <span id="serpSlugPreview">{initialProperty.slug || 'slug'}</span></div>
-          <div id="serpTitlePreview" style="color: #1a0dab; font-size: 1.25rem; font-weight: 500; cursor: pointer; text-decoration: none; margin-bottom: 4px; line-height: 1.3;">
-            {initialProperty.seo_title || initialProperty.title || 'Property Title'} | Edgar Valle Realtor
-          </div>
-          <div id="serpDescPreview" style="color: #4d5156; font-size: 0.9rem; line-height: 1.5;">
-            {initialProperty.seo_description || 'San Diego real estate listing offered by Edgar Valle with Full Circle Group.'}
-          </div>
-        </div>
-      </div>
+    <!-- Bottom Actions -->
+    <div style="display: flex; gap: 1rem; align-items: center; justify-content: flex-end; padding: 1.5rem 0; margin-bottom: 3rem;">
+      <a href="/admin/properties" class="btn btn-outline-white">Cancel</a>
+      <button type="button" id="btnSaveDraftBottom" class="btn btn-outline-gold">Save as Draft</button>
+      <button type="button" id="btnSavePublishBottom" class="btn btn-gold btn-lg">
+        {isEdit ? '💾 Save Changes' : '✅ Save & Publish'}
+      </button>
     </div>
   </form>
+
+  <!-- Notification Toast Container -->
+  <div id="formToast" class="admin-toast-container"></div>
 </div>
 
-<style>
-  .form-action-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1.25rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--admin-border);
-  }
-</style>
-
 <script>
-  function setupPropertyCMSForm() {
-    const tabs = document.querySelectorAll('.admin-tab-btn');
-    const panes = document.querySelectorAll('.tab-pane');
-    const form = document.getElementById('propertyMasterForm') as HTMLFormElement;
-    const saveDraftBtn = document.getElementById('saveDraftBtn') as HTMLButtonElement;
-    const savePublishBtn = document.getElementById('savePublishBtn') as HTMLButtonElement;
-    const dropzone = document.getElementById('mediaDropzone');
-    const fileInput = document.getElementById('mediaFileInput') as HTMLInputElement;
-    const photoGrid = document.getElementById('photoGridContainer');
-    const photoCountDisplay = document.getElementById('photoCountDisplay');
-    const uploadProgress = document.getElementById('uploadProgress');
-    const uploadProgressBar = document.getElementById('uploadProgressBar');
-    const initialMediaInput = document.getElementById('initialMediaInput') as HTMLInputElement;
-
-    // SEO Preview elements
-    const propTitleInput = document.getElementById('propTitle') as HTMLInputElement;
-    const propSlugInput = document.getElementById('propSlug') as HTMLInputElement;
-    const propSeoTitleInput = document.getElementById('propSeoTitle') as HTMLInputElement;
-    const propSeoDescInput = document.getElementById('propSeoDesc') as HTMLTextAreaElement;
-    const serpTitle = document.getElementById('serpTitlePreview');
-    const serpDesc = document.getElementById('serpDescPreview');
-    const serpSlug = document.getElementById('serpSlugPreview');
-    const seoTitleCounter = document.getElementById('seoTitleCounter');
-    const seoDescCounter = document.getElementById('seoDescCounter');
-
+  function setupSimplePropertyForm() {
+    const form = document.getElementById('simplePropertyForm') as HTMLFormElement;
     if (!form) return;
 
-    // Media array state
-    let mediaList: any[] = [];
-    try {
-      mediaList = JSON.parse(initialMediaInput?.value || '[]');
-    } catch {
-      mediaList = [];
-    }
+    const primaryImageInput = document.getElementById('propPrimaryImage') as HTMLInputElement;
+    const previewImg = document.getElementById('previewImg') as HTMLImageElement;
+    const toastContainer = document.getElementById('formToast');
 
-    // Render Media Grid
-    function renderMediaGrid() {
-      if (!photoGrid) return;
-      photoGrid.innerHTML = '';
-      if (photoCountDisplay) photoCountDisplay.textContent = mediaList.length.toString();
-
-      if (mediaList.length === 0) {
-        photoGrid.innerHTML = '<div style="grid-column: 1 / -1; color: var(--admin-text-muted); font-size: 0.88rem; padding: 1.5rem 0;">No photos added yet. Use the dropzone above to upload photos.</div>';
-        return;
-      }
-
-      mediaList.forEach((m, idx) => {
-        const card = document.createElement('div');
-        card.className = `admin-photo-card ${m.is_primary ? 'is-cover' : ''}`;
-        card.innerHTML = `
-          <div style="position: relative;">
-            <img src="${m.url}" alt="${m.alt_text || 'Photo'}" class="admin-photo-preview" />
-            ${m.is_primary ? '<span style="position: absolute; top: 6px; left: 6px; background: var(--color-gold-500); color: #000; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 2px;">COVER</span>' : ''}
-          </div>
-          <div style="padding: 0.5rem; flex: 1;">
-            <input type="text" value="${m.alt_text || ''}" placeholder="Alt text for SEO..." class="form-input photo-alt-input" data-idx="${idx}" style="font-size: 0.75rem; height: 28px; margin-bottom: 0.35rem; padding: 2px 6px;" />
-          </div>
-          <div class="admin-photo-actions">
-            <div style="display: flex; gap: 2px;">
-              <button type="button" class="btn-icon btn-move-left" data-idx="${idx}" title="Move earlier" ${idx === 0 ? 'disabled style="opacity: 0.3;"' : ''}>&larr;</button>
-              <button type="button" class="btn-icon btn-move-right" data-idx="${idx}" title="Move later" ${idx === mediaList.length - 1 ? 'disabled style="opacity: 0.3;"' : ''}>&rarr;</button>
-            </div>
-            <div style="display: flex; gap: 4px;">
-              ${!m.is_primary ? `<button type="button" class="btn-icon btn-set-cover" data-idx="${idx}" title="Make Cover" style="color: var(--color-gold-400); font-size: 0.72rem;">Set Cover</button>` : ''}
-              <button type="button" class="btn-icon btn-remove-photo" data-idx="${idx}" title="Remove photo" style="color: #ef4444;">&times;</button>
-            </div>
-          </div>
-        `;
-        photoGrid.appendChild(card);
-      });
-
-      // Bind actions
-      photoGrid.querySelectorAll('.photo-alt-input').forEach(input => {
-        input.addEventListener('change', (e: any) => {
-          const idx = parseInt(e.target.getAttribute('data-idx'));
-          if (mediaList[idx]) mediaList[idx].alt_text = e.target.value;
-        });
-      });
-
-      photoGrid.querySelectorAll('.btn-set-cover').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const idx = parseInt(btn.getAttribute('data-idx') || '0');
-          mediaList.forEach((m, i) => m.is_primary = (i === idx));
-          renderMediaGrid();
-        });
-      });
-
-      photoGrid.querySelectorAll('.btn-remove-photo').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const idx = parseInt(btn.getAttribute('data-idx') || '0');
-          if (confirm('Remove this photo from listing?')) {
-            mediaList.splice(idx, 1);
-            if (mediaList.length > 0 && !mediaList.some(m => m.is_primary)) {
-              mediaList[0].is_primary = true;
-            }
-            renderMediaGrid();
-          }
-        });
-      });
-
-      photoGrid.querySelectorAll('.btn-move-left').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const idx = parseInt(btn.getAttribute('data-idx') || '0');
-          if (idx > 0) {
-            const temp = mediaList[idx - 1];
-            mediaList[idx - 1] = mediaList[idx];
-            mediaList[idx] = temp;
-            renderMediaGrid();
-          }
-        });
-      });
-
-      photoGrid.querySelectorAll('.btn-move-right').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const idx = parseInt(btn.getAttribute('data-idx') || '0');
-          if (idx < mediaList.length - 1) {
-            const temp = mediaList[idx + 1];
-            mediaList[idx + 1] = mediaList[idx];
-            mediaList[idx] = temp;
-            renderMediaGrid();
-          }
-        });
+    // Live image preview
+    if (primaryImageInput && previewImg) {
+      primaryImageInput.addEventListener('input', () => {
+        const val = primaryImageInput.value.trim();
+        if (val) previewImg.src = val;
       });
     }
 
-    renderMediaGrid();
-
-    // Tab Navigation
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        panes.forEach(p => (p as HTMLElement).style.display = 'none');
-        tab.classList.add('active');
-        const targetId = tab.getAttribute('data-tab');
-        if (targetId) {
-          const pane = document.getElementById(targetId);
-          if (pane) pane.style.display = 'block';
+    // Quick image buttons
+    document.querySelectorAll('.btn-quick-image').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const url = btn.getAttribute('data-url');
+        if (url && primaryImageInput && previewImg) {
+          primaryImageInput.value = url;
+          previewImg.src = url;
         }
       });
     });
 
-    // Auto-generate slug from title if not already set or editing
-    if (propTitleInput && propSlugInput) {
-      propTitleInput.addEventListener('input', () => {
-        const titleVal = propTitleInput.value;
-        if (!propSlugInput.getAttribute('data-user-edited')) {
-          propSlugInput.value = titleVal
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, '-')
-            .replace(/[^\w\-]+/g, '')
-            .replace(/\-\-+/g, '-');
-          if (serpSlug) serpSlug.textContent = propSlugInput.value || 'slug';
-        }
-        updateSeoPreview();
-      });
-
-      propSlugInput.addEventListener('input', () => {
-        propSlugInput.setAttribute('data-user-edited', 'true');
-        if (serpSlug) serpSlug.textContent = propSlugInput.value || 'slug';
-      });
-    }
-
-    function updateSeoPreview() {
-      const title = propSeoTitleInput?.value || propTitleInput?.value || 'Property Title';
-      const desc = propSeoDescInput?.value || 'San Diego real estate listing offered by Edgar Valle with Full Circle Group.';
-      if (serpTitle) serpTitle.textContent = `${title} | Edgar Valle Realtor`;
-      if (serpDesc) serpDesc.textContent = desc;
-      if (seoTitleCounter) seoTitleCounter.textContent = `${title.length} / 60 characters`;
-      if (seoDescCounter) seoDescCounter.textContent = `${desc.length} / 160 characters`;
-    }
-
-    if (propSeoTitleInput) propSeoTitleInput.addEventListener('input', updateSeoPreview);
-    if (propSeoDescInput) propSeoDescInput.addEventListener('input', updateSeoPreview);
-    updateSeoPreview();
-
-    // Dropzone Upload
-    if (dropzone && fileInput) {
-      dropzone.addEventListener('click', () => fileInput.click());
-
-      dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropzone.classList.add('dragover');
-      });
-
-      dropzone.addEventListener('dragleave', () => {
-        dropzone.classList.remove('dragover');
-      });
-
-      dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropzone.classList.remove('dragover');
-        if (e.dataTransfer?.files) {
-          handleFiles(Array.from(e.dataTransfer.files));
-        }
-      });
-
-      fileInput.addEventListener('change', () => {
-        if (fileInput.files) {
-          handleFiles(Array.from(fileInput.files));
-        }
-      });
-    }
-
-    async function handleFiles(files: File[]) {
-      if (!files.length) return;
-      if (uploadProgress) uploadProgress.style.display = 'block';
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const pct = Math.round(((i + 1) / files.length) * 100);
-        if (uploadProgressBar) uploadProgressBar.style.width = `${pct}%`;
-
-        const fd = new FormData();
-        fd.append('file', file);
-        fd.append('altText', file.name.replace(/\.[^/.]+$/, ''));
-        fd.append('isPrimary', (mediaList.length === 0 && i === 0) ? 'true' : 'false');
-
-        try {
-          const res = await fetch('/api/admin/media/upload', {
-            method: 'POST',
-            body: fd
-          });
-          const data = await res.json();
-          if (data.success && data.media) {
-            mediaList.push(data.media);
-            renderMediaGrid();
-          } else {
-            alert(`Failed to upload ${file.name}: ${data.error || 'Server error'}`);
-          }
-        } catch (e: any) {
-          alert(`Network error uploading ${file.name}: ${e.message}`);
-        }
+    function showToast(msg: string, type: 'success' | 'error' = 'success') {
+      if (!toastContainer) {
+        alert(msg);
+        return;
       }
-
-      if (uploadProgress) uploadProgress.style.display = 'none';
-      if (fileInput) fileInput.value = '';
+      const toast = document.createElement('div');
+      toast.className = `admin-toast ${type}`;
+      toast.textContent = msg;
+      toastContainer.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
     }
 
-    // Submit handler
     async function submitForm(targetStatus: 'draft' | 'published') {
-      const mode = (document.querySelector('.property-form-wrapper') as HTMLElement)?.dataset?.mode || 'create';
-      const fd = new FormData(form);
-      
-      const payload: any = {
-        title: fd.get('title'),
-        slug: fd.get('slug'),
-        tagline: fd.get('tagline'),
-        property_type: fd.get('property_type'),
-        listing_status: fd.get('listing_status'),
-        publication_status: targetStatus,
-        status: targetStatus === 'published' ? 'active' : 'draft',
-        price: parseFloat(fd.get('price') as string || '0'),
-        currency: 'USD',
-        previous_price: fd.get('previous_price') ? parseFloat(fd.get('previous_price') as string) : undefined,
-        bedrooms: parseInt(fd.get('bedrooms') as string || '0', 10),
-        bathrooms: parseFloat(fd.get('bathrooms') as string || '0'),
-        square_feet: parseInt(fd.get('square_feet') as string || '0', 10),
-        lot_size_sqft: fd.get('lot_size_sqft') ? parseInt(fd.get('lot_size_sqft') as string, 10) : undefined,
-        lot_size_unit: fd.get('lot_size_unit') || 'sqft',
-        year_built: fd.get('year_built') ? parseInt(fd.get('year_built') as string, 10) : undefined,
-        garage_spaces: parseInt(fd.get('garage_spaces') as string || '0', 10),
-        has_pool: fd.get('has_pool') === 'true',
-        has_spa: fd.get('has_spa') === 'true',
-        is_va_eligible: fd.get('is_va_eligible') === 'true',
-        is_featured: fd.get('is_featured') === 'true',
-        is_fixer_upper: fd.get('is_fixer_upper') === 'true',
-        arv_estimate: fd.get('arv_estimate') ? parseFloat(fd.get('arv_estimate') as string) : undefined,
-        renovation_status: fd.get('renovation_status'),
-        address_street: fd.get('address_street'),
-        address_unit: fd.get('address_unit'),
-        address_city: fd.get('address_city'),
-        address_state: 'CA',
-        address_zip: fd.get('address_zip'),
-        address_visibility: fd.get('address_visibility'),
-        neighborhood: fd.get('neighborhood'),
-        latitude: fd.get('latitude') ? parseFloat(fd.get('latitude') as string) : undefined,
-        longitude: fd.get('longitude') ? parseFloat(fd.get('longitude') as string) : undefined,
-        description: fd.get('description'),
-        hoa_fee_monthly: fd.get('hoa_fee_monthly') ? parseFloat(fd.get('hoa_fee_monthly') as string) : 0,
-        hoa_fee_frequency: fd.get('hoa_fee_frequency'),
-        property_tax_rate: fd.get('property_tax_rate') ? parseFloat(fd.get('property_tax_rate') as string) : 1.25,
-        video_url: fd.get('video_url'),
-        virtual_tour_url: fd.get('virtual_tour_url'),
-        mls_number: fd.get('mls_number'),
-        seo_title: fd.get('seo_title'),
-        seo_description: fd.get('seo_description'),
-        og_image: fd.get('og_image'),
-        is_indexable: fd.get('is_indexable') === 'true',
-        media: mediaList,
-        primary_image: mediaList.find(m => m.is_primary)?.url || (mediaList[0]?.url) || '/images/properties/north-park-spanish.svg',
-        gallery_images: mediaList.map(m => m.url)
-      };
+      const titleInput = document.getElementById('propTitle') as HTMLInputElement;
+      const priceInput = document.getElementById('propPrice') as HTMLInputElement;
 
-      const featuresText = fd.get('features_text') as string;
-      if (featuresText) {
-        payload.features = featuresText.split(',').map(s => s.trim()).filter(Boolean);
-      }
+      const title = titleInput?.value.trim() || '';
+      const price = parseFloat(priceInput?.value || '0');
 
-      if (mode === 'edit') {
-        payload.id = fd.get('id');
-      }
-
-      if (!payload.title || !payload.price) {
-        alert('Please fill in required fields (Title, Asking Price).');
+      if (!title || title.length < 3) {
+        showToast('Please enter a property title (minimum 3 characters).', 'error');
+        titleInput?.focus();
         return;
       }
 
-      const method = mode === 'edit' ? 'PUT' : 'POST';
-      const endpoint = '/api/admin/properties';
+      if (!price || price <= 0) {
+        showToast('Please enter a valid asking price greater than 0.', 'error');
+        priceInput?.focus();
+        return;
+      }
 
-      saveDraftBtn.disabled = true;
-      savePublishBtn.disabled = true;
+      const fd = new FormData(form);
+      const mode = fd.get('mode') as string;
+      const id = fd.get('id') as string;
+
+      // Gallery images array
+      const galleryRaw = (fd.get('gallery_text') as string || '').trim();
+      const galleryLines = galleryRaw ? galleryRaw.split('\n').map(l => l.trim()).filter(Boolean) : [];
+      const primaryImg = (fd.get('primary_image') as string || '').trim() || '/images/properties/north-park-spanish.svg';
+      const gallery_images = [primaryImg, ...galleryLines.filter(u => u !== primaryImg)];
+
+      const payload: any = {
+        title,
+        price,
+        property_type: fd.get('property_type') || 'Single Family',
+        listing_status: fd.get('listing_status') || 'for_sale',
+        publication_status: targetStatus,
+        status: targetStatus === 'published' ? 'active' : 'draft',
+        is_featured: fd.get('is_featured') === 'true',
+        address_street: fd.get('address_street') || '123 Main St',
+        neighborhood: fd.get('neighborhood') || 'North Park',
+        address_city: fd.get('address_city') || 'San Diego',
+        address_state: fd.get('address_state') || 'CA',
+        address_zip: fd.get('address_zip') || '92101',
+        bedrooms: parseInt(fd.get('bedrooms') as string || '3', 10),
+        bathrooms: parseFloat(fd.get('bathrooms') as string || '2.0'),
+        square_feet: parseInt(fd.get('square_feet') as string || '1500', 10),
+        year_built: parseInt(fd.get('year_built') as string || '2020', 10),
+        garage_spaces: parseInt(fd.get('garage_spaces') as string || '2', 10),
+        has_pool: fd.get('has_pool') === 'true',
+        has_spa: fd.get('has_spa') === 'true',
+        is_va_eligible: fd.get('is_va_eligible') === 'true',
+        is_fixer_upper: fd.get('is_fixer_upper') === 'true',
+        tagline: fd.get('tagline') || '',
+        description: fd.get('description') || '',
+        primary_image: primaryImg,
+        gallery_images
+      };
+
+      if (mode === 'edit' && id) {
+        payload.id = id;
+      }
+
+      const isEdit = mode === 'edit';
+      const endpoint = '/api/admin/properties';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      // Disable buttons during submission
+      const allButtons = form.querySelectorAll('button');
+      allButtons.forEach(b => (b as HTMLButtonElement).disabled = true);
 
       try {
         const res = await fetch(endpoint, {
@@ -1099,33 +558,34 @@ const initialMediaJson = JSON.stringify(initialProperty.media || (initialPropert
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+
         const data = await res.json();
 
         if (res.ok && data.success) {
-          alert(`Property listing successfully ${mode === 'edit' ? 'updated' : 'created'} (${targetStatus})!`);
-          window.location.href = '/admin/properties';
+          showToast(`Property successfully ${isEdit ? 'updated' : 'created'}! Redirecting...`, 'success');
+          setTimeout(() => {
+            window.location.href = '/admin/properties';
+          }, 1000);
         } else {
-          alert('Submission error: ' + (data.error || 'Failed to save property.'));
-          saveDraftBtn.disabled = false;
-          savePublishBtn.disabled = false;
+          showToast(data.error || 'Failed to save property.', 'error');
+          allButtons.forEach(b => (b as HTMLButtonElement).disabled = false);
         }
-      } catch (e: any) {
-        alert('Network error: ' + e.message);
-        saveDraftBtn.disabled = false;
-        savePublishBtn.disabled = false;
+      } catch (err: any) {
+        showToast('Network error: ' + err.message, 'error');
+        allButtons.forEach(b => (b as HTMLButtonElement).disabled = false);
       }
     }
 
-    if (saveDraftBtn) {
-      saveDraftBtn.addEventListener('click', () => submitForm('draft'));
-    }
-    if (savePublishBtn) {
-      savePublishBtn.addEventListener('click', () => submitForm('published'));
-    }
+    // Attach click events
+    document.getElementById('btnSaveDraft')?.addEventListener('click', () => submitForm('draft'));
+    document.getElementById('btnSaveDraftBottom')?.addEventListener('click', () => submitForm('draft'));
+    document.getElementById('btnSavePublish')?.addEventListener('click', () => submitForm('published'));
+    document.getElementById('btnSavePublishBottom')?.addEventListener('click', () => submitForm('published'));
   }
 
-  document.addEventListener('astro:page-load', setupPropertyCMSForm);
+  // Setup on page load
+  document.addEventListener('astro:page-load', setupSimplePropertyForm);
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setupPropertyCMSForm();
+    setupSimplePropertyForm();
   }
 </script>

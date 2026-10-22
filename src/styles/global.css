@@ -17,13 +17,18 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  overflow-x: clip;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
 }
 
 main {
@@ -110,6 +115,10 @@ img, svg {
   display: block;
   max-width: 100%;
   height: auto;
+}
+
+img {
+  content-visibility: auto;
 }
 
 /* Section Header Component */

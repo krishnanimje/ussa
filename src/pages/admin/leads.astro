@@ -9,482 +9,330 @@ if (!checkAdminAuth(Astro.request)) {
   return Astro.redirect('/admin/login');
 }
 
-const leads = await getAllLeads();
+const url = new URL(Astro.request.url);
+const search = (url.searchParams.get('search') || '').toLowerCase().trim();
+const statusFilter = url.searchParams.get('status') || 'all';
 
-// Calculate status counts
-const counts = {
-  all: leads.length,
-  new: leads.filter(l => l.status === 'new').length,
-  contacted: leads.filter(l => l.status === 'contacted').length,
-  qualified: leads.filter(l => l.status === 'qualified').length,
-  appointment_scheduled: leads.filter(l => l.status === 'appointment_scheduled' || (l.status as string) === 'appointment_set').length,
-  in_progress: leads.filter(l => l.status === 'in_progress').length,
-  converted: leads.filter(l => l.status === 'converted' || (l.status as string) === 'closed').length,
-  lost: leads.filter(l => l.status === 'lost' || (l.status as string) === 'archived').length,
-  spam: leads.filter(l => l.status === 'spam').length
-};
+const allLeads = await getAllLeads();
 
-// Check for overdue follow-ups
-const nowTime = Date.now();
-const overdueCount = leads.filter(l => l.follow_up_date && new Date(l.follow_up_date).getTime() < nowTime && l.status !== 'converted' && l.status !== 'lost' && l.status !== 'spam').length;
+const filteredLeads = allLeads.filter(lead => {
+  const matchesSearch = !search || 
+    lead.full_name.toLowerCase().includes(search) ||
+    lead.email.toLowerCase().includes(search) ||
+    lead.phone.toLowerCase().includes(search) ||
+    (lead.property_address && lead.property_address.toLowerCase().includes(search)) ||
+    (lead.message && lead.message.toLowerCase().includes(search));
+
+  const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
+
+  return matchesSearch && matchesStatus;
+});
+
+const totalCount = allLeads.length;
+const newCount = allLeads.filter(l => l.status === 'new').length;
+const contactedCount = allLeads.filter(l => l.status === 'contacted').length;
 ---
 
-<AdminLayout title="Inquiries & CRM" activeNav="leads">
+<AdminLayout title="Client Inquiries" activeNav="leads">
   <!-- Header -->
   <div class="admin-header" style="flex-wrap: wrap; gap: 1rem;">
     <div>
-      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-        <h1 style="font-size: 1.85rem; margin: 0; color: #ffffff;">CRM &amp; Client Inquiries Workspace</h1>
-        <span class="badge badge-gold" style="font-size: 0.72rem; text-transform: uppercase;">
-          Full Lifecycle CRM
-        </span>
-      </div>
+      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: #ffffff;">Client Inquiries</h1>
       <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.9rem;">
-        Securely managing private client inquiries, follow-up reminders, and internal notes.
+        View and manage inquiries submitted by prospective buyers and sellers.
       </p>
     </div>
-
-    <!-- Actions / Export -->
-    <div style="display: flex; gap: 0.75rem; align-items: center;">
-      <a href="/api/admin/reports/export?type=leads_by_date" class="btn btn-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        Export Leads CSV
+    <div>
+      <a href="/api/admin/reports/export?type=leads_by_date" class="btn btn-outline-white btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: -1px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Export CSV
       </a>
     </div>
   </div>
 
-  <!-- KPI / Status Counter Ribbon -->
-  <div class="admin-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-bottom: 1.75rem;">
-    <div class="kpi-card" style="padding: 1rem;">
-      <div class="kpi-title">Total Leads</div>
-      <div class="kpi-value">{counts.all}</div>
+  <!-- Summary KPI Cards -->
+  <div class="admin-kpi-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 1.75rem;">
+    <div class="kpi-card" style="padding: 1.25rem;">
+      <div class="kpi-title">Total Inquiries</div>
+      <div class="kpi-value">{totalCount}</div>
+      <span style="font-size: 0.8rem; color: var(--admin-text-muted);">All submissions</span>
     </div>
-    <div class="kpi-card" style="padding: 1rem; border-top: 3px solid #38bdf8;">
+
+    <div class="kpi-card" style="padding: 1.25rem; border-top: 3px solid #f59e0b;">
       <div class="kpi-title">New Inquiries</div>
-      <div class="kpi-value" style="color: #38bdf8;">{counts.new}</div>
+      <div class="kpi-value" style="color: #f59e0b;">{newCount}</div>
+      <span style="font-size: 0.8rem; color: #f59e0b;">Needs follow-up</span>
     </div>
-    <div class="kpi-card" style="padding: 1rem; border-top: 3px solid #f59e0b;">
+
+    <div class="kpi-card" style="padding: 1.25rem; border-top: 3px solid #38bdf8;">
       <div class="kpi-title">Contacted</div>
-      <div class="kpi-value" style="color: #f59e0b;">{counts.contacted}</div>
-    </div>
-    <div class="kpi-card" style="padding: 1rem; border-top: 3px solid #10b981;">
-      <div class="kpi-title">Qualified</div>
-      <div class="kpi-value" style="color: #10b981;">{counts.qualified}</div>
-    </div>
-    <div class="kpi-card" style="padding: 1rem; border-top: 3px solid #a855f7;">
-      <div class="kpi-title">Appt Scheduled</div>
-      <div class="kpi-value" style="color: #c084fc;">{counts.appointment_scheduled}</div>
-    </div>
-    <div class="kpi-card" style="padding: 1rem; border-top: 3px solid var(--color-gold-400);">
-      <div class="kpi-title">In Progress</div>
-      <div class="kpi-value" style="color: var(--color-gold-400);">{counts.in_progress}</div>
-    </div>
-    <div class="kpi-card" style="padding: 1rem; border-top: 3px solid #34d399;">
-      <div class="kpi-title">Converted / Closed</div>
-      <div class="kpi-value" style="color: #34d399;">{counts.converted}</div>
-    </div>
-    <div class="kpi-card" style="padding: 1rem; border-top: 3px solid #ef4444;">
-      <div class="kpi-title">Overdue Follow-ups</div>
-      <div class="kpi-value" style="color: #ef4444;">{overdueCount}</div>
+      <div class="kpi-value" style="color: #38bdf8;">{contactedCount}</div>
+      <span style="font-size: 0.8rem; color: #38bdf8;">In conversation</span>
     </div>
   </div>
 
-  <!-- Search & Filter Controls -->
-  <div class="card" style="padding: 1.25rem; background: var(--admin-surface); border: 1px solid var(--admin-border); margin-bottom: 1.75rem;">
-    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-      <!-- Search Input -->
-      <div style="flex: 1; min-width: 260px;">
+  <!-- Search & Filter Bar -->
+  <div class="card" style="padding: 1.25rem; background: var(--admin-surface); border: 1px solid var(--admin-border); margin-bottom: 1.5rem;">
+    <form method="GET" action="/admin/leads" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+      <!-- Search -->
+      <div style="flex: 2; min-width: 260px;">
+        <label style="display: block; font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 0.35rem;">Search Inquiries</label>
         <input 
           type="text" 
-          id="crmSearchInput" 
-          placeholder="Search client name, email, phone, message, or property address..." 
-          style="width: 100%; box-sizing: border-box; background: #090e14; border: 1px solid #1e2c3c; border-radius: 6px; padding: 0.65rem 1rem; color: #ffffff; font-size: 0.9rem;"
+          name="search" 
+          value={search} 
+          placeholder="Search by name, email, phone, message..." 
+          class="form-input"
+          style="height: 38px;"
         />
       </div>
 
-      <!-- Quick Filter Toggles -->
-      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-        <button class="lead-filter-btn active" data-status="all">All ({counts.all})</button>
-        <button class="lead-filter-btn" data-status="new">New ({counts.new})</button>
-        <button class="lead-filter-btn" data-status="contacted">Contacted ({counts.contacted})</button>
-        <button class="lead-filter-btn" data-status="qualified">Qualified ({counts.qualified})</button>
-        <button class="lead-filter-btn" data-status="appointment_scheduled">Appts ({counts.appointment_scheduled})</button>
-        <button class="lead-filter-btn" data-status="in_progress">In Progress ({counts.in_progress})</button>
-        <button class="lead-filter-btn" data-status="converted">Converted ({counts.converted})</button>
-        <button class="lead-filter-btn" data-status="lost">Lost ({counts.lost})</button>
-        <button class="lead-filter-btn" data-status="spam">Spam ({counts.spam})</button>
+      <!-- Status Filter -->
+      <div style="flex: 1; min-width: 180px;">
+        <label style="display: block; font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 0.35rem;">Status</label>
+        <select name="status" class="form-select" style="height: 38px;">
+          <option value="all" selected={statusFilter === 'all'}>All Statuses</option>
+          <option value="new" selected={statusFilter === 'new'}>New Only</option>
+          <option value="contacted" selected={statusFilter === 'contacted'}>Contacted</option>
+          <option value="qualified" selected={statusFilter === 'qualified'}>Qualified</option>
+          <option value="converted" selected={statusFilter === 'converted'}>Converted</option>
+        </select>
       </div>
-    </div>
+
+      <!-- Buttons -->
+      <div style="display: flex; gap: 0.5rem;">
+        <button type="submit" class="btn btn-gold btn-sm" style="height: 38px; padding: 0 1.25rem;">Filter</button>
+        {search || statusFilter !== 'all' ? (
+          <a href="/admin/leads" class="btn btn-outline-white btn-sm" style="height: 38px;">Reset</a>
+        ) : null}
+      </div>
+    </form>
   </div>
 
-  <!-- CRM Leads Table -->
+  <!-- Inquiries Table -->
   <div class="admin-table-container">
-    <table class="admin-table" id="crmLeadsTable">
-      <thead>
-        <tr>
-          <th>Client &amp; Contact</th>
-          <th>Type &amp; Property</th>
-          <th>Status</th>
-          <th>Follow-Up Date</th>
-          <th>Budget / Timeframe</th>
-          <th>Source / Campaign</th>
-          <th style="text-align: right;">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {leads.length === 0 && (
+    {filteredLeads.length === 0 ? (
+      <div style="padding: 4rem 2rem; text-align: center;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--admin-text-muted); margin-bottom: 1rem;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        <h3 style="color: #ffffff; margin-bottom: 0.5rem;">No inquiries found</h3>
+        <p style="color: var(--admin-text-muted); max-width: 400px; margin: 0 auto; font-size: 0.9rem;">
+          Inquiries from the website contact and valuation forms will appear here automatically.
+        </p>
+      </div>
+    ) : (
+      <table class="admin-table">
+        <thead>
           <tr>
-            <td colspan="7" style="text-align: center; padding: 3.5rem 1rem; color: #94a3b8;">
-              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 0.75rem auto; display: block; opacity: 0.4;">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              <div style="font-size: 1.15rem; color: #ffffff; font-weight: 600; margin-bottom: 0.35rem;">No Client Inquiries Yet</div>
-              <div style="font-size: 0.85rem; max-width: 480px; margin: 0 auto; color: #64748b;">When buyers, sellers, or open house attendees submit inquiry or valuation forms, they will automatically appear here.</div>
-            </td>
+            <th>Client Name</th>
+            <th>Contact Details</th>
+            <th>Interest / Type</th>
+            <th>Message</th>
+            <th>Received</th>
+            <th>Status</th>
+            <th style="text-align: right;">Action</th>
           </tr>
-        )}
-        {leads.map(lead => {
-          const isOverdue = lead.follow_up_date && new Date(lead.follow_up_date).getTime() < nowTime && lead.status !== 'converted' && lead.status !== 'lost' && lead.status !== 'spam';
-          return (
-            <tr class="lead-crm-row" data-lead-id={lead.id} data-status={lead.status} data-type={lead.lead_type}>
+        </thead>
+        <tbody>
+          {filteredLeads.map(lead => (
+            <tr id={`lead-${lead.id}`}>
+              <!-- Client Name -->
               <td>
-                <div style="font-weight: 700; color: #ffffff; font-size: 0.95rem;">
-                  {lead.full_name}
-                </div>
-                <div style="font-size: 0.8rem; margin-top: 0.2rem;">
-                  <a href={`tel:${lead.phone}`} style="color: #38bdf8; text-decoration: none;">{lead.phone}</a>
-                  <span style="color: #64748b; margin: 0 0.35rem;">•</span>
-                  <a href={`mailto:${lead.email}`} style="color: #8b9bb0; text-decoration: none;">{lead.email}</a>
-                </div>
-                <div style="font-size: 0.72rem; color: #64748b; margin-top: 0.15rem;">
-                  ID: {lead.id} • Created {new Date(lead.created_at).toLocaleDateString()}
-                </div>
-              </td>
-
-              <td>
-                <span class="badge badge-dark" style="font-size: 0.72rem; border-color: var(--color-gold-500); text-transform: capitalize;">
-                  {lead.lead_type.replace(/_/g, ' ')}
-                </span>
+                <strong style="color: #ffffff; font-size: 0.95rem;">{lead.full_name}</strong>
                 {lead.property_address && (
-                  <div style="font-size: 0.78rem; color: var(--color-gold-400); margin-top: 0.3rem;">
-                    {lead.property_address}
+                  <div style="font-size: 0.78rem; color: var(--color-gold-400); margin-top: 2px;">
+                    🏠 {lead.property_address}
                   </div>
                 )}
-                {lead.property_id && (
-                  <a href={`/properties/${lead.property_id}`} target="_blank" style="font-size: 0.72rem; color: #38bdf8;">
-                    View Property &rarr;
+              </td>
+
+              <!-- Phone & Email -->
+              <td>
+                <div>
+                  <a href={`tel:${lead.phone}`} style="color: #38bdf8; text-decoration: none; font-weight: 600; font-size: 0.88rem;">
+                    📞 {lead.phone}
                   </a>
+                </div>
+                <div style="margin-top: 2px;">
+                  <a href={`mailto:${lead.email}`} style="color: #cbd5e1; text-decoration: none; font-size: 0.82rem;">
+                    ✉️ {lead.email}
+                  </a>
+                </div>
+              </td>
+
+              <!-- Type -->
+              <td>
+                <span class="badge badge-dark" style="text-transform: capitalize;">
+                  {(lead.lead_type || 'General').replace('_', ' ')}
+                </span>
+                {lead.estimated_budget && (
+                  <div style="font-size: 0.75rem; color: var(--admin-text-muted); margin-top: 2px;">
+                    Budget: {lead.estimated_budget}
+                  </div>
                 )}
               </td>
 
+              <!-- Message -->
+              <td style="max-width: 280px;">
+                <div style="font-size: 0.85rem; color: #e2e8f0; line-height: 1.4; max-height: 60px; overflow-y: auto;">
+                  {lead.message || <span style="color: var(--admin-text-muted); font-style: italic;">No message provided</span>}
+                </div>
+              </td>
+
+              <!-- Date -->
+              <td style="font-size: 0.82rem; color: var(--admin-text-muted); white-space: nowrap;">
+                {new Date(lead.created_at).toLocaleDateString()}
+              </td>
+
+              <!-- Status Dropdown -->
               <td>
-                <select class="crm-inline-status" data-lead-id={lead.id} style="background: #090e14; color: #ffffff; border: 1px solid #1e2c3c; padding: 0.35rem 0.6rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
-                  <option value="new" selected={lead.status === 'new'}>New</option>
-                  <option value="contacted" selected={lead.status === 'contacted'}>Contacted</option>
-                  <option value="qualified" selected={lead.status === 'qualified'}>Qualified</option>
-                  <option value="appointment_scheduled" selected={lead.status === 'appointment_scheduled' || (lead.status as string) === 'appointment_set'}>Appointment Set</option>
-                  <option value="in_progress" selected={lead.status === 'in_progress'}>In Progress</option>
-                  <option value="converted" selected={lead.status === 'converted' || (lead.status as string) === 'closed'}>Converted</option>
-                  <option value="lost" selected={lead.status === 'lost' || (lead.status as string) === 'archived'}>Lost</option>
-                  <option value="spam" selected={lead.status === 'spam'}>Spam</option>
+                <select 
+                  class="form-select lead-status-select" 
+                  data-id={lead.id}
+                  style="font-size: 0.8rem; padding: 4px 8px; height: 32px; width: 130px;"
+                >
+                  <option value="new" selected={lead.status === 'new'}>🟡 New</option>
+                  <option value="contacted" selected={lead.status === 'contacted'}>🔵 Contacted</option>
+                  <option value="qualified" selected={lead.status === 'qualified'}>🟢 Qualified</option>
+                  <option value="converted" selected={lead.status === 'converted'}>⭐ Converted</option>
+                  <option value="lost" selected={lead.status === 'lost'}>⚪ Archived</option>
                 </select>
               </td>
 
-              <td>
-                {lead.follow_up_date ? (
-                  <div>
-                    <span class:list={['badge', isOverdue ? 'badge-archived' : 'badge-draft']} style={`font-size: 0.75rem; ${isOverdue ? 'color: #f87171; border-color: #ef4444;' : ''}`}>
-                      {new Date(lead.follow_up_date).toLocaleDateString()}
-                    </span>
-                    {isOverdue && <div style="font-size: 0.7rem; color: #ef4444; font-weight: 600; margin-top: 0.2rem;">Overdue</div>}
-                  </div>
-                ) : (
-                  <span style="font-size: 0.78rem; color: #64748b;">Not scheduled</span>
-                )}
-              </td>
-
-              <td>
-                <div style="font-size: 0.82rem; color: #ffffff;">{lead.estimated_budget || 'Budget unstated'}</div>
-                <div style="font-size: 0.75rem; color: #94a3b8;">{lead.timeframe || 'Timeframe open'}</div>
-              </td>
-
-              <td>
-                <div style="font-size: 0.78rem; color: #cbd5e1;">{lead.source_page || '/contact'}</div>
-                {lead.utm_source && (
-                  <div style="font-size: 0.72rem; color: var(--color-gold-400);">
-                    UTM: {lead.utm_source} / {lead.utm_medium || 'none'}
-                  </div>
-                )}
-              </td>
-
-              <td style="text-align: right;">
-                <button class="btn btn-outline-white btn-sm open-lead-drawer-btn" data-lead={JSON.stringify(lead)} style="padding: 0.35rem 0.65rem; font-size: 0.75rem;">
-                  CRM Details
+              <!-- Delete Button -->
+              <td style="text-align: right; white-space: nowrap;">
+                <button 
+                  type="button" 
+                  class="btn-icon btn-delete-lead" 
+                  data-id={lead.id} 
+                  data-name={lead.full_name}
+                  title="Delete Inquiry" 
+                  style="color: #ef4444;"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
               </td>
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
+          ))}
+        </tbody>
+      </table>
+    )}
   </div>
 
-  <!-- Lead Detail & Notes Drawer Modal -->
-  <dialog id="leadDrawerModal" style="background: #101923; border: 1px solid #1e2c3c; border-radius: 12px; color: #ffffff; max-width: 680px; width: 90%; padding: 2rem; box-shadow: 0 25px 50px rgba(0,0,0,0.6);">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #1e2c3c; padding-bottom: 1rem;">
-      <div>
-        <h2 id="modalLeadName" style="margin: 0 0 0.25rem 0; font-size: 1.35rem; color: #ffffff;">Client Name</h2>
-        <span id="modalLeadMeta" style="font-size: 0.8rem; color: #94a3b8;">ID: lead-000</span>
+  <!-- Delete Modal -->
+  <div id="deleteLeadModal" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <h3 style="margin: 0; color: #ef4444; font-size: 1.15rem;">Delete Inquiry</h3>
+        <button type="button" class="btn-modal-close" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
       </div>
-      <button id="closeLeadDrawerBtn" style="background: none; border: none; color: #94a3b8; font-size: 1.6rem; cursor: pointer;">&times;</button>
-    </div>
-
-    <!-- Contact & Status Row -->
-    <div class="grid-2" style="gap: 1.5rem; margin-bottom: 1.5rem;">
-      <div style="background: #090e14; border: 1px solid #1e2c3c; border-radius: 6px; padding: 1rem;">
-        <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--color-gold-400);">Contact Details</h4>
-        <div id="modalLeadPhone" style="font-size: 0.9rem; margin-bottom: 0.3rem;">Phone: (619) 555-0000</div>
-        <div id="modalLeadEmail" style="font-size: 0.9rem; margin-bottom: 0.3rem;">Email: client@domain.com</div>
-        <div id="modalLeadPref" style="font-size: 0.78rem; color: #94a3b8;">Prefers: Phone</div>
+      <div class="admin-modal-body">
+        <p style="margin: 0 0 0.5rem 0; color: #f1f5f9;">
+          Are you sure you want to delete inquiry from <strong id="deleteTargetLeadName" style="color: #fff;"></strong>?
+        </p>
       </div>
-
-      <div style="background: #090e14; border: 1px solid #1e2c3c; border-radius: 6px; padding: 1rem;">
-        <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--color-gold-400);">Status &amp; Follow-up</h4>
-        <div style="margin-bottom: 0.6rem;">
-          <label style="display: block; font-size: 0.72rem; color: #94a3b8; margin-bottom: 0.2rem;">Lifecycle Status</label>
-          <select id="modalStatusSelect" style="width: 100%; background: #101923; color: #ffffff; border: 1px solid #1e2c3c; padding: 0.4rem; border-radius: 4px; font-size: 0.85rem;">
-            <option value="new">New</option>
-            <option value="contacted">Contacted</option>
-            <option value="qualified">Qualified</option>
-            <option value="appointment_scheduled">Appointment Scheduled</option>
-            <option value="in_progress">In Progress</option>
-            <option value="converted">Converted / Closed</option>
-            <option value="lost">Lost</option>
-            <option value="spam">Spam</option>
-          </select>
-        </div>
-
-        <div>
-          <label style="display: block; font-size: 0.72rem; color: #94a3b8; margin-bottom: 0.2rem;">Next Follow-Up Date</label>
-          <input type="date" id="modalFollowUpDate" style="width: 100%; box-sizing: border-box; background: #101923; color: #ffffff; border: 1px solid #1e2c3c; padding: 0.4rem; border-radius: 4px; font-size: 0.85rem;" />
-        </div>
+      <div class="admin-modal-footer">
+        <button type="button" class="btn btn-outline-white btn-sm btn-modal-cancel">Cancel</button>
+        <button type="button" id="confirmDeleteLeadBtn" class="btn btn-danger btn-sm">Delete</button>
       </div>
     </div>
+  </div>
 
-    <!-- Client Message -->
-    <div style="margin-bottom: 1.5rem;">
-      <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #cbd5e1;">Client Message / Inquiry Request</h4>
-      <div id="modalLeadMessage" style="background: #090e14; border: 1px solid #1e2c3c; border-radius: 6px; padding: 1rem; font-size: 0.88rem; color: #cbd5e1; line-height: 1.5;">
-        Message text goes here...
-      </div>
-    </div>
-
-    <!-- Internal Notes Thread -->
-    <div style="margin-bottom: 1.5rem;">
-      <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--color-gold-400);">Internal Notes &amp; Follow-up History</h4>
-      <div id="modalNotesList" style="max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;">
-        <!-- Dynamically populated notes -->
-      </div>
-
-      <div style="display: flex; gap: 0.5rem;">
-        <input type="text" id="modalNewNoteInput" placeholder="Add confidential internal note..." style="flex: 1; background: #090e14; border: 1px solid #1e2c3c; border-radius: 4px; padding: 0.5rem 0.75rem; color: #ffffff; font-size: 0.85rem;" />
-        <button id="modalAddNoteBtn" class="btn btn-gold btn-sm">Add Note</button>
-      </div>
-    </div>
-
-    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1e2c3c; padding-top: 1rem;">
-      <button id="modalDeleteLeadBtn" class="btn btn-outline-white btn-sm" style="color: #f87171; border-color: rgba(248,113,113,0.3);">
-        Delete Lead
-      </button>
-      <button id="modalSaveLeadBtn" class="btn btn-gold btn-sm">
-        Save Changes
-      </button>
-    </div>
-  </dialog>
+  <!-- Toast -->
+  <div id="leadsToastContainer" class="admin-toast-container"></div>
 </AdminLayout>
 
-<script is:inline>
-  var activeLead = null;
+<script>
+  function setupLeadsManager() {
+    const toastContainer = document.getElementById('leadsToastContainer');
+    const deleteModal = document.getElementById('deleteLeadModal');
+    const deleteTargetLeadName = document.getElementById('deleteTargetLeadName');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteLeadBtn');
+    let targetLeadId = '';
 
-  // Search and Filtering
-  var searchInput = document.getElementById('crmSearchInput');
-  var filterButtons = document.querySelectorAll('.lead-filter-btn');
-  var rows = document.querySelectorAll('.lead-crm-row');
-
-  function applyFilters() {
-    var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-    var activeBtn = document.querySelector('.lead-filter-btn.active');
-    var targetStatus = activeBtn ? activeBtn.getAttribute('data-status') : 'all';
-
-    rows.forEach(function(row) {
-      var rowStatus = row.getAttribute('data-status');
-      var rowText = row.textContent.toLowerCase();
-
-      var matchesQuery = !query || rowText.includes(query);
-      var matchesStatus = targetStatus === 'all' || rowStatus === targetStatus;
-
-      row.style.display = matchesQuery && matchesStatus ? '' : 'none';
-    });
-  }
-
-  if (searchInput) {
-    searchInput.addEventListener('input', applyFilters);
-  }
-
-  filterButtons.forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      filterButtons.forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      applyFilters();
-    });
-  });
-
-  // Inline Status Changer
-  document.querySelectorAll('.crm-inline-status').forEach(function(select) {
-    select.addEventListener('change', async function() {
-      var leadId = select.getAttribute('data-lead-id');
-      var newStatus = select.value;
-      try {
-        var res = await fetch('/api/admin/leads', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ leadId: leadId, status: newStatus })
-        });
-        if (res.ok) {
-          var row = select.closest('tr');
-          if (row) row.setAttribute('data-status', newStatus);
-        } else {
-          alert('Could not update lead status');
-        }
-      } catch (err) {
-        alert('Network error updating status');
+    function showToast(msg: string, type: 'success' | 'error' = 'success') {
+      if (!toastContainer) {
+        alert(msg);
+        return;
       }
-    });
-  });
-
-  // Lead Drawer Modal
-  var drawer = document.getElementById('leadDrawerModal');
-  var closeDrawerBtn = document.getElementById('closeLeadDrawerBtn');
-
-  document.querySelectorAll('.open-lead-drawer-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var leadData = JSON.parse(btn.getAttribute('data-lead'));
-      activeLead = leadData;
-
-      document.getElementById('modalLeadName').textContent = leadData.full_name;
-      document.getElementById('modalLeadMeta').textContent = 'ID: ' + leadData.id + ' • Source: ' + (leadData.source_page || 'Website');
-      document.getElementById('modalLeadPhone').innerHTML = '<strong>Phone:</strong> <a href="tel:' + leadData.phone + '" style="color:#38bdf8;">' + leadData.phone + '</a>';
-      document.getElementById('modalLeadEmail').innerHTML = '<strong>Email:</strong> <a href="mailto:' + leadData.email + '" style="color:#8b9bb0;">' + leadData.email + '</a>';
-      document.getElementById('modalLeadPref').textContent = 'Preferred Contact: ' + (leadData.preferred_contact_method || 'Phone');
-      document.getElementById('modalStatusSelect').value = leadData.status;
-      document.getElementById('modalFollowUpDate').value = leadData.follow_up_date ? leadData.follow_up_date.split('T')[0] : '';
-      document.getElementById('modalLeadMessage').textContent = leadData.message || 'No additional client message provided.';
-
-      renderNotes(leadData.notes || []);
-      drawer.showModal();
-    });
-  });
-
-  function renderNotes(notes) {
-    var notesList = document.getElementById('modalNotesList');
-    if (!notes || notes.length === 0) {
-      notesList.innerHTML = '<div style="font-size:0.78rem;color:#64748b;font-style:italic;">No internal notes logged yet.</div>';
-      return;
+      const toast = document.createElement('div');
+      toast.className = `admin-toast ${type}`;
+      toast.textContent = msg;
+      toastContainer.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
     }
-    notesList.innerHTML = notes.map(function(n) {
-      return '<div style="background:#090e14;border:1px solid #1e2c3c;border-radius:4px;padding:0.5rem 0.75rem;font-size:0.8rem;">' +
-        '<div style="color:#ffffff;line-height:1.4;">' + n.note + '</div>' +
-        '<div style="font-size:0.7rem;color:#64748b;margin-top:0.25rem;">' + n.author_email + ' • ' + new Date(n.created_at).toLocaleString() + '</div>' +
-      '</div>';
-    }).join('');
-  }
 
-  if (closeDrawerBtn && drawer) {
-    closeDrawerBtn.addEventListener('click', function() { drawer.close(); });
-    drawer.addEventListener('click', function(e) { if (e.target === drawer) drawer.close(); });
-  }
+    // Status change
+    document.querySelectorAll('.lead-status-select').forEach(select => {
+      select.addEventListener('change', async () => {
+        const leadId = select.getAttribute('data-id');
+        const status = (select as HTMLSelectElement).value;
+        if (!leadId) return;
 
-  // Add Note Button
-  var addNoteBtn = document.getElementById('modalAddNoteBtn');
-  var newNoteInput = document.getElementById('modalNewNoteInput');
-
-  if (addNoteBtn && newNoteInput) {
-    addNoteBtn.addEventListener('click', async function() {
-      var noteText = newNoteInput.value.trim();
-      if (!noteText || !activeLead) return;
-
-      try {
-        var res = await fetch('/api/admin/leads', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'add_note', leadId: activeLead.id, note: noteText })
-        });
-        var data = await res.json();
-        if (data.success && data.note) {
-          if (!activeLead.notes) activeLead.notes = [];
-          activeLead.notes.unshift(data.note);
-          renderNotes(activeLead.notes);
-          newNoteInput.value = '';
+        try {
+          const res = await fetch('/api/admin/leads', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ leadId, status })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            showToast('Lead status updated!');
+          } else {
+            showToast(data.error || 'Failed to update status', 'error');
+          }
+        } catch (e: any) {
+          showToast('Network error: ' + e.message, 'error');
         }
-      } catch (err) {
-        alert('Error saving note');
-      }
+      });
     });
+
+    // Delete trigger
+    document.querySelectorAll('.btn-delete-lead').forEach(btn => {
+      btn.addEventListener('click', () => {
+        targetLeadId = btn.getAttribute('data-id') || '';
+        const name = btn.getAttribute('data-name') || 'this client';
+        if (deleteTargetLeadName) deleteTargetLeadName.textContent = name;
+        if (deleteModal) deleteModal.style.display = 'flex';
+      });
+    });
+
+    function closeModal() {
+      if (deleteModal) deleteModal.style.display = 'none';
+      targetLeadId = '';
+    }
+
+    document.querySelectorAll('.btn-modal-close, .btn-modal-cancel').forEach(btn => {
+      btn.addEventListener('click', closeModal);
+    });
+
+    if (confirmDeleteBtn) {
+      confirmDeleteBtn.addEventListener('click', async () => {
+        if (!targetLeadId) return;
+        confirmDeleteBtn.setAttribute('disabled', 'true');
+        try {
+          const res = await fetch(`/api/admin/leads?id=${targetLeadId}`, {
+            method: 'DELETE'
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            showToast('Inquiry deleted successfully!');
+            const row = document.getElementById(`lead-${targetLeadId}`);
+            if (row) row.remove();
+            closeModal();
+          } else {
+            showToast(data.error || 'Failed to delete inquiry', 'error');
+          }
+        } catch (e: any) {
+          showToast('Network error: ' + e.message, 'error');
+        } finally {
+          confirmDeleteBtn.removeAttribute('disabled');
+        }
+      });
+    }
   }
 
-  // Save Changes in Modal
-  var saveLeadBtn = document.getElementById('modalSaveLeadBtn');
-  if (saveLeadBtn) {
-    saveLeadBtn.addEventListener('click', async function() {
-      if (!activeLead) return;
-      var newStatus = document.getElementById('modalStatusSelect').value;
-      var newDate = document.getElementById('modalFollowUpDate').value;
-
-      try {
-        var res = await fetch('/api/admin/leads', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            leadId: activeLead.id,
-            status: newStatus,
-            follow_up_date: newDate ? new Date(newDate).toISOString() : null
-          })
-        });
-        if (res.ok) {
-          drawer.close();
-          window.location.reload();
-        } else {
-          alert('Error updating lead');
-        }
-      } catch (e) {
-        alert('Network error updating lead');
-      }
-    });
-  }
-
-  // Delete Lead Button
-  var deleteLeadBtn = document.getElementById('modalDeleteLeadBtn');
-  if (deleteLeadBtn) {
-    deleteLeadBtn.addEventListener('click', async function() {
-      if (!activeLead) return;
-      if (!confirm('Are you sure you want to permanently delete lead for ' + activeLead.full_name + '?')) return;
-
-      try {
-        var res = await fetch('/api/admin/leads?id=' + encodeURIComponent(activeLead.id), {
-          method: 'DELETE'
-        });
-        if (res.ok) {
-          drawer.close();
-          window.location.reload();
-        } else {
-          alert('Error deleting lead');
-        }
-      } catch (e) {
-        alert('Network error deleting lead');
-      }
-    });
+  document.addEventListener('astro:page-load', setupLeadsManager);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setupLeadsManager();
   }
 </script>

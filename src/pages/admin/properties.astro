@@ -10,20 +10,18 @@ if (!checkAdminAuth(Astro.request)) {
   return Astro.redirect('/admin/login');
 }
 
-// Extract search and filter params
+// Search & Filter parameters
 const url = new URL(Astro.request.url);
 const search = url.searchParams.get('search') || '';
 const publicationStatus = url.searchParams.get('publicationStatus') || 'all';
 const listingStatus = url.searchParams.get('listingStatus') || 'all';
-const propertyType = url.searchParams.get('propertyType') || 'all';
 const page = parseInt(url.searchParams.get('page') || '1', 10);
-const pageSize = parseInt(url.searchParams.get('pageSize') || '10', 10);
+const pageSize = 12;
 
 const paginatedResult = await getPropertiesPaginated({
   search: search || undefined,
   publicationStatus: publicationStatus !== 'all' ? publicationStatus : undefined,
   listingStatus: listingStatus !== 'all' ? listingStatus : undefined,
-  propertyType: propertyType !== 'all' ? propertyType : undefined,
   page,
   pageSize,
   includeUnpublished: true,
@@ -33,113 +31,92 @@ const paginatedResult = await getPropertiesPaginated({
 const stats = await getPropertyStats();
 ---
 
-<AdminLayout title="Properties Manager" activeNav="properties">
-  <!-- Page Header -->
-  <div class="admin-header">
+<AdminLayout title="Properties" activeNav="properties">
+  <!-- Header -->
+  <div class="admin-header" style="flex-wrap: wrap; gap: 1rem;">
     <div>
-      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: #ffffff;">Listing Inventory &amp; Property CMS</h1>
+      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: #ffffff;">Property Listings</h1>
       <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.9rem;">
-        Search, manage, publish, and duplicate San Diego listings for Edgar Valle ({SITE_SETTINGS.brokerage_name}).
+        Add, edit, and manage all your real estate listings for {SITE_SETTINGS.brokerage_name}.
       </p>
     </div>
-    <div style="display: flex; gap: 0.75rem; align-items: center;">
+    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
       <a href="/properties" target="_blank" class="btn btn-outline-white btn-sm">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: -2px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-        Preview Public Site
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        View Public Site
       </a>
-      <a href="/admin/properties/new" class="btn btn-gold btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        Add New Property
+      <a href="/admin/properties/new" class="btn btn-gold btn-sm" style="font-weight: 700;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        + Add New Property
       </a>
     </div>
   </div>
 
-  <!-- Inventory Summary KPI Ribbon -->
-  <div class="admin-kpi-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 2rem;">
-    <div class="kpi-card" style="padding: 1.15rem;">
+  <!-- Quick KPI Counters -->
+  <div class="admin-kpi-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 1.75rem;">
+    <div class="kpi-card" style="padding: 1.25rem;">
       <div class="kpi-title">Total Listings</div>
       <div class="kpi-value">{stats.total}</div>
-      <span style="font-size: 0.75rem; color: var(--admin-text-muted);">Active in catalog</span>
+      <span style="font-size: 0.8rem; color: var(--admin-text-muted);">Active in catalog</span>
     </div>
-    <div class="kpi-card" style="padding: 1.15rem; border-top: 3px solid #10b981;">
-      <div class="kpi-title">Published</div>
+
+    <div class="kpi-card" style="padding: 1.25rem; border-top: 3px solid #10b981;">
+      <div class="kpi-title">Published (Live)</div>
       <div class="kpi-value" style="color: #10b981;">{stats.published}</div>
-      <span style="font-size: 0.75rem; color: #10b981;">Live on public website</span>
+      <span style="font-size: 0.8rem; color: #10b981;">Visible on public website</span>
     </div>
-    <div class="kpi-card" style="padding: 1.15rem; border-top: 3px solid #f59e0b;">
+
+    <div class="kpi-card" style="padding: 1.25rem; border-top: 3px solid #f59e0b;">
       <div class="kpi-title">Drafts</div>
       <div class="kpi-value" style="color: #f59e0b;">{stats.draft}</div>
-      <span style="font-size: 0.75rem; color: #f59e0b;">Unpublished / In progress</span>
-    </div>
-    <div class="kpi-card" style="padding: 1.15rem; border-top: 3px solid #ef4444;">
-      <div class="kpi-title">Pending Escrow</div>
-      <div class="kpi-value" style="color: #ef4444;">{stats.pending}</div>
-      <span style="font-size: 0.75rem; color: #ef4444;">Under contract</span>
-    </div>
-    <div class="kpi-card" style="padding: 1.15rem; border-top: 3px solid var(--color-gold-400);">
-      <div class="kpi-title">Total Active Value</div>
-      <div class="kpi-value" style="font-size: 1.45rem; color: var(--color-gold-400);">{formatCurrency(stats.totalVolume)}</div>
-      <span style="font-size: 0.75rem; color: var(--admin-text-muted);">{stats.totalInquiries} total inquiries</span>
+      <span style="font-size: 0.8rem; color: #f59e0b;">Hidden from visitors</span>
     </div>
   </div>
 
   <!-- Search & Filter Bar -->
-  <div class="admin-form-section" style="padding: 1.25rem; margin-bottom: 1.5rem;">
-    <form method="GET" action="/admin/properties" class="admin-filter-form" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+  <div class="card" style="padding: 1.25rem; background: var(--admin-surface); border: 1px solid var(--admin-border); margin-bottom: 1.5rem;">
+    <form method="GET" action="/admin/properties" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
       <!-- Search -->
-      <div style="flex: 2; min-width: 220px;">
-        <label style="display: block; font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 0.35rem;">Search Inventory</label>
+      <div style="flex: 2; min-width: 240px;">
+        <label style="display: block; font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 0.35rem;">Search</label>
         <input 
           type="text" 
           name="search" 
           value={search} 
-          placeholder="Search by title, address, MLS #, neighborhood..." 
+          placeholder="Search by title, address, neighborhood..." 
           class="form-input"
-          style="background: #0d151e; border-color: var(--admin-border); color: #fff; height: 38px;"
+          style="height: 38px;"
         />
       </div>
 
       <!-- Publication Status -->
-      <div style="flex: 1; min-width: 150px;">
+      <div style="flex: 1; min-width: 160px;">
         <label style="display: block; font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 0.35rem;">Publication</label>
-        <select name="publicationStatus" class="form-input" style="background: #0d151e; border-color: var(--admin-border); color: #fff; height: 38px;">
+        <select name="publicationStatus" class="form-select" style="height: 38px;">
           <option value="all" selected={publicationStatus === 'all'}>All Statuses</option>
           <option value="published" selected={publicationStatus === 'published'}>Published Only</option>
           <option value="draft" selected={publicationStatus === 'draft'}>Drafts Only</option>
-          <option value="archived" selected={publicationStatus === 'archived'}>Archived Only</option>
         </select>
       </div>
 
       <!-- Listing Status -->
-      <div style="flex: 1; min-width: 150px;">
+      <div style="flex: 1; min-width: 160px;">
         <label style="display: block; font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 0.35rem;">Market State</label>
-        <select name="listingStatus" class="form-input" style="background: #0d151e; border-color: var(--admin-border); color: #fff; height: 38px;">
+        <select name="listingStatus" class="form-select" style="height: 38px;">
           <option value="all" selected={listingStatus === 'all'}>All States</option>
           <option value="for_sale" selected={listingStatus === 'for_sale'}>For Sale</option>
-          <option value="for_rent" selected={listingStatus === 'for_rent'}>For Rent</option>
-          <option value="pending" selected={listingStatus === 'pending'}>Pending Escrow</option>
+          <option value="pending" selected={listingStatus === 'pending'}>Pending / Under Contract</option>
           <option value="sold" selected={listingStatus === 'sold'}>Sold</option>
-          <option value="coming_soon" selected={listingStatus === 'coming_soon'}>Coming Soon</option>
+          <option value="for_rent" selected={listingStatus === 'for_rent'}>For Rent</option>
         </select>
       </div>
 
-      <!-- Property Type -->
-      <div style="flex: 1; min-width: 150px;">
-        <label style="display: block; font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 0.35rem;">Property Type</label>
-        <select name="propertyType" class="form-input" style="background: #0d151e; border-color: var(--admin-border); color: #fff; height: 38px;">
-          <option value="all" selected={propertyType === 'all'}>All Types</option>
-          <option value="Single Family" selected={propertyType === 'Single Family'}>Single Family</option>
-          <option value="Condo" selected={propertyType === 'Condo'}>Condo</option>
-          <option value="Townhome" selected={propertyType === 'Townhome'}>Townhome</option>
-          <option value="Multi-Family" selected={propertyType === 'Multi-Family'}>Multi-Family</option>
-          <option value="Fixer-Upper" selected={propertyType === 'Fixer-Upper'}>Fixer-Upper</option>
-        </select>
-      </div>
-
-      <!-- Submit & Reset -->
+      <!-- Buttons -->
       <div style="display: flex; gap: 0.5rem;">
         <button type="submit" class="btn btn-gold btn-sm" style="height: 38px; padding: 0 1.25rem;">Filter</button>
-        <a href="/admin/properties" class="btn btn-outline-white btn-sm" style="height: 38px; display: inline-flex; align-items: center;">Reset</a>
+        {search || publicationStatus !== 'all' || listingStatus !== 'all' ? (
+          <a href="/admin/properties" class="btn btn-outline-white btn-sm" style="height: 38px;">Reset</a>
+        ) : null}
       </div>
     </form>
   </div>
@@ -149,9 +126,9 @@ const stats = await getPropertyStats();
     {paginatedResult.properties.length === 0 ? (
       <div style="padding: 4rem 2rem; text-align: center;">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--admin-text-muted); margin-bottom: 1rem;"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        <h3 style="color: #ffffff; margin-bottom: 0.5rem;">No Properties Found</h3>
-        <p style="color: var(--admin-text-muted); max-width: 460px; margin: 0 auto 1.5rem auto; font-size: 0.9rem;">
-          No listings match your search criteria. Try modifying your filters or add a new property.
+        <h3 style="color: #ffffff; margin-bottom: 0.5rem;">No properties found</h3>
+        <p style="color: var(--admin-text-muted); max-width: 400px; margin: 0 auto 1.5rem auto; font-size: 0.9rem;">
+          Try adjusting your search filters or click below to add your first property.
         </p>
         <a href="/admin/properties/new" class="btn btn-gold btn-sm">+ Add New Property</a>
       </div>
@@ -159,24 +136,19 @@ const stats = await getPropertyStats();
       <table class="admin-table">
         <thead>
           <tr>
-            <th>Thumbnail</th>
-            <th>Property Title &amp; ID</th>
-            <th>Asking Price</th>
-            <th>Location &amp; Display</th>
-            <th>Type</th>
-            <th>Beds / Baths</th>
-            <th>Area &amp; Lot</th>
-            <th>Market State</th>
-            <th>Publication</th>
-            <th>Analytics</th>
-            <th style="text-align: right;">Actions</th>
+            <th style="width: 70px;">Photo</th>
+            <th>Property &amp; Location</th>
+            <th>Price</th>
+            <th>Details</th>
+            <th>Status</th>
+            <th style="text-align: right; min-width: 140px;">Actions</th>
           </tr>
         </thead>
         <tbody>
           {paginatedResult.properties.map(p => (
             <tr id={`row-${p.id}`}>
               <!-- Thumbnail -->
-              <td style="width: 72px;">
+              <td style="width: 70px;">
                 <a href={`/admin/properties/edit?id=${p.id}`}>
                   <img 
                     src={p.primary_image || '/images/properties/north-park-spanish.svg'} 
@@ -188,171 +160,80 @@ const stats = await getPropertyStats();
                 </a>
               </td>
 
-              <!-- Title & ID -->
-              <td style="min-width: 220px;">
+              <!-- Title & Location -->
+              <td>
                 <a href={`/admin/properties/edit?id=${p.id}`} style="color: #ffffff; font-weight: 700; text-decoration: none; font-size: 0.95rem;">
                   {p.title}
                 </a>
-                <div style="font-size: 0.72rem; color: var(--admin-text-muted); margin-top: 2px; font-family: monospace;">
-                  ID: {p.id.slice(0, 18)}... • MLS #{p.mls_number || 'N/A'}
+                <div style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 3px;">
+                  {p.neighborhood}, {p.address_city} {p.address_street ? `• ${p.address_street}` : ''}
                 </div>
               </td>
 
-              <!-- Price & Currency -->
+              <!-- Price -->
               <td>
                 <strong style="color: var(--color-gold-400); font-size: 1rem;">
-                  {formatCurrency(p.price)} <span style="font-size: 0.72rem; color: var(--admin-text-muted);">{p.currency || 'USD'}</span>
+                  {formatCurrency(p.price)}
                 </strong>
-                {p.previous_price && p.previous_price !== p.price && (
-                  <div style="font-size: 0.72rem; color: #64748b; text-decoration: line-through;">
-                    {formatCurrency(p.previous_price)}
+                {p.listing_status && p.listing_status !== 'for_sale' && (
+                  <div style="font-size: 0.72rem; text-transform: uppercase; color: #94a3b8; margin-top: 2px;">
+                    {p.listing_status.replace('_', ' ')}
                   </div>
                 )}
-                {p.hoa_fee_monthly && p.hoa_fee_monthly > 0 ? (
-                  <div style="font-size: 0.72rem; color: var(--admin-text-muted);">
-                    HOA: ${p.hoa_fee_monthly}/{p.hoa_fee_frequency || 'mo'}
-                  </div>
-                ) : null}
               </td>
 
-              <!-- Location & Address Visibility -->
-              <td>
-                <div style="color: #f1f5f9; font-weight: 600; font-size: 0.88rem;">
-                  {p.neighborhood}, {p.address_city}
-                </div>
-                <div style="font-size: 0.75rem; color: var(--admin-text-muted); display: flex; align-items: center; gap: 4px;">
-                  {p.address_street} {p.address_unit ? `(${p.address_unit})` : ''}
-                  {p.address_visibility === 'neighborhood_only' && (
-                    <span class="badge badge-dark" style="font-size: 0.62rem; padding: 1px 4px;">Street Hidden</span>
-                  )}
+              <!-- Details -->
+              <td style="font-size: 0.85rem; color: #cbd5e1;">
+                <div>{p.property_type}</div>
+                <div style="font-size: 0.78rem; color: var(--admin-text-muted);">
+                  {p.bedrooms} Beds • {p.bathrooms} Baths • {p.square_feet.toLocaleString()} sq ft
                 </div>
               </td>
 
-              <!-- Property Type -->
+              <!-- Status Badge & 1-Click Toggle -->
               <td>
-                <span class="badge badge-dark" style="font-size: 0.72rem;">{p.property_type}</span>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span class:list={[
+                    'badge',
+                    p.publication_status === 'published' ? 'badge-emerald' : 'badge-gold'
+                  ]}>
+                    {p.publication_status === 'published' ? '● Published' : '○ Draft'}
+                  </span>
+                  
+                  <button 
+                    type="button" 
+                    class="btn-icon btn-toggle-status" 
+                    data-id={p.id} 
+                    data-action={p.publication_status === 'published' ? 'unpublish' : 'publish'}
+                    title={p.publication_status === 'published' ? 'Click to make Draft' : 'Click to Publish live'}
+                    style="font-size: 0.72rem; padding: 2px 6px;"
+                  >
+                    {p.publication_status === 'published' ? 'Hide' : 'Publish'}
+                  </button>
+                </div>
               </td>
 
-              <!-- Beds / Baths -->
-              <td style="font-size: 0.85rem; white-space: nowrap;">
-                {p.bedrooms} Beds • {p.bathrooms} Baths
-              </td>
-
-              <!-- Interior Area & Lot Size with explicit units -->
-              <td style="font-size: 0.82rem; white-space: nowrap;">
-                <div><strong>{p.square_feet.toLocaleString()}</strong> sq ft</div>
-                {p.lot_size_sqft ? (
-                  <div style="font-size: 0.72rem; color: var(--admin-text-muted);">
-                    Lot: {p.lot_size_sqft.toLocaleString()} {p.lot_size_unit || 'sqft'}
-                  </div>
-                ) : null}
-              </td>
-
-              <!-- Listing Status (Market State) -->
-              <td>
-                <span class:list={[
-                  'badge',
-                  p.listing_status === 'for_sale' ? 'badge-blue' :
-                  p.listing_status === 'pending' ? 'badge-ruby' :
-                  p.listing_status === 'sold' ? 'badge-dark' :
-                  p.listing_status === 'coming_soon' ? 'badge-gold' : 'badge-emerald'
-                ]} style="font-size: 0.72rem; text-transform: capitalize;">
-                  {(p.listing_status || p.status).replace('_', ' ')}
-                </span>
-              </td>
-
-              <!-- Publication Status -->
-              <td>
-                <span class:list={[
-                  p.publication_status === 'published' ? 'badge-published' :
-                  p.publication_status === 'draft' ? 'badge-draft' : 'badge-archived'
-                ]}>
-                  {p.publication_status || 'published'}
-                </span>
-              </td>
-
-              <!-- Analytics (Views & Inquiries) -->
-              <td style="font-size: 0.78rem; white-space: nowrap;">
-                <div style="color: #10b981;">{p.view_count || 0} views</div>
-                <div style="color: var(--color-gold-400);">{p.inquiries_count || 0} inquiries</div>
-              </td>
-
-              <!-- Actions Group -->
+              <!-- Actions -->
               <td style="text-align: right; white-space: nowrap;">
-                <div style="display: inline-flex; gap: 0.35rem; align-items: center;">
-                  <!-- Edit -->
-                  <a href={`/admin/properties/edit?id=${p.id}`} class="btn-icon" title="Edit Listing">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <div style="display: inline-flex; gap: 0.4rem; align-items: center;">
+                  <!-- Edit Button -->
+                  <a href={`/admin/properties/edit?id=${p.id}`} class="btn btn-outline-white btn-sm" style="padding: 0.35rem 0.65rem;" title="Edit Property">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 3px; vertical-align: -1px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Edit
                   </a>
 
-                  <!-- Preview -->
-                  <a href={`/properties/${p.slug}`} target="_blank" class="btn-icon" title="Preview Listing">
+                  <!-- View on Site Button -->
+                  <a href={`/properties/${p.slug}`} target="_blank" class="btn-icon" title="View Public Listing">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   </a>
 
-                  <!-- Quick Publish / Unpublish Toggle -->
-                  {p.publication_status === 'published' ? (
-                    <button 
-                      type="button" 
-                      class="btn-icon btn-action-status" 
-                      data-id={p.id} 
-                      data-action="unpublish" 
-                      title="Unpublish (Convert to Draft)"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #f59e0b;"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-                    </button>
-                  ) : (
-                    <button 
-                      type="button" 
-                      class="btn-icon btn-action-status" 
-                      data-id={p.id} 
-                      data-action="publish" 
-                      title="Publish to Live Website"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #10b981;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    </button>
-                  )}
-
-                  <!-- Duplicate -->
+                  <!-- Delete Button -->
                   <button 
                     type="button" 
-                    class="btn-icon btn-action-duplicate" 
-                    data-id={p.id} 
-                    title="Duplicate Listing as Draft"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                  </button>
-
-                  <!-- Archive / Unarchive -->
-                  {p.publication_status === 'archived' ? (
-                    <button 
-                      type="button" 
-                      class="btn-icon btn-action-status" 
-                      data-id={p.id} 
-                      data-action="unarchive" 
-                      title="Unarchive Listing"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-                    </button>
-                  ) : (
-                    <button 
-                      type="button" 
-                      class="btn-icon btn-action-status" 
-                      data-id={p.id} 
-                      data-action="archive" 
-                      title="Archive Listing"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
-                    </button>
-                  )}
-
-                  <!-- Delete -->
-                  <button 
-                    type="button" 
-                    class="btn-icon btn-action-delete" 
+                    class="btn-icon btn-delete-prop" 
                     data-id={p.id} 
                     data-title={p.title}
-                    title="Delete Listing (Soft Delete)"
+                    title="Delete Property" 
                     style="color: #ef4444;"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -365,20 +246,20 @@ const stats = await getPropertyStats();
       </table>
     )}
 
-    <!-- Pagination Controls -->
+    <!-- Simple Pagination -->
     {paginatedResult.totalPages > 1 && (
       <div style="padding: 1.25rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--admin-border); background: #0c131a; font-size: 0.85rem;">
         <span style="color: var(--admin-text-muted);">
-          Showing Page {paginatedResult.page} of {paginatedResult.totalPages} ({paginatedResult.total} Total Listings)
+          Page {paginatedResult.page} of {paginatedResult.totalPages} ({paginatedResult.total} Total)
         </span>
         <div style="display: flex; gap: 0.5rem;">
           {paginatedResult.page > 1 && (
-            <a href={`/admin/properties?page=${paginatedResult.page - 1}&search=${encodeURIComponent(search)}&publicationStatus=${publicationStatus}&listingStatus=${listingStatus}&propertyType=${propertyType}`} class="btn btn-outline-white btn-sm">
-              &larr; Previous
+            <a href={`/admin/properties?page=${paginatedResult.page - 1}&search=${encodeURIComponent(search)}&publicationStatus=${publicationStatus}&listingStatus=${listingStatus}`} class="btn btn-outline-white btn-sm">
+              &larr; Prev
             </a>
           )}
           {paginatedResult.page < paginatedResult.totalPages && (
-            <a href={`/admin/properties?page=${paginatedResult.page + 1}&search=${encodeURIComponent(search)}&publicationStatus=${publicationStatus}&listingStatus=${listingStatus}&propertyType=${propertyType}`} class="btn btn-outline-white btn-sm">
+            <a href={`/admin/properties?page=${paginatedResult.page + 1}&search=${encodeURIComponent(search)}&publicationStatus=${publicationStatus}&listingStatus=${listingStatus}`} class="btn btn-outline-white btn-sm">
               Next &rarr;
             </a>
           )}
@@ -391,41 +272,41 @@ const stats = await getPropertyStats();
   <div id="deleteModal" class="admin-modal-overlay" style="display: none;">
     <div class="admin-modal">
       <div class="admin-modal-header">
-        <h3 style="margin: 0; color: #ef4444; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-          Confirm Listing Removal
-        </h3>
-        <button type="button" class="btn-modal-close" style="background: none; border: none; color: var(--admin-text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+        <h3 style="margin: 0; color: #ef4444; font-size: 1.15rem;">Delete Property</h3>
+        <button type="button" class="btn-modal-close" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
       </div>
       <div class="admin-modal-body">
-        <p style="margin: 0 0 1rem 0; color: var(--admin-text-main);">
-          Are you sure you want to remove <strong id="deleteTargetTitle" style="color: #ffffff;"></strong>?
+        <p style="margin: 0 0 1rem 0; color: #f1f5f9; font-size: 0.95rem;">
+          Are you sure you want to delete <strong id="deleteTargetTitle" style="color: #ffffff;"></strong>?
         </p>
-        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: var(--radius-sm); padding: 0.85rem; font-size: 0.82rem; color: #fca5a5;">
-          <strong>Historical Reporting Safety:</strong> This action will soft-delete and archive the property. All inquiries, view metrics, and transaction history are preserved for reporting, but the property will be immediately removed from active search and public pages.
-        </div>
+        <p style="margin: 0; font-size: 0.82rem; color: var(--admin-text-muted);">
+          This listing will be archived and removed from your active website.
+        </p>
       </div>
       <div class="admin-modal-footer">
         <button type="button" class="btn btn-outline-white btn-sm btn-modal-cancel">Cancel</button>
-        <button type="button" id="confirmDeleteBtn" class="btn btn-danger btn-sm">Confirm Soft Delete</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger btn-sm">Delete</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification System -->
+  <!-- Toast Notifications -->
   <div id="adminToastContainer" class="admin-toast-container"></div>
 </AdminLayout>
 
 <script>
-  function setupPropertiesManager() {
+  function setupPropertiesList() {
     const toastContainer = document.getElementById('adminToastContainer');
     const deleteModal = document.getElementById('deleteModal');
     const deleteTargetTitle = document.getElementById('deleteTargetTitle');
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-    let pendingDeleteId = '';
+    let targetPropertyId = '';
 
     function showToast(msg: string, type: 'success' | 'error' = 'success') {
-      if (!toastContainer) return;
+      if (!toastContainer) {
+        alert(msg);
+        return;
+      }
       const toast = document.createElement('div');
       toast.className = `admin-toast ${type}`;
       toast.textContent = msg;
@@ -433,8 +314,8 @@ const stats = await getPropertyStats();
       setTimeout(() => toast.remove(), 4000);
     }
 
-    // Status action buttons (Publish / Unpublish / Archive / Unarchive)
-    document.querySelectorAll('.btn-action-status').forEach(btn => {
+    // Toggle Published / Draft status
+    document.querySelectorAll('.btn-toggle-status').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
         const action = btn.getAttribute('data-action');
@@ -448,9 +329,9 @@ const stats = await getPropertyStats();
             body: JSON.stringify({ id, action })
           });
           const data = await res.json();
-          if (data.success) {
-            showToast(`Listing successfully updated to ${action}ed.`);
-            setTimeout(() => window.location.reload(), 600);
+          if (res.ok && data.success) {
+            showToast(`Property is now ${action === 'publish' ? 'published' : 'draft'}!`);
+            setTimeout(() => window.location.reload(), 700);
           } else {
             showToast(data.error || 'Failed to update status', 'error');
             (btn as HTMLButtonElement).disabled = false;
@@ -462,91 +343,54 @@ const stats = await getPropertyStats();
       });
     });
 
-    // Duplicate listing button
-    document.querySelectorAll('.btn-action-duplicate').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.getAttribute('data-id');
-        if (!id) return;
-
-        if (!confirm('Duplicate this listing as a new draft?')) return;
-
-        (btn as HTMLButtonElement).disabled = true;
-        try {
-          const res = await fetch('/api/admin/properties/duplicate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-          });
-          const data = await res.json();
-          if (data.success && data.property) {
-            showToast('Listing duplicated successfully as draft!');
-            setTimeout(() => {
-              window.location.href = `/admin/properties/edit?id=${data.property.id}`;
-            }, 750);
-          } else {
-            showToast(data.error || 'Failed to duplicate listing', 'error');
-            (btn as HTMLButtonElement).disabled = false;
-          }
-        } catch (e: any) {
-          showToast('Network error: ' + e.message, 'error');
-          (btn as HTMLButtonElement).disabled = false;
-        }
-      });
-    });
-
     // Delete modal trigger
-    document.querySelectorAll('.btn-action-delete').forEach(btn => {
+    document.querySelectorAll('.btn-delete-prop').forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-id') || '';
-        const title = btn.getAttribute('data-title') || '';
-        pendingDeleteId = id;
-        if (deleteTargetTitle) deleteTargetTitle.textContent = title;
+        targetPropertyId = btn.getAttribute('data-id') || '';
+        const title = btn.getAttribute('data-title') || 'this property';
+        if (deleteTargetTitle) deleteTargetTitle.textContent = `"${title}"`;
         if (deleteModal) deleteModal.style.display = 'flex';
       });
     });
 
     // Close modal
+    function closeModal() {
+      if (deleteModal) deleteModal.style.display = 'none';
+      targetPropertyId = '';
+    }
     document.querySelectorAll('.btn-modal-close, .btn-modal-cancel').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (deleteModal) deleteModal.style.display = 'none';
-        pendingDeleteId = '';
-      });
+      btn.addEventListener('click', closeModal);
     });
 
-    // Confirm soft delete
+    // Confirm Delete
     if (confirmDeleteBtn) {
       confirmDeleteBtn.addEventListener('click', async () => {
-        if (!pendingDeleteId) return;
-        confirmDeleteBtn.textContent = 'Removing...';
-        (confirmDeleteBtn as HTMLButtonElement).disabled = true;
-
+        if (!targetPropertyId) return;
+        confirmDeleteBtn.setAttribute('disabled', 'true');
         try {
-          const res = await fetch(`/api/admin/properties?id=${encodeURIComponent(pendingDeleteId)}`, {
+          const res = await fetch(`/api/admin/properties?id=${targetPropertyId}`, {
             method: 'DELETE'
           });
           const data = await res.json();
-          if (data.success) {
-            showToast('Listing successfully archived and removed from public catalog.');
-            if (deleteModal) deleteModal.style.display = 'none';
-            const row = document.getElementById(`row-${pendingDeleteId}`);
-            if (row) row.style.opacity = '0.3';
-            setTimeout(() => window.location.reload(), 700);
+          if (res.ok && data.success) {
+            showToast('Property deleted successfully!');
+            const row = document.getElementById(`row-${targetPropertyId}`);
+            if (row) row.remove();
+            closeModal();
           } else {
-            showToast(data.error || 'Error removing listing', 'error');
-            confirmDeleteBtn.textContent = 'Confirm Soft Delete';
-            (confirmDeleteBtn as HTMLButtonElement).disabled = false;
+            showToast(data.error || 'Failed to delete property', 'error');
           }
         } catch (e: any) {
           showToast('Network error: ' + e.message, 'error');
-          confirmDeleteBtn.textContent = 'Confirm Soft Delete';
-          (confirmDeleteBtn as HTMLButtonElement).disabled = false;
+        } finally {
+          confirmDeleteBtn.removeAttribute('disabled');
         }
       });
     }
   }
 
-  document.addEventListener('astro:page-load', setupPropertiesManager);
+  document.addEventListener('astro:page-load', setupPropertiesList);
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setupPropertiesManager();
+    setupPropertiesList();
   }
 </script>

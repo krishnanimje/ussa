@@ -363,6 +363,30 @@ const isSpanish = currentPath.startsWith('/es');
       justify-content: flex-end;
     }
   }
+
+  @media (max-width: 480px) {
+    .top-bar {
+      padding: 0.35rem 0;
+    }
+    .top-bar-right {
+      gap: 0.65rem;
+      width: 100%;
+      justify-content: space-between;
+      font-size: 0.75rem;
+    }
+    .top-bar-right .top-link:nth-child(2) span {
+      display: none;
+    }
+    .brand-logo img {
+      height: 42px;
+    }
+    .main-header {
+      height: 64px;
+    }
+    .mobile-drawer {
+      top: 96px;
+    }
+  }
 </style>
 
 <script>
