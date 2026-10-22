@@ -1,0 +1,8 @@
+{
+  "name": "Brandon Urzua — Luxury Real Estate Advisor & Estates Specialist",
+  "description": "Official luxury real estate portfolio for Brandon Urzua (@brandonurzua21). Exclusive architectural residences, luxury estates, and private off-market advisory in Beverly Hills, Bel Air, Malibu, and Los Angeles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
