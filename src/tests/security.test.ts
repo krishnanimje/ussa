@@ -58,7 +58,38 @@ describe('Master Prompt 05 — Security, Privacy & Compliance Test Suite', () =>
       expect(logoutCookie).toContain('Expires=Thu, 01 Jan 1970');
       expect(logoutCookie).toContain('HttpOnly');
     });
+
+    it('rejects unauthorized mutations to site settings and neighborhood endpoints with 401', async () => {
+      const { GET: getSettings, POST: postSettings } = await import('../pages/api/admin/site-settings');
+      const { GET: getNeighborhoods, POST: postNeighborhoods } = await import('../pages/api/admin/neighborhoods');
+
+      // Unauthenticated requests
+      const unauthReq = new Request('http://localhost:4321/api/admin/site-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent_avatar: '/malicious.png' })
+      });
+
+      const res1 = await postSettings({ request: unauthReq } as any);
+      expect(res1.status).toBe(401);
+
+      const res2 = await getSettings({ request: unauthReq } as any);
+      expect(res2.status).toBe(401);
+
+      const unauthHoodReq = new Request('http://localhost:4321/api/admin/neighborhoods', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: 'north-park', hero_image: '/malicious.png' })
+      });
+
+      const res3 = await postNeighborhoods({ request: unauthHoodReq } as any);
+      expect(res3.status).toBe(401);
+
+      const res4 = await getNeighborhoods({ request: unauthHoodReq } as any);
+      expect(res4.status).toBe(401);
+    });
   });
+
 
   // --------------------------------------------------------------------------
   // 2. Private Data & Unpublished Listings Isolation
