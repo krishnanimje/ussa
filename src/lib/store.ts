@@ -1309,11 +1309,138 @@ export interface PropertyQueryFilters {
   includeDeleted?: boolean;
 }
 
+export const SUPABASE_PROPERTY_COLUMNS = new Set([
+  'id', 'slug', 'title', 'tagline', 'property_type', 'status', 'price',
+  'original_price', 'bedrooms', 'bathrooms', 'square_feet', 'lot_size_sqft',
+  'year_built', 'garage_spaces', 'has_pool', 'is_featured', 'is_va_eligible',
+  'is_fixer_upper', 'arv_estimate', 'address_street', 'address_city',
+  'address_state', 'address_zip', 'neighborhood', 'latitude', 'longitude',
+  'description', 'features', 'hoa_fee_monthly', 'property_tax_rate',
+  'virtual_tour_url', 'mls_number', 'view_count', 'created_at', 'updated_at',
+  'listing_status', 'publication_status', 'currency', 'previous_price',
+  'hoa_fee_frequency', 'additional_costs', 'address_unit', 'address_country',
+  'address_visibility', 'lot_size_unit', 'parking_spaces', 'has_spa',
+  'renovation_status', 'amenities', 'video_url', 'seo_title', 'seo_description',
+  'og_image', 'is_indexable', 'inquiries_count', 'deleted_at'
+]);
+
+export function isUuid(str: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
+export function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+export function sanitizeForSupabaseProperties(prop: Partial<Property>): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const [key, value] of Object.entries(prop)) {
+    if (SUPABASE_PROPERTY_COLUMNS.has(key) && value !== undefined) {
+      result[key] = value;
+    }
+  }
+  if (prop.primary_image && (!result.og_image || result.og_image.startsWith('/images/branding/'))) {
+    result.og_image = prop.primary_image;
+  }
+  return result;
+}
+
+export function mapSupabasePropertyRow(row: any): Property {
+  const mediaList: PropertyMedia[] = Array.isArray(row.property_media)
+    ? [...row.property_media].sort((a: any, b: any) => (a.display_order ?? 0) - (b.display_order ?? 0))
+    : [];
+
+  const primaryMedia = mediaList.find((m: any) => m.is_primary) || mediaList[0];
+  const primaryImage = primaryMedia?.url || row.og_image || row.primary_image || '/images/properties/north-park-spanish.svg';
+
+  const galleryImages = mediaList.length > 0
+    ? mediaList.map((m: any) => m.url)
+    : (row.gallery_images && row.gallery_images.length > 0 ? row.gallery_images : [primaryImage]);
+
+  return {
+    ...row,
+    primary_image: primaryImage,
+    gallery_images: galleryImages,
+    media: mediaList.length > 0 ? mediaList : (row.media || [
+      {
+        id: `m-${row.id}-1`,
+        property_id: row.id,
+        media_type: 'image',
+        url: primaryImage,
+        alt_text: row.title || 'Property photo',
+        display_order: 1,
+        is_primary: true,
+        created_at: row.created_at || new Date().toISOString()
+      }
+    ])
+  };
+}
+
+async function syncPropertyMediaToSupabase(
+  adminClient: any,
+  propertyId: string,
+  primaryImage?: string,
+  galleryImages?: string[],
+  media?: PropertyMedia[]
+) {
+  if (!adminClient || !isUuid(propertyId)) return;
+  try {
+    await adminClient.from('property_media').delete().eq('property_id', propertyId);
+
+    const rowsToInsert: any[] = [];
+    const primImg = primaryImage || (galleryImages && galleryImages[0]);
+
+    if (media && media.length > 0) {
+      media.forEach((m, idx) => {
+        rowsToInsert.push({
+          property_id: propertyId,
+          media_type: m.media_type || 'image',
+          url: m.url,
+          display_order: m.display_order ?? idx + 1,
+          is_primary: m.is_primary !== undefined ? m.is_primary : (m.url === primImg || idx === 0),
+          alt_text: m.alt_text || null
+        });
+      });
+    } else if (galleryImages && galleryImages.length > 0) {
+      galleryImages.forEach((url, idx) => {
+        rowsToInsert.push({
+          property_id: propertyId,
+          media_type: 'image',
+          url: url,
+          display_order: idx + 1,
+          is_primary: url === primImg || idx === 0
+        });
+      });
+    } else if (primImg) {
+      rowsToInsert.push({
+        property_id: propertyId,
+        media_type: 'image',
+        url: primImg,
+        display_order: 1,
+        is_primary: true
+      });
+    }
+
+    if (rowsToInsert.length > 0) {
+      await adminClient.from('property_media').insert(rowsToInsert);
+    }
+  } catch (err) {
+    console.warn('Failed to sync property media to Supabase:', err);
+  }
+}
+
 export async function getProperties(filters?: PropertyQueryFilters): Promise<Property[]> {
   const supabase = getSupabase();
   if (supabase) {
     try {
-      let query = supabase.from('properties').select('*');
+      let query = supabase.from('properties').select('*, property_media(*)');
 
       // Public filtering: by default, only published non-deleted properties
       if (!filters?.includeUnpublished) {
@@ -1356,7 +1483,29 @@ export async function getProperties(filters?: PropertyQueryFilters): Promise<Pro
 
       const { data, error } = await query;
       if (!error && data && data.length > 0) {
-        return data as Property[];
+        let mappedList = data.map(mapSupabasePropertyRow);
+
+        // Merge any runtimeProperties not in Supabase yet
+        for (const localProp of runtimeProperties) {
+          if (!mappedList.some(p => p.id === localProp.id)) {
+            let matches = true;
+            if (!filters?.includeUnpublished && localProp.publication_status !== 'published') matches = false;
+            if (!filters?.includeDeleted && localProp.deleted_at) matches = false;
+            if (matches) mappedList.unshift(localProp);
+          }
+        }
+
+        if (filters?.search) {
+          const q = filters.search.toLowerCase().trim();
+          mappedList = mappedList.filter(p => 
+            p.title.toLowerCase().includes(q) ||
+            p.address_street.toLowerCase().includes(q) ||
+            p.neighborhood.toLowerCase().includes(q) ||
+            p.address_city.toLowerCase().includes(q) ||
+            (p.mls_number && p.mls_number.toLowerCase().includes(q))
+          );
+        }
+        return mappedList;
       }
     } catch (e) {
       console.warn('Supabase properties query fallback to local store:', e);
@@ -1447,13 +1596,15 @@ export async function getPropertiesPaginated(options: PropertyQueryFilters & { p
 }
 
 export async function getPropertyById(id: string): Promise<Property | undefined> {
-  const supabase = getSupabaseAdmin() || getSupabase();
-  if (supabase) {
-    try {
-      const { data, error } = await supabase.from('properties').select('*').eq('id', id).single();
-      if (!error && data) return data as Property;
-    } catch (e) {
-      console.warn('Supabase query error for property ID:', e);
+  if (isUuid(id)) {
+    const supabase = getSupabaseAdmin() || getSupabase();
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('properties').select('*, property_media(*)').eq('id', id).single();
+        if (!error && data) return mapSupabasePropertyRow(data);
+      } catch (e) {
+        console.warn('Supabase query error for property ID:', e);
+      }
     }
   }
   return runtimeProperties.find(p => p.id === id);
@@ -1463,7 +1614,7 @@ export async function getPropertyBySlug(slug: string, options?: { allowUnpublish
   const supabase = getSupabase();
   if (supabase) {
     try {
-      let query = supabase.from('properties').select('*').eq('slug', slug);
+      let query = supabase.from('properties').select('*, property_media(*)').eq('slug', slug);
       if (!options?.allowUnpublished) {
         query = query.eq('publication_status', 'published').is('deleted_at', null);
       }
@@ -1471,7 +1622,7 @@ export async function getPropertyBySlug(slug: string, options?: { allowUnpublish
       if (!error && data) {
         // Increment view count asynchronously
         void supabase.rpc('increment_property_views', { property_id: data.id });
-        return data as Property;
+        return mapSupabasePropertyRow(data);
       }
     } catch (e) {
       console.warn('Supabase query error:', e);
@@ -1509,7 +1660,7 @@ export async function createProperty(
     return { success: false, property: {} as Property, error: 'Asking price must be greater than zero.' };
   }
 
-  const id = data.id || `p${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+  const id = (data.id && isUuid(data.id)) ? data.id : generateUUID();
   let baseSlug = slugify(data.slug || data.title);
   let finalSlug = baseSlug;
   let counter = 1;
@@ -1580,11 +1731,27 @@ export async function createProperty(
 
   // 1. Try Supabase
   const adminClient = getSupabaseAdmin();
-  if (adminClient) {
+  if (adminClient && isUuid(newProperty.id)) {
     try {
-      const { data: dbData, error } = await adminClient.from('properties').insert(newProperty).select('*').single();
+      const sanitized = sanitizeForSupabaseProperties(newProperty);
+      const { data: dbData, error } = await adminClient.from('properties').insert(sanitized).select('*').single();
       if (!error && dbData) {
-        runtimeProperties.unshift(dbData as Property);
+        await syncPropertyMediaToSupabase(
+          adminClient, 
+          dbData.id, 
+          newProperty.primary_image, 
+          newProperty.gallery_images, 
+          newProperty.media
+        );
+
+        const fullProperty: Property = {
+          ...mapSupabasePropertyRow(dbData),
+          primary_image: newProperty.primary_image,
+          gallery_images: newProperty.gallery_images,
+          media: newProperty.media
+        };
+
+        runtimeProperties.unshift(fullProperty);
         await logAuditEvent({
           actor_email: actorEmail,
           action: 'create_property',
@@ -1592,7 +1759,9 @@ export async function createProperty(
           entity_id: dbData.id,
           details: { title: newProperty.title, price: newProperty.price, status: newProperty.publication_status }
         });
-        return { success: true, property: dbData as Property };
+        return { success: true, property: fullProperty };
+      } else if (error) {
+        console.warn('Supabase create property error:', error);
       }
     } catch (e) {
       console.warn('Supabase create property error, fallback to runtime:', e);
@@ -1617,7 +1786,18 @@ export async function updateProperty(
   updates: Partial<Property>, 
   actorEmail: string = 'edgar@yourrealtoredgar.com'
 ): Promise<{ success: boolean; property?: Property; error?: string }> {
-  const existing = runtimeProperties.find(p => p.id === id);
+  let existing = runtimeProperties.find(p => p.id === id);
+  if (!existing && isUuid(id)) {
+    const adminClient = getSupabaseAdmin();
+    if (adminClient) {
+      const { data: fetched } = await adminClient.from('properties').select('*, property_media(*)').eq('id', id).single();
+      if (fetched) {
+        existing = mapSupabasePropertyRow(fetched);
+        runtimeProperties.push(existing);
+      }
+    }
+  }
+
   if (!existing) {
     return { success: false, error: 'Property not found.' };
   }
@@ -1652,14 +1832,47 @@ export async function updateProperty(
     updated_at: new Date().toISOString()
   };
 
+  if (updates.primary_image) {
+    updatedProperty.primary_image = updates.primary_image;
+  }
+  if (updates.gallery_images) {
+    updatedProperty.gallery_images = updates.gallery_images;
+  }
+
   // 1. Try Supabase
   const adminClient = getSupabaseAdmin();
-  if (adminClient) {
+  if (adminClient && isUuid(id)) {
     try {
-      const { data: dbData, error } = await adminClient.from('properties').update(updatedProperty).eq('id', id).select('*').single();
+      const sanitized = sanitizeForSupabaseProperties(updatedProperty);
+      const { data: dbData, error } = await adminClient
+        .from('properties')
+        .update(sanitized)
+        .eq('id', id)
+        .select('*')
+        .single();
+
       if (!error && dbData) {
+        if (updates.primary_image || updates.gallery_images || updates.media) {
+          await syncPropertyMediaToSupabase(
+            adminClient, 
+            id, 
+            updatedProperty.primary_image, 
+            updatedProperty.gallery_images, 
+            updatedProperty.media
+          );
+        }
+
+        const fullProperty: Property = {
+          ...mapSupabasePropertyRow(dbData),
+          primary_image: updatedProperty.primary_image,
+          gallery_images: updatedProperty.gallery_images,
+          media: updatedProperty.media
+        };
+
         const idx = runtimeProperties.findIndex(p => p.id === id);
-        if (idx !== -1) runtimeProperties[idx] = dbData as Property;
+        if (idx !== -1) runtimeProperties[idx] = fullProperty;
+        else runtimeProperties.unshift(fullProperty);
+
         await logAuditEvent({
           actor_email: actorEmail,
           action: 'update_property',
@@ -1667,7 +1880,9 @@ export async function updateProperty(
           entity_id: id,
           details: { updates, title: updatedProperty.title }
         });
-        return { success: true, property: dbData as Property };
+        return { success: true, property: fullProperty };
+      } else if (error) {
+        console.warn('Supabase update property error:', error);
       }
     } catch (e) {
       console.warn('Supabase update property error, fallback to runtime:', e);
@@ -1806,11 +2021,12 @@ export async function deleteProperty(
   }
 
   const adminClient = getSupabaseAdmin();
-  if (adminClient) {
+  if (adminClient && isUuid(id)) {
     try {
       if (softDelete) {
         await adminClient.from('properties').update({ deleted_at: new Date().toISOString(), publication_status: 'archived' }).eq('id', id);
       } else {
+        await adminClient.from('property_media').delete().eq('property_id', id);
         await adminClient.from('properties').delete().eq('id', id);
       }
     } catch (e) {
@@ -1838,7 +2054,7 @@ export async function addPropertyMedia(
   mediaData: Omit<PropertyMedia, 'id' | 'property_id' | 'created_at'>
 ): Promise<PropertyMedia> {
   const prop = runtimeProperties.find(p => p.id === propertyId);
-  const mediaId = `media_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+  const mediaId = generateUUID();
   const newMedia: PropertyMedia = {
     id: mediaId,
     property_id: propertyId,
@@ -1857,31 +2073,83 @@ export async function addPropertyMedia(
     prop.gallery_images.push(newMedia.url);
   }
 
+  const adminClient = getSupabaseAdmin();
+  if (adminClient && isUuid(propertyId)) {
+    try {
+      if (newMedia.is_primary) {
+        await adminClient.from('property_media').update({ is_primary: false }).eq('property_id', propertyId);
+        await adminClient.from('properties').update({ og_image: newMedia.url }).eq('id', propertyId);
+      }
+      await adminClient.from('property_media').insert({
+        id: newMedia.id,
+        property_id: propertyId,
+        media_type: newMedia.media_type || 'image',
+        url: newMedia.url,
+        display_order: newMedia.display_order || 99,
+        is_primary: Boolean(newMedia.is_primary),
+        alt_text: newMedia.alt_text || null
+      });
+    } catch (e) {
+      console.warn('Supabase addPropertyMedia sync error:', e);
+    }
+  }
+
   return newMedia;
 }
 
 export async function removePropertyMedia(propertyId: string, mediaId: string): Promise<boolean> {
   const prop = runtimeProperties.find(p => p.id === propertyId);
-  if (!prop || !prop.media) return false;
-
-  prop.media = prop.media.filter(m => m.id !== mediaId);
-  prop.gallery_images = prop.media.map(m => m.url);
-  if (prop.media.length > 0 && !prop.media.some(m => m.is_primary)) {
-    prop.media[0].is_primary = true;
-    prop.primary_image = prop.media[0].url;
+  if (prop && prop.media) {
+    prop.media = prop.media.filter(m => m.id !== mediaId);
+    prop.gallery_images = prop.media.map(m => m.url);
+    if (prop.media.length > 0 && !prop.media.some(m => m.is_primary)) {
+      prop.media[0].is_primary = true;
+      prop.primary_image = prop.media[0].url;
+    }
   }
+
+  const adminClient = getSupabaseAdmin();
+  if (adminClient && isUuid(propertyId)) {
+    try {
+      if (isUuid(mediaId)) {
+        await adminClient.from('property_media').delete().eq('id', mediaId);
+      }
+    } catch (e) {
+      console.warn('Supabase removePropertyMedia error:', e);
+    }
+  }
+
   return true;
 }
 
 export async function setCoverMedia(propertyId: string, mediaId: string): Promise<boolean> {
+  let targetUrl = '';
   const prop = runtimeProperties.find(p => p.id === propertyId);
-  if (!prop || !prop.media) return false;
+  if (prop && prop.media) {
+    const target = prop.media.find(m => m.id === mediaId);
+    if (target) {
+      prop.media.forEach(m => m.is_primary = (m.id === mediaId));
+      prop.primary_image = target.url;
+      targetUrl = target.url;
+    }
+  }
 
-  const target = prop.media.find(m => m.id === mediaId);
-  if (!target) return false;
+  const adminClient = getSupabaseAdmin();
+  if (adminClient && isUuid(propertyId)) {
+    try {
+      await adminClient.from('property_media').update({ is_primary: false }).eq('property_id', propertyId);
+      if (isUuid(mediaId)) {
+        const { data } = await adminClient.from('property_media').update({ is_primary: true }).eq('id', mediaId).select('url').single();
+        if (data?.url) targetUrl = data.url;
+      }
+      if (targetUrl) {
+        await adminClient.from('properties').update({ og_image: targetUrl }).eq('id', propertyId);
+      }
+    } catch (e) {
+      console.warn('Supabase setCoverMedia error:', e);
+    }
+  }
 
-  prop.media.forEach(m => m.is_primary = (m.id === mediaId));
-  prop.primary_image = target.url;
   return true;
 }
 
@@ -1984,10 +2252,31 @@ export async function getOpenHouses(): Promise<OpenHouse[]> {
 export let runtimeNeighborhoods: Neighborhood[] = [...INITIAL_NEIGHBORHOODS];
 
 export async function getNeighborhoods(): Promise<Neighborhood[]> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from('neighborhoods').select('*').order('name');
+      if (!error && data && data.length > 0) {
+        runtimeNeighborhoods = data as Neighborhood[];
+        return runtimeNeighborhoods;
+      }
+    } catch (e) {
+      console.warn('Supabase getNeighborhoods error:', e);
+    }
+  }
   return runtimeNeighborhoods;
 }
 
 export async function getNeighborhoodBySlug(slug: string): Promise<Neighborhood | undefined> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from('neighborhoods').select('*').eq('slug', slug).single();
+      if (!error && data) return data as Neighborhood;
+    } catch (e) {
+      console.warn('Supabase getNeighborhoodBySlug error:', e);
+    }
+  }
   return runtimeNeighborhoods.find(n => n.slug === slug);
 }
 
@@ -1995,9 +2284,27 @@ export async function updateNeighborhood(slug: string, updates: Partial<Neighbor
   const idx = runtimeNeighborhoods.findIndex(n => n.slug === slug);
   if (idx !== -1) {
     runtimeNeighborhoods[idx] = { ...runtimeNeighborhoods[idx], ...updates };
-    return runtimeNeighborhoods[idx];
   }
-  return undefined;
+
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      const { data, error } = await adminClient
+        .from('neighborhoods')
+        .update(updates)
+        .eq('slug', slug)
+        .select('*')
+        .single();
+      if (!error && data) {
+        if (idx !== -1) runtimeNeighborhoods[idx] = data as Neighborhood;
+        return data as Neighborhood;
+      }
+    } catch (e) {
+      console.warn('Supabase updateNeighborhood error:', e);
+    }
+  }
+
+  return idx !== -1 ? runtimeNeighborhoods[idx] : undefined;
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
@@ -2009,11 +2316,43 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefi
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
+  const supabase = getSupabaseAdmin() || getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('key', 'general')
+        .single();
+      if (!error && data?.value) {
+        runtimeSiteSettings = { ...SITE_SETTINGS, ...data.value };
+        return runtimeSiteSettings;
+      }
+    } catch (e) {
+      console.warn('Supabase site settings fetch error:', e);
+    }
+  }
   return runtimeSiteSettings;
 }
 
 export async function updateSiteSettings(updates: Partial<SiteSettings>): Promise<SiteSettings> {
   runtimeSiteSettings = { ...runtimeSiteSettings, ...updates };
+
+  const adminClient = getSupabaseAdmin();
+  if (adminClient) {
+    try {
+      await adminClient
+        .from('site_settings')
+        .upsert({
+          key: 'general',
+          value: runtimeSiteSettings,
+          updated_at: new Date().toISOString()
+        });
+    } catch (e) {
+      console.warn('Supabase update site settings error:', e);
+    }
+  }
+
   return runtimeSiteSettings;
 }
 
