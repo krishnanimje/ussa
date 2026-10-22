@@ -1,7 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import { SITE_SETTINGS } from '../lib/store';
+import { getSiteSettings, SITE_SETTINGS } from '../lib/store';
+
+const siteSettings = await getSiteSettings();
 
 const breadcrumbItems = [
   { name: 'Home', url: '/' },
@@ -26,7 +28,7 @@ const breadcrumbItems = [
           <span class="section-eyebrow">MEET YOUR SAN DIEGO REALTOR</span>
           <h1 style="margin-bottom: 0.75rem;">Edgar Valle</h1>
           <p class="brokerage-text">
-            Realtor® • Affiliated with <strong>{SITE_SETTINGS.brokerage_name}</strong> • California DRE License <strong>#{SITE_SETTINGS.dre_license}</strong>
+            Realtor® • Affiliated with <strong>{siteSettings.brokerage_name}</strong> • California DRE License <strong>#{siteSettings.dre_license}</strong>
           </p>
           <p class="lead" style="margin-bottom: 1.5rem;">
             Dedicated to providing transparent, mathematically rigorous, and culturally attuned real estate guidance across San Diego County.
@@ -39,7 +41,7 @@ const breadcrumbItems = [
         </div>
 
         <div class="about-hero-img-wrap">
-          <img src="/images/branding/edgar-valle.svg" alt="Edgar Valle Realtor" width="500" height="600" class="hero-portrait" />
+          <img src={siteSettings.agent_avatar || '/images/branding/edgar-valle.svg'} alt="Edgar Valle Realtor" width="500" height="600" class="hero-portrait" />
         </div>
       </div>
     </div>

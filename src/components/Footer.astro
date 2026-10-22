@@ -1,5 +1,7 @@
 ---
-import { SITE_SETTINGS } from '../lib/store';
+import { getSiteSettings, SITE_SETTINGS } from '../lib/store';
+
+const siteSettings = await getSiteSettings();
 ---
 
 <footer class="site-footer" role="contentinfo">
@@ -9,7 +11,7 @@ import { SITE_SETTINGS } from '../lib/store';
       <!-- Col 1: Brand & Bio -->
       <div class="footer-col brand-col">
         <a href="/" class="footer-logo">
-          <img src="/images/branding/logo-white.svg" alt="Edgar Valle | Realtor" width="240" height="60" />
+          <img src={siteSettings.logo_white_url || '/images/branding/logo-white.svg'} alt="Edgar Valle | Realtor" width="240" height="60" />
         </a>
         <p class="footer-bio">
           Providing high-touch, analytical, and bilingual real estate guidance across San Diego County. Specializing in first-time homebuyers, VA military relocation, and fix-and-flip investment properties.
@@ -17,11 +19,11 @@ import { SITE_SETTINGS } from '../lib/store';
         <div class="footer-credentials">
           <div class="cred-item">
             <span class="cred-label">CALIFORNIA DRE LICENSE:</span>
-            <span class="cred-val">#{SITE_SETTINGS.dre_license}</span>
+            <span class="cred-val">#{siteSettings.dre_license}</span>
           </div>
           <div class="cred-item">
             <span class="cred-label">BROKERAGE:</span>
-            <span class="cred-val">{SITE_SETTINGS.brokerage_name}</span>
+            <span class="cred-val">{siteSettings.brokerage_name}</span>
           </div>
         </div>
       </div>

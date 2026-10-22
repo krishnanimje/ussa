@@ -1011,8 +1011,14 @@ export const SITE_SETTINGS: SiteSettings = {
   instagram: '@yourrealtoredgar',
   instagram_url: 'https://www.instagram.com/yourrealtoredgar/',
   service_area: 'San Diego County, California',
-  languages: ['English', 'Spanish (Hablamos Español)']
+  languages: ['English', 'Spanish (Hablamos Español)'],
+  agent_avatar: '/images/branding/edgar-valle.svg',
+  logo_url: '/images/branding/logo.svg',
+  logo_white_url: '/images/branding/logo-white.svg',
+  hero_image: '/images/branding/og-preview.png'
 };
+
+export let runtimeSiteSettings: SiteSettings = { ...SITE_SETTINGS };
 
 // Initial Audit Logs (Pre-populated for Audit Stream)
 export const INITIAL_AUDIT_LOGS: AuditLog[] = [
@@ -1975,12 +1981,23 @@ export async function getOpenHouses(): Promise<OpenHouse[]> {
   return INITIAL_OPEN_HOUSES;
 }
 
+export let runtimeNeighborhoods: Neighborhood[] = [...INITIAL_NEIGHBORHOODS];
+
 export async function getNeighborhoods(): Promise<Neighborhood[]> {
-  return INITIAL_NEIGHBORHOODS;
+  return runtimeNeighborhoods;
 }
 
 export async function getNeighborhoodBySlug(slug: string): Promise<Neighborhood | undefined> {
-  return INITIAL_NEIGHBORHOODS.find(n => n.slug === slug);
+  return runtimeNeighborhoods.find(n => n.slug === slug);
+}
+
+export async function updateNeighborhood(slug: string, updates: Partial<Neighborhood>): Promise<Neighborhood | undefined> {
+  const idx = runtimeNeighborhoods.findIndex(n => n.slug === slug);
+  if (idx !== -1) {
+    runtimeNeighborhoods[idx] = { ...runtimeNeighborhoods[idx], ...updates };
+    return runtimeNeighborhoods[idx];
+  }
+  return undefined;
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
@@ -1992,7 +2009,12 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefi
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-  return SITE_SETTINGS;
+  return runtimeSiteSettings;
+}
+
+export async function updateSiteSettings(updates: Partial<SiteSettings>): Promise<SiteSettings> {
+  runtimeSiteSettings = { ...runtimeSiteSettings, ...updates };
+  return runtimeSiteSettings;
 }
 
 // Leads management

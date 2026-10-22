@@ -209,6 +209,10 @@ export interface SiteSettings {
   instagram_url: string;
   service_area: string;
   languages: string[];
+  agent_avatar?: string;
+  logo_url?: string;
+  logo_white_url?: string;
+  hero_image?: string;
 }
 
 export interface AuditLog {

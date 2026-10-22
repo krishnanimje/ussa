@@ -2,11 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import PropertyCard from '../components/PropertyCard.astro';
 import LeadCaptureForm from '../components/LeadCaptureForm.astro';
-import { getFeaturedProperties, getOpenHouses, getNeighborhoods, SITE_SETTINGS } from '../lib/store';
+import { getFeaturedProperties, getOpenHouses, getNeighborhoods, getSiteSettings, SITE_SETTINGS } from '../lib/store';
 
 const featuredProperties = await getFeaturedProperties();
 const openHouses = await getOpenHouses();
 const neighborhoods = await getNeighborhoods();
+const siteSettings = await getSiteSettings();
 ---
 
 <Layout 
@@ -24,7 +25,7 @@ const neighborhoods = await getNeighborhoods();
       <div class="hero-content">
         <div class="hero-badge-row hero-stagger-1">
           <span class="badge badge-gold">SAN DIEGO, CA</span>
-          <span class="badge badge-dark">DRE #{SITE_SETTINGS.dre_license}</span>
+          <span class="badge badge-gold">DRE #{siteSettings.dre_license}</span>
           <span class="badge badge-emerald">Hablamos Español</span>
         </div>
 
@@ -212,14 +213,14 @@ const neighborhoods = await getNeighborhoods();
     </section>
   )}
 
-  <!-- Meet Edgar Valle Section -->
-  <section class="section section-dark reveal-on-scroll">
+  <!-- Meet Edgar Valle Section (Modern Luxury Light Aesthetic) -->
+  <section class="section section-about-modern reveal-on-scroll">
     <div class="container">
       <div class="grid-2" style="align-items: center; gap: 4rem;">
         <div class="about-portrait-wrap">
           <img 
-            src="/images/branding/edgar-valle.svg" 
-            alt="Edgar Valle | Realtor DRE #02375273" 
+            src={siteSettings.agent_avatar || '/images/branding/edgar-valle.svg'} 
+            alt={`Edgar Valle | Realtor DRE #${siteSettings.dre_license}`} 
             width="540" 
             height="630" 
             class="about-portrait"
@@ -231,25 +232,25 @@ const neighborhoods = await getNeighborhoods();
         </div>
 
         <div class="about-copy">
-          <span class="section-eyebrow" style="color: var(--color-gold-400);">MEET YOUR REALTOR</span>
-          <h2 style="color: #ffffff;">Edgar Valle</h2>
-          <p class="brokerage-badge">Full Circle Group • DRE #02375273</p>
+          <span class="section-eyebrow" style="color: var(--color-gold-700);">MEET YOUR REALTOR</span>
+          <h2 style="color: #0f1822;">Edgar Valle</h2>
+          <p class="brokerage-badge">{siteSettings.brokerage_name} • DRE #{siteSettings.dre_license}</p>
           
           <p class="about-paragraph">
             Real estate in San Diego is more than transactions—it is about securing generational stability, building real equity, and navigating one of California's most vibrant coastal markets with complete transparency.
           </p>
 
           <p class="about-paragraph">
-            Affiliated with <strong>Full Circle Group</strong>, Edgar blends rigorous financial comp analysis with high-touch personal service. Fluent in both English and Spanish, Edgar ensures Spanish-speaking families and military service members stationed at Camp Pendleton, 32nd St, and Coronado have an unwavering advocate from contract to keys.
+            Affiliated with <strong>{siteSettings.brokerage_name}</strong>, Edgar blends rigorous financial comp analysis with high-touch personal service. Fluent in both English and Spanish, Edgar ensures Spanish-speaking families and military service members stationed at Camp Pendleton, 32nd St, and Coronado have an unwavering advocate from contract to keys.
           </p>
 
           <div class="about-metrics">
             <div class="metric-item">
-              <span class="metric-val">DRE #02375273</span>
+              <span class="metric-val">DRE #{siteSettings.dre_license}</span>
               <span class="metric-lbl">California Licensed</span>
             </div>
             <div class="metric-item">
-              <span class="metric-val">@yourrealtoredgar</span>
+              <span class="metric-val">{siteSettings.instagram}</span>
               <span class="metric-lbl">Instagram Property Tours</span>
             </div>
             <div class="metric-item">
@@ -260,7 +261,7 @@ const neighborhoods = await getNeighborhoods();
 
           <div class="about-cta-row">
             <a href="/about" class="btn btn-gold btn-lg">Learn More About Edgar</a>
-            <a href={SITE_SETTINGS.instagram_url} target="_blank" rel="noopener noreferrer" class="btn btn-outline-white btn-lg">Watch Property Tours on IG</a>
+            <a href={siteSettings.instagram_url} target="_blank" rel="noopener noreferrer" class="btn btn-navy btn-lg">Watch Property Tours on IG</a>
           </div>
         </div>
       </div>
@@ -339,12 +340,14 @@ const neighborhoods = await getNeighborhoods();
 
 <style>
   /* Hero Styles */
+  /* Hero Styles - Modern Bright California Luxury */
   .hero-section {
     position: relative;
-    padding: 6.5rem 0 5rem 0;
-    background: linear-gradient(135deg, #0a1118 0%, #15202c 60%, #1d2c3d 100%);
-    color: #ffffff;
+    padding: 6.5rem 0 5.5rem 0;
+    background: linear-gradient(180deg, #fdfbf7 0%, #f7f3ea 50%, #f3ebe0 100%);
+    color: var(--text-primary);
     overflow: hidden;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
   }
 
   .hero-bg-overlay {
@@ -353,8 +356,8 @@ const neighborhoods = await getNeighborhoods();
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: radial-gradient(circle at 80% 20%, rgba(197, 160, 89, 0.15) 0%, transparent 50%),
-                      radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 50%);
+    background-image: radial-gradient(circle at 80% 20%, rgba(197, 160, 89, 0.18) 0%, transparent 60%),
+                      radial-gradient(circle at 15% 85%, rgba(56, 189, 248, 0.12) 0%, transparent 55%);
     pointer-events: none;
   }
 
@@ -378,20 +381,20 @@ const neighborhoods = await getNeighborhoods();
   }
 
   .hero-title {
-    color: #ffffff;
+    color: #0f1822;
     font-size: clamp(2.5rem, 5.5vw, 4.2rem);
     line-height: 1.15;
     margin-bottom: 1.25rem;
   }
 
   .gold-gradient-text {
-    background: linear-gradient(135deg, #fceade 0%, #dfc26e 50%, #c5a059 100%);
+    background: linear-gradient(135deg, #a9833f 0%, #c5a059 50%, #88652d 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .hero-lead {
-    color: #cbd5e1;
+    color: #475569;
     font-size: clamp(1.15rem, 2vw, 1.35rem);
     line-height: 1.6;
     max-width: 760px;
@@ -401,8 +404,9 @@ const neighborhoods = await getNeighborhoods();
   .hero-search-card {
     background: #ffffff;
     padding: 1.75rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(197, 160, 89, 0.4);
+    box-shadow: 0 20px 45px rgba(15, 24, 34, 0.08);
+    border: 1px solid rgba(197, 160, 89, 0.35);
+    border-radius: var(--radius-md);
     text-align: left;
     margin-bottom: 1.75rem;
   }
@@ -466,16 +470,17 @@ const neighborhoods = await getNeighborhoods();
   }
 
   .quick-tags-title {
-    color: var(--color-gold-400);
+    color: var(--color-gold-700);
     font-weight: 700;
   }
 
   .quick-tag {
-    background: rgba(255, 255, 255, 0.08);
-    color: #e2e8f0;
-    padding: 0.3rem 0.75rem;
+    background: #ffffff;
+    color: #334155;
+    padding: 0.35rem 0.85rem;
     border-radius: var(--radius-full);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
     transition: all var(--transition-fast);
   }
 
@@ -571,10 +576,12 @@ const neighborhoods = await getNeighborhoods();
   }
 
   .open-house-banner {
-    background: linear-gradient(135deg, #101c28 0%, #172738 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, #ffffff 0%, #fcfaf7 100%);
+    color: var(--text-primary);
     padding: 2.25rem 2.5rem;
-    border: 1px solid rgba(197, 160, 89, 0.4);
+    border: 1px solid rgba(197, 160, 89, 0.35);
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 30px rgba(15, 24, 34, 0.06);
   }
 
   .banner-badge-wrap {
@@ -587,7 +594,7 @@ const neighborhoods = await getNeighborhoods();
   .open-house-date {
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--color-gold-400);
+    color: var(--color-gold-700);
     letter-spacing: 0.08em;
   }
 
@@ -600,25 +607,32 @@ const neighborhoods = await getNeighborhoods();
   }
 
   .banner-title {
-    color: #ffffff;
+    color: #0f1822;
     font-size: 1.5rem;
     margin-bottom: 0.35rem;
   }
 
   .banner-address {
-    color: var(--color-gold-300);
-    font-size: 0.92rem;
+    color: var(--color-gold-700);
+    font-size: 0.95rem;
+    font-weight: 600;
     margin-bottom: 0.4rem;
   }
 
   .banner-desc {
-    color: #cbd5e1;
-    font-size: 0.9rem;
+    color: #475569;
+    font-size: 0.92rem;
     margin: 0;
     max-width: 680px;
   }
 
-  /* About Section */
+  /* About Section - Modern Bright California Luxury */
+  .section-about-modern {
+    background: linear-gradient(180deg, #fdfbf7 0%, #f6f1e6 100%);
+    border-top: 1px solid rgba(197, 160, 89, 0.2);
+    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+  }
+
   .about-portrait-wrap {
     position: relative;
   }
@@ -628,6 +642,7 @@ const neighborhoods = await getNeighborhoods();
     box-shadow: var(--shadow-xl);
     width: 100%;
     height: auto;
+    border: 1px solid rgba(197, 160, 89, 0.25);
   }
 
   .portrait-floating-stat {
@@ -638,7 +653,7 @@ const neighborhoods = await getNeighborhoods();
     color: var(--color-navy-950);
     padding: 1.15rem 1.5rem;
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 12px 28px rgba(15, 24, 34, 0.12);
     border: 2px solid var(--color-gold-400);
     text-align: center;
   }
@@ -658,14 +673,14 @@ const neighborhoods = await getNeighborhoods();
   }
 
   .brokerage-badge {
-    color: var(--color-gold-400);
-    font-weight: 600;
+    color: var(--color-gold-700);
+    font-weight: 700;
     font-size: 0.95rem;
     margin-bottom: 1.5rem;
   }
 
   .about-paragraph {
-    color: #cbd5e1;
+    color: #334155;
     font-size: 1.05rem;
     line-height: 1.75;
     margin-bottom: 1.25rem;
@@ -677,20 +692,21 @@ const neighborhoods = await getNeighborhoods();
     gap: 1rem;
     margin: 2rem 0;
     padding: 1.25rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
   }
 
   .metric-val {
     display: block;
     font-size: 1.05rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #0f1822;
   }
 
   .metric-lbl {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: #64748b;
+    font-weight: 600;
   }
 
   .about-cta-row {

@@ -1,0 +1,572 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getSiteSettings, getNeighborhoods } from '../../lib/store';
+import { checkAdminAuth } from '../../lib/auth';
+
+export const prerender = false;
+
+if (!checkAdminAuth(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+
+const siteSettings = await getSiteSettings();
+const neighborhoods = await getNeighborhoods();
+---
+
+<AdminLayout title="Media & Image Manager" activeNav="media">
+  <div class="admin-header" style="flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: var(--admin-text-main);">Website Media &amp; Image Manager</h1>
+      <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.9rem;">
+        Easily drag &amp; drop photos from your computer to replace branding, logos, agent photos, and neighborhood banners across the entire website.
+      </p>
+    </div>
+    <div>
+      <a href="/" target="_blank" class="btn btn-outline-white btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <span>View Live Website</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="mediaToast" class="admin-toast-container"></div>
+
+  <!-- SECTION 1: Brand & Site Identity Images -->
+  <div class="admin-card" style="margin-bottom: 2.5rem;">
+    <div class="admin-card-header">
+      <h2 class="admin-card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-400)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        1. Brand &amp; Site Identity Images
+      </h2>
+      <span class="badge badge-gold">Live on Website</span>
+    </div>
+
+    <div class="media-grid">
+      <!-- 1. Agent Portrait Headshot -->
+      <div class="media-asset-card" data-setting-key="agent_avatar">
+        <div class="media-preview-box" style="height: 190px;">
+          <img 
+            id="preview_agent_avatar" 
+            src={siteSettings.agent_avatar || '/images/branding/edgar-valle.svg'} 
+            alt="Agent Portrait" 
+          />
+        </div>
+        <div class="media-asset-title">Agent Headshot Photo</div>
+        <div class="media-asset-desc">Displayed on the Homepage "Meet Edgar" section, About page, and Property feature sheets.</div>
+
+        <div class="admin-dropzone media-dropzone" data-target="agent_avatar" tabindex="0" role="button">
+          <div class="dropzone-icon" style="width: 36px; height: 36px; margin-bottom: 0.4rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          </div>
+          <div class="dropzone-title" style="font-size: 0.88rem;">Drop new headshot photo</div>
+          <div class="dropzone-subtitle" style="font-size: 0.75rem;">or click to browse</div>
+          <input type="file" accept="image/*" class="media-file-input" style="display: none;" />
+          <div class="dropzone-status" style="display: none;"></div>
+        </div>
+
+        <div style="margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+          <span class="badge badge-gold" style="font-size: 0.7rem;">Active</span>
+          <button type="button" class="btn btn-outline-white btn-sm btn-reset-image" data-target="agent_avatar" data-default="/images/branding/edgar-valle.svg" style="font-size: 0.72rem; padding: 0.25rem 0.5rem;">Reset</button>
+        </div>
+      </div>
+
+      <!-- 2. Header Logo -->
+      <div class="media-asset-card" data-setting-key="logo_url">
+        <div class="media-preview-box" style="height: 190px; background: #ffffff;">
+          <img 
+            id="preview_logo_url" 
+            src={siteSettings.logo_url || '/images/branding/logo.svg'} 
+            alt="Header Logo" 
+          />
+        </div>
+        <div class="media-asset-title">Main Header Logo</div>
+        <div class="media-asset-desc">Displayed on the top navigation bar across all pages of the public site.</div>
+
+        <div class="admin-dropzone media-dropzone" data-target="logo_url" tabindex="0" role="button">
+          <div class="dropzone-icon" style="width: 36px; height: 36px; margin-bottom: 0.4rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          </div>
+          <div class="dropzone-title" style="font-size: 0.88rem;">Drop new header logo</div>
+          <div class="dropzone-subtitle" style="font-size: 0.75rem;">SVG or transparent PNG recommended</div>
+          <input type="file" accept="image/*" class="media-file-input" style="display: none;" />
+          <div class="dropzone-status" style="display: none;"></div>
+        </div>
+
+        <div style="margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+          <span class="badge badge-gold" style="font-size: 0.7rem;">Active</span>
+          <button type="button" class="btn btn-outline-white btn-sm btn-reset-image" data-target="logo_url" data-default="/images/branding/logo.svg" style="font-size: 0.72rem; padding: 0.25rem 0.5rem;">Reset</button>
+        </div>
+      </div>
+
+      <!-- 3. Footer Logo -->
+      <div class="media-asset-card" data-setting-key="logo_white_url">
+        <div class="media-preview-box" style="height: 190px; background: #0f1822;">
+          <img 
+            id="preview_logo_white_url" 
+            src={siteSettings.logo_white_url || '/images/branding/logo-white.svg'} 
+            alt="Footer White Logo" 
+          />
+        </div>
+        <div class="media-asset-title">Footer Contrast Logo</div>
+        <div class="media-asset-desc">Displayed on dark backgrounds, email templates, and the bottom footer bar.</div>
+
+        <div class="admin-dropzone media-dropzone" data-target="logo_white_url" tabindex="0" role="button">
+          <div class="dropzone-icon" style="width: 36px; height: 36px; margin-bottom: 0.4rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          </div>
+          <div class="dropzone-title" style="font-size: 0.88rem;">Drop new footer logo</div>
+          <div class="dropzone-subtitle" style="font-size: 0.75rem;">White or light SVG / PNG</div>
+          <input type="file" accept="image/*" class="media-file-input" style="display: none;" />
+          <div class="dropzone-status" style="display: none;"></div>
+        </div>
+
+        <div style="margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+          <span class="badge badge-gold" style="font-size: 0.7rem;">Active</span>
+          <button type="button" class="btn btn-outline-white btn-sm btn-reset-image" data-target="logo_white_url" data-default="/images/branding/logo-white.svg" style="font-size: 0.72rem; padding: 0.25rem 0.5rem;">Reset</button>
+        </div>
+      </div>
+
+      <!-- 4. Social Share Hero -->
+      <div class="media-asset-card" data-setting-key="hero_image">
+        <div class="media-preview-box" style="height: 190px;">
+          <img 
+            id="preview_hero_image" 
+            src={siteSettings.hero_image || '/images/branding/og-preview.png'} 
+            alt="Hero / Social Share Banner" 
+          />
+        </div>
+        <div class="media-asset-title">Social Share &amp; OG Banner</div>
+        <div class="media-asset-desc">Displayed on Facebook, iMessage, Twitter, and LinkedIn when someone shares your website link.</div>
+
+        <div class="admin-dropzone media-dropzone" data-target="hero_image" tabindex="0" role="button">
+          <div class="dropzone-icon" style="width: 36px; height: 36px; margin-bottom: 0.4rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          </div>
+          <div class="dropzone-title" style="font-size: 0.88rem;">Drop new share banner</div>
+          <div class="dropzone-subtitle" style="font-size: 0.75rem;">1200 x 630 px recommended</div>
+          <input type="file" accept="image/*" class="media-file-input" style="display: none;" />
+          <div class="dropzone-status" style="display: none;"></div>
+        </div>
+
+        <div style="margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+          <span class="badge badge-gold" style="font-size: 0.7rem;">Active</span>
+          <button type="button" class="btn btn-outline-white btn-sm btn-reset-image" data-target="hero_image" data-default="/images/branding/og-preview.png" style="font-size: 0.72rem; padding: 0.25rem 0.5rem;">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: San Diego Neighborhood Hero Images -->
+  <div class="admin-card" style="margin-bottom: 2.5rem;">
+    <div class="admin-card-header">
+      <h2 class="admin-card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-400)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+        2. San Diego Neighborhood Hero Banners
+      </h2>
+      <span class="badge badge-emerald">{neighborhoods.length} Communities</span>
+    </div>
+    <p style="color: var(--admin-text-muted); font-size: 0.88rem; margin-bottom: 1.5rem;">
+      Each neighborhood card and dedicated guide page features its own hero photo. Drop a new image into any card below to replace that neighborhood's photo across the site.
+    </p>
+
+    <div class="media-grid">
+      {neighborhoods.map((n) => (
+        <div class="media-asset-card" data-neighborhood-slug={n.slug}>
+          <div class="media-preview-box">
+            <img 
+              id={`preview_hood_${n.slug}`} 
+              src={n.hero_image} 
+              alt={n.name} 
+            />
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem;">
+            <div class="media-asset-title" style="margin-bottom: 0;">{n.name}</div>
+            <span style="font-size: 0.78rem; font-weight: 700; color: var(--color-gold-700);">
+              ${(n.median_home_price / 1000).toFixed(0)}K Median
+            </span>
+          </div>
+          <div class="media-asset-desc">{n.tagline}</div>
+
+          <div class="admin-dropzone hood-dropzone" data-slug={n.slug} tabindex="0" role="button">
+            <div class="dropzone-icon" style="width: 32px; height: 32px; margin-bottom: 0.35rem;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+            <div class="dropzone-title" style="font-size: 0.85rem;">Drop new {n.name} photo</div>
+            <div class="dropzone-subtitle" style="font-size: 0.72rem;">or click to browse</div>
+            <input type="file" accept="image/*" class="hood-file-input" style="display: none;" />
+            <div class="dropzone-status" style="display: none;"></div>
+          </div>
+
+          <div style="margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+            <a href={`/neighborhoods/${n.slug}`} target="_blank" class="btn btn-outline-white btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.6rem;">
+              View Neighborhood Page &rarr;
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- SECTION 3: General Media Uploader & Direct Asset Dropzone -->
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2 class="admin-card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-400)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        3. Fast Image Uploader &amp; URL Generator
+      </h2>
+      <span class="badge badge-gold">Quick Upload</span>
+    </div>
+    <p style="color: var(--admin-text-muted); font-size: 0.88rem; margin-bottom: 1.5rem;">
+      Drop any image file here to immediately upload it to the website's secure storage. You can instantly copy the public URL to use in listings, blog posts, or marketing materials.
+    </p>
+
+    <!-- General Universal Dropzone -->
+    <div id="generalDropzone" class="admin-dropzone" style="padding: 2.5rem 1.5rem; margin-bottom: 1.5rem;" tabindex="0" role="button">
+      <div class="dropzone-icon" style="width: 52px; height: 52px;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+      </div>
+      <div class="dropzone-title" style="font-size: 1.1rem;">Drag &amp; Drop Any Image Here</div>
+      <div class="dropzone-subtitle" style="font-size: 0.88rem;">or click to select from your files (JPG, PNG, WEBP, SVG)</div>
+      <input type="file" id="generalFileInput" accept="image/*" multiple style="display: none;" />
+      <div id="generalUploadStatus" class="dropzone-status" style="display: none;"></div>
+    </div>
+
+    <!-- Recently Uploaded Files List -->
+    <div id="recentUploadsContainer" style="display: none;">
+      <h3 style="font-size: 1rem; color: var(--admin-text-main); margin-bottom: 0.75rem;">Recently Uploaded Files</h3>
+      <div id="recentUploadsList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  function setupMediaManager() {
+    const toastContainer = document.getElementById('mediaToast');
+
+    function showToast(msg: string, type: 'success' | 'error' = 'success') {
+      if (!toastContainer) {
+        alert(msg);
+        return;
+      }
+      const toast = document.createElement('div');
+      toast.className = `admin-toast ${type}`;
+      toast.textContent = msg;
+      toastContainer.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    async function uploadFile(file: File): Promise<string> {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/admin/media/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Upload failed');
+      }
+      return data.mediaUrl;
+    }
+
+    // 1. Setup Branding Dropzones
+    document.querySelectorAll('.media-dropzone').forEach(dz => {
+      const dropzone = dz as HTMLElement;
+      const targetKey = dropzone.getAttribute('data-target');
+      if (!targetKey) return;
+
+      const fileInput = dropzone.querySelector('.media-file-input') as HTMLInputElement;
+      const statusEl = dropzone.querySelector('.dropzone-status') as HTMLElement;
+      const previewImg = document.getElementById(`preview_${targetKey}`) as HTMLImageElement;
+
+      if (!fileInput) return;
+
+      dropzone.addEventListener('click', () => fileInput.click());
+      dropzone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          fileInput.click();
+        }
+      });
+
+      ['dragenter', 'dragover'].forEach(ev => {
+        dropzone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('drag-over');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(ev => {
+        dropzone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('drag-over');
+        });
+      });
+
+      dropzone.addEventListener('drop', async (e) => {
+        const files = (e as DragEvent).dataTransfer?.files;
+        if (files && files.length > 0) {
+          await handleBrandingUpload(files[0]);
+        }
+      });
+
+      fileInput.addEventListener('change', async () => {
+        if (fileInput.files && fileInput.files.length > 0) {
+          await handleBrandingUpload(fileInput.files[0]);
+        }
+      });
+
+      async function handleBrandingUpload(file: File) {
+        if (!statusEl) return;
+        statusEl.style.display = 'block';
+        statusEl.className = 'dropzone-status uploading';
+        statusEl.textContent = `Uploading ${file.name}...`;
+
+        try {
+          const mediaUrl = await uploadFile(file);
+          // Persist to site settings
+          const updateRes = await fetch('/api/admin/site-settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [targetKey]: mediaUrl })
+          });
+          const updateData = await updateRes.json();
+          if (!updateRes.ok || !updateData.success) {
+            throw new Error(updateData.error || 'Failed to update site settings');
+          }
+
+          if (previewImg) previewImg.src = mediaUrl;
+          statusEl.className = 'dropzone-status success';
+          statusEl.textContent = `✓ Updated live on site!`;
+          showToast(`Website image updated successfully!`, 'success');
+        } catch (err: any) {
+          statusEl.className = 'dropzone-status error';
+          statusEl.textContent = `✕ ${err.message}`;
+          showToast(`Error: ${err.message}`, 'error');
+        }
+      }
+    });
+
+    // Reset button handler
+    document.querySelectorAll('.btn-reset-image').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const targetKey = btn.getAttribute('data-target');
+        const defaultUrl = btn.getAttribute('data-default');
+        if (!targetKey || !defaultUrl) return;
+
+        try {
+          const res = await fetch('/api/admin/site-settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [targetKey]: defaultUrl })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            const previewImg = document.getElementById(`preview_${targetKey}`) as HTMLImageElement;
+            if (previewImg) previewImg.src = defaultUrl;
+            showToast('Reset to original default graphic.', 'success');
+          }
+        } catch (err: any) {
+          showToast(`Reset error: ${err.message}`, 'error');
+        }
+      });
+    });
+
+    // 2. Setup Neighborhood Dropzones
+    document.querySelectorAll('.hood-dropzone').forEach(dz => {
+      const dropzone = dz as HTMLElement;
+      const slug = dropzone.getAttribute('data-slug');
+      if (!slug) return;
+
+      const fileInput = dropzone.querySelector('.hood-file-input') as HTMLInputElement;
+      const statusEl = dropzone.querySelector('.dropzone-status') as HTMLElement;
+      const previewImg = document.getElementById(`preview_hood_${slug}`) as HTMLImageElement;
+
+      if (!fileInput) return;
+
+      dropzone.addEventListener('click', () => fileInput.click());
+      dropzone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          fileInput.click();
+        }
+      });
+
+      ['dragenter', 'dragover'].forEach(ev => {
+        dropzone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('drag-over');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(ev => {
+        dropzone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('drag-over');
+        });
+      });
+
+      dropzone.addEventListener('drop', async (e) => {
+        const files = (e as DragEvent).dataTransfer?.files;
+        if (files && files.length > 0) {
+          await handleHoodUpload(files[0]);
+        }
+      });
+
+      fileInput.addEventListener('change', async () => {
+        if (fileInput.files && fileInput.files.length > 0) {
+          await handleHoodUpload(fileInput.files[0]);
+        }
+      });
+
+      async function handleHoodUpload(file: File) {
+        if (!statusEl) return;
+        statusEl.style.display = 'block';
+        statusEl.className = 'dropzone-status uploading';
+        statusEl.textContent = `Uploading ${file.name}...`;
+
+        try {
+          const mediaUrl = await uploadFile(file);
+          const updateRes = await fetch('/api/admin/neighborhoods', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug, hero_image: mediaUrl })
+          });
+          const updateData = await updateRes.json();
+          if (!updateRes.ok || !updateData.success) {
+            throw new Error(updateData.error || 'Failed to update neighborhood');
+          }
+
+          if (previewImg) previewImg.src = mediaUrl;
+          statusEl.className = 'dropzone-status success';
+          statusEl.textContent = `✓ Neighborhood photo updated!`;
+          showToast(`Updated ${slug} photo successfully!`, 'success');
+        } catch (err: any) {
+          statusEl.className = 'dropzone-status error';
+          statusEl.textContent = `✕ ${err.message}`;
+          showToast(`Error: ${err.message}`, 'error');
+        }
+      }
+    });
+
+    // 3. Setup General Uploader
+    const generalDropzone = document.getElementById('generalDropzone');
+    const generalFileInput = document.getElementById('generalFileInput') as HTMLInputElement;
+    const generalStatus = document.getElementById('generalUploadStatus');
+    const recentContainer = document.getElementById('recentUploadsContainer');
+    const recentList = document.getElementById('recentUploadsList');
+
+    if (generalDropzone && generalFileInput) {
+      generalDropzone.addEventListener('click', () => generalFileInput.click());
+      generalDropzone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          generalFileInput.click();
+        }
+      });
+
+      ['dragenter', 'dragover'].forEach(ev => {
+        generalDropzone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          generalDropzone.classList.add('drag-over');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(ev => {
+        generalDropzone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          generalDropzone.classList.remove('drag-over');
+        });
+      });
+
+      generalDropzone.addEventListener('drop', async (e) => {
+        const files = (e as DragEvent).dataTransfer?.files;
+        if (files && files.length > 0) {
+          await handleGeneralFiles(Array.from(files));
+        }
+      });
+
+      generalFileInput.addEventListener('change', async () => {
+        if (generalFileInput.files && generalFileInput.files.length > 0) {
+          await handleGeneralFiles(Array.from(generalFileInput.files));
+        }
+      });
+
+      async function handleGeneralFiles(files: File[]) {
+        if (!generalStatus) return;
+        generalStatus.style.display = 'block';
+        generalStatus.className = 'dropzone-status uploading';
+        generalStatus.textContent = `Uploading ${files.length} file(s)...`;
+
+        for (const file of files) {
+          try {
+            const url = await uploadFile(file);
+            addRecentUploadItem(url, file.name);
+          } catch (e: any) {
+            showToast(`Upload failed for ${file.name}: ${e.message}`, 'error');
+          }
+        }
+
+        generalStatus.className = 'dropzone-status success';
+        generalStatus.textContent = `✓ Upload complete! URLs ready below.`;
+      }
+
+      function addRecentUploadItem(url: string, filename: string) {
+        if (!recentContainer || !recentList) return;
+        recentContainer.style.display = 'block';
+
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.justifyContent = 'space-between';
+        row.style.background = '#ffffff';
+        row.style.padding = '0.75rem 1rem';
+        row.style.borderRadius = '6px';
+        row.style.border = '1px solid var(--admin-border)';
+        row.style.gap = '1rem';
+
+        row.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
+            <img src="${url}" style="width: 44px; height: 32px; object-fit: cover; border-radius: 4px; border: 1px solid var(--admin-border);" alt="Preview" />
+            <div style="min-width: 0;">
+              <div style="font-size: 0.85rem; font-weight: 600; color: var(--admin-text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${filename}</div>
+              <div style="font-size: 0.75rem; color: var(--admin-text-muted); font-family: monospace;">${url}</div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline-white btn-sm btn-copy-url" data-url="${url}" style="flex-shrink: 0;">
+            Copy URL
+          </button>
+        `;
+
+        const copyBtn = row.querySelector('.btn-copy-url') as HTMLButtonElement;
+        copyBtn?.addEventListener('click', () => {
+          navigator.clipboard.writeText(url).then(() => {
+            copyBtn.textContent = 'Copied!';
+            copyBtn.style.borderColor = 'var(--color-success)';
+            copyBtn.style.color = 'var(--color-success)';
+            setTimeout(() => {
+              copyBtn.textContent = 'Copy URL';
+              copyBtn.style.borderColor = '';
+              copyBtn.style.color = '';
+            }, 2000);
+          });
+        });
+
+        recentList.prepend(row);
+      }
+    }
+  }
+
+  document.addEventListener('astro:page-load', setupMediaManager);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setupMediaManager();
+  }
+</script>

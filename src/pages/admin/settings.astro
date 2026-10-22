@@ -14,7 +14,7 @@ if (!checkAdminAuth(Astro.request)) {
 <AdminLayout title="Brokerage Settings" activeNav="settings">
   <div class="admin-header">
     <div>
-      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: #ffffff;">Brokerage &amp; Compliance Settings</h1>
+      <h1 style="font-size: 1.85rem; margin: 0 0 0.25rem 0; color: var(--admin-text-main);">Brokerage &amp; Compliance Settings</h1>
       <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.9rem;">
         Regulatory credentials, Department of Real Estate disclosures, and Supabase integration status.
       </p>
@@ -24,51 +24,51 @@ if (!checkAdminAuth(Astro.request)) {
   <div class="grid-2" style="gap: 2rem;">
     <!-- License & Credentials -->
     <div class="card" style="padding: 2rem; background: var(--admin-surface); border: 1px solid var(--admin-border);">
-      <h3 style="color: #ffffff; margin-bottom: 1.25rem; font-size: 1.25rem;">Realtor Credentials</h3>
+      <h3 style="color: var(--admin-text-main); margin-bottom: 1.25rem; font-size: 1.25rem;">Realtor Credentials</h3>
       
       <div style="margin-bottom: 1rem;">
-        <label style="font-size: 0.78rem; text-transform: uppercase; color: #8b9bb0; font-weight: 700;">Realtor Name</label>
-        <div style="font-size: 1.1rem; color: #ffffff; font-weight: 600;">{SITE_SETTINGS.agent_name}</div>
+        <label style="font-size: 0.78rem; text-transform: uppercase; color: var(--admin-text-muted); font-weight: 700;">Realtor Name</label>
+        <div style="font-size: 1.1rem; color: var(--admin-text-main); font-weight: 600;">{SITE_SETTINGS.agent_name}</div>
       </div>
 
       <div style="margin-bottom: 1rem;">
-        <label style="font-size: 0.78rem; text-transform: uppercase; color: #8b9bb0; font-weight: 700;">Affiliated Brokerage</label>
-        <div style="font-size: 1.1rem; color: #ffffff; font-weight: 600;">{SITE_SETTINGS.brokerage_name}</div>
+        <label style="font-size: 0.78rem; text-transform: uppercase; color: var(--admin-text-muted); font-weight: 700;">Affiliated Brokerage</label>
+        <div style="font-size: 1.1rem; color: var(--admin-text-main); font-weight: 600;">{SITE_SETTINGS.brokerage_name}</div>
       </div>
 
       <div style="margin-bottom: 1rem;">
-        <label style="font-size: 0.78rem; text-transform: uppercase; color: #8b9bb0; font-weight: 700;">California DRE License Number</label>
-        <div style="font-size: 1.1rem; color: var(--color-gold-400); font-weight: 700;">#{SITE_SETTINGS.dre_license}</div>
+        <label style="font-size: 0.78rem; text-transform: uppercase; color: var(--admin-text-muted); font-weight: 700;">California DRE License Number</label>
+        <div style="font-size: 1.1rem; color: var(--color-gold-700); font-weight: 700;">#{SITE_SETTINGS.dre_license}</div>
       </div>
 
       <div style="margin-bottom: 1rem;">
-        <label style="font-size: 0.78rem; text-transform: uppercase; color: #8b9bb0; font-weight: 700;">Instagram Profile Handle</label>
-        <div style="font-size: 1.1rem; color: #38bdf8;">{SITE_SETTINGS.instagram}</div>
+        <label style="font-size: 0.78rem; text-transform: uppercase; color: var(--admin-text-muted); font-weight: 700;">Instagram Profile Handle</label>
+        <div style="font-size: 1.1rem; color: #0284c7; font-weight: 600;">{SITE_SETTINGS.instagram}</div>
       </div>
     </div>
 
     <!-- Database & Infrastructure Status -->
     <div class="card" style="padding: 2rem; background: var(--admin-surface); border: 1px solid var(--admin-border);">
-      <h3 style="color: #ffffff; margin-bottom: 1.25rem; font-size: 1.25rem;">Database &amp; Storage Architecture</h3>
+      <h3 style="color: var(--admin-text-main); margin-bottom: 1.25rem; font-size: 1.25rem;">Database &amp; Storage Architecture</h3>
       
-      <div style="background: #090e14; border: 1px solid #1e2c3c; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
+      <div style="background: #f8fafc; border: 1px solid var(--admin-border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-          <span style="font-size: 0.9rem; font-weight: 600; color: #ffffff;">Supabase PostgreSQL Status</span>
+          <span style="font-size: 0.9rem; font-weight: 600; color: var(--admin-text-main);">Supabase PostgreSQL Status</span>
           {isSupabaseConfigured ? (
             <span class="badge badge-emerald">Connected Live</span>
           ) : (
             <span class="badge badge-gold">Active Local Store</span>
           )}
         </div>
-        <p style="font-size: 0.82rem; color: #8b9bb0; margin: 0; line-height: 1.5;">
+        <p style="font-size: 0.82rem; color: var(--admin-text-muted); margin: 0; line-height: 1.5;">
           {isSupabaseConfigured 
             ? 'Connected directly to remote Supabase cluster with Row Level Security enforced.'
             : 'Running in zero-downtime resilient store with full San Diego listings and active CRM in-memory buffer. To connect remote Supabase, set PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.'}
         </p>
       </div>
 
-      <h4 style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 0.5rem;">Available Database Migrations</h4>
-      <ul style="font-size: 0.82rem; color: #8b9bb0; margin: 0; padding-left: 1.25rem; line-height: 1.8;">
+      <h4 style="color: var(--admin-text-main); font-size: 0.95rem; margin-bottom: 0.5rem;">Available Database Migrations</h4>
+      <ul style="font-size: 0.82rem; color: var(--admin-text-muted); margin: 0; padding-left: 1.25rem; line-height: 1.8;">
         <li><code>20261018000001_initial_schema.sql</code> (Tables &amp; Indexes)</li>
         <li><code>20261018000002_rls_policies.sql</code> (Row Level Security &amp; Isolation)</li>
         <li><code>20261018000003_seed_data.sql</code> (12+ San Diego Properties &amp; Posts)</li>

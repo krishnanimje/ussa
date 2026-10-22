@@ -60,7 +60,7 @@ const sampleImages = [
   <!-- Header Bar -->
   <div class="admin-header" style="flex-wrap: wrap; gap: 1rem;">
     <div>
-      <h1 style="font-size: 1.75rem; margin: 0 0 0.25rem 0; color: #ffffff;">
+      <h1 style="font-size: 1.75rem; margin: 0 0 0.25rem 0; color: var(--admin-text-main);">
         {isEdit ? `Edit: ${initialProperty.title}` : 'Add New Property'}
       </h1>
       <p style="color: var(--admin-text-muted); margin: 0; font-size: 0.88rem;">
@@ -348,21 +348,34 @@ const sampleImages = [
         </h2>
       </div>
 
-      <!-- Main Photo -->
+      <!-- Main Photo with Drag & Drop Uploader -->
       <div class="form-group">
-        <label class="form-label" for="propPrimaryImage">Main Photo URL</label>
-        <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;">
+        <label class="form-label" for="propPrimaryImage">Main Listing Photo <span class="required">*</span></label>
+        
+        <!-- Drag & Drop Dropzone for Primary Photo -->
+        <div id="primaryDropzone" class="admin-dropzone" tabindex="0" role="button" aria-label="Drop primary image here or click to browse">
+          <div class="dropzone-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          </div>
+          <div class="dropzone-title">Drag &amp; drop primary photo here, or <span style="color: var(--color-gold-700); text-decoration: underline;">browse files</span></div>
+          <div class="dropzone-subtitle">Drop any image directly from your computer (JPG, PNG, WEBP, SVG)</div>
+          <input type="file" id="primaryFileInput" accept="image/jpeg,image/png,image/webp,image/svg+xml" style="display: none;" />
+          <div id="primaryUploadStatus" class="dropzone-status" style="display: none;"></div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; margin-top: 1rem;">
           <div style="flex: 1; min-width: 250px;">
+            <label class="form-label" style="font-size: 0.8rem; margin-bottom: 0.25rem;">Active Image URL</label>
             <input 
               type="text" 
               id="propPrimaryImage" 
               name="primary_image" 
               class="form-input" 
               value={initialProperty.primary_image || '/images/properties/north-park-spanish.svg'} 
-              placeholder="/images/properties/north-park-spanish.svg or https://..." 
+              placeholder="/images/properties/north-park-spanish.svg or /uploads/..." 
             />
-            <div class="form-hint" style="margin-bottom: 0.75rem;">
-              Paste image URL or click one of the quick presets below:
+            <div class="form-hint" style="margin-top: 0.35rem; margin-bottom: 0.5rem;">
+              Or select one of the quick starter presets:
             </div>
             <!-- Quick Preset Photos -->
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -379,7 +392,7 @@ const sampleImages = [
             </div>
           </div>
           <!-- Live Preview -->
-          <div style="width: 140px; height: 95px; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--admin-border); flex-shrink: 0;">
+          <div style="width: 140px; height: 95px; background: #0f172a; border-radius: 6px; overflow: hidden; border: 1px solid var(--admin-border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm);">
             <img 
               id="previewImg" 
               src={initialProperty.primary_image || '/images/properties/north-park-spanish.svg'} 
@@ -415,17 +428,33 @@ const sampleImages = [
         >{initialProperty.description || ''}</textarea>
       </div>
 
-      <!-- Additional Gallery Images -->
+      <!-- Additional Gallery Images with Drag & Drop -->
       <div class="form-group">
-        <label class="form-label" for="propGallery">Additional Gallery Photo URLs (Optional)</label>
+        <label class="form-label">Additional Gallery Photos</label>
+        
+        <!-- Multi-File Drag & Drop Zone -->
+        <div id="galleryDropzone" class="admin-dropzone" tabindex="0" role="button" aria-label="Drop gallery photos here or click to browse">
+          <div class="dropzone-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          </div>
+          <div class="dropzone-title">Drag &amp; drop multiple gallery photos here, or <span style="color: var(--color-gold-700); text-decoration: underline;">browse</span></div>
+          <div class="dropzone-subtitle">Drop multiple photos at once to build your listing photo gallery</div>
+          <input type="file" id="galleryFileInput" accept="image/jpeg,image/png,image/webp,image/svg+xml" multiple style="display: none;" />
+          <div id="galleryUploadStatus" class="dropzone-status" style="display: none;"></div>
+        </div>
+
+        <!-- Visual Thumbnail Strip -->
+        <div id="galleryThumbnailsContainer" class="admin-gallery-strip"></div>
+
         <textarea 
           id="propGallery" 
           name="gallery_text" 
           class="form-textarea" 
           rows="2"
-          placeholder="Paste additional image URLs (one per line)"
+          style="margin-top: 0.75rem; font-family: monospace; font-size: 0.82rem;"
+          placeholder="Paste additional image URLs (one per line) or use drag & drop above"
         >{(initialProperty.gallery_images || []).join('\n')}</textarea>
-        <div class="form-hint">Enter one photo URL per line for the listing photo slider.</div>
+        <div class="form-hint">Gallery photos list synchronizes automatically with the thumbnails above.</div>
       </div>
     </div>
 
@@ -451,26 +480,10 @@ const sampleImages = [
     const primaryImageInput = document.getElementById('propPrimaryImage') as HTMLInputElement;
     const previewImg = document.getElementById('previewImg') as HTMLImageElement;
     const toastContainer = document.getElementById('formToast');
+    const galleryTextarea = document.getElementById('propGallery') as HTMLTextAreaElement;
+    const galleryThumbnailsContainer = document.getElementById('galleryThumbnailsContainer');
 
-    // Live image preview
-    if (primaryImageInput && previewImg) {
-      primaryImageInput.addEventListener('input', () => {
-        const val = primaryImageInput.value.trim();
-        if (val) previewImg.src = val;
-      });
-    }
-
-    // Quick image buttons
-    document.querySelectorAll('.btn-quick-image').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const url = btn.getAttribute('data-url');
-        if (url && primaryImageInput && previewImg) {
-          primaryImageInput.value = url;
-          previewImg.src = url;
-        }
-      });
-    });
-
+    // Helper: show toast message
     function showToast(msg: string, type: 'success' | 'error' = 'success') {
       if (!toastContainer) {
         alert(msg);
@@ -483,6 +496,239 @@ const sampleImages = [
       setTimeout(() => toast.remove(), 4000);
     }
 
+    // Live primary image preview on input typing
+    if (primaryImageInput && previewImg) {
+      primaryImageInput.addEventListener('input', () => {
+        const val = primaryImageInput.value.trim();
+        if (val) previewImg.src = val;
+      });
+    }
+
+    // Quick image preset buttons
+    document.querySelectorAll('.btn-quick-image').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const url = btn.getAttribute('data-url');
+        if (url && primaryImageInput && previewImg) {
+          primaryImageInput.value = url;
+          previewImg.src = url;
+        }
+      });
+    });
+
+    // Helper: Upload file to /api/admin/media/upload
+    async function uploadMediaFile(file: File): Promise<string> {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/admin/media/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Upload failed');
+      }
+      return data.mediaUrl;
+    }
+
+    // 1. Primary Image Dropzone Setup
+    const primaryDropzone = document.getElementById('primaryDropzone');
+    const primaryFileInput = document.getElementById('primaryFileInput') as HTMLInputElement;
+    const primaryUploadStatus = document.getElementById('primaryUploadStatus');
+
+    if (primaryDropzone && primaryFileInput) {
+      // Click or keyboard trigger
+      primaryDropzone.addEventListener('click', () => primaryFileInput.click());
+      primaryDropzone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          primaryFileInput.click();
+        }
+      });
+
+      // Drag events
+      ['dragenter', 'dragover'].forEach(eventName => {
+        primaryDropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          primaryDropzone.classList.add('drag-over');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        primaryDropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          primaryDropzone.classList.remove('drag-over');
+        });
+      });
+
+      // Handle drop
+      primaryDropzone.addEventListener('drop', async (e) => {
+        const files = e.dataTransfer?.files;
+        if (files && files.length > 0) {
+          await handlePrimaryFileUpload(files[0]);
+        }
+      });
+
+      // Handle file input selection
+      primaryFileInput.addEventListener('change', async () => {
+        if (primaryFileInput.files && primaryFileInput.files.length > 0) {
+          await handlePrimaryFileUpload(primaryFileInput.files[0]);
+        }
+      });
+
+      async function handlePrimaryFileUpload(file: File) {
+        if (!primaryUploadStatus) return;
+        primaryUploadStatus.style.display = 'block';
+        primaryUploadStatus.className = 'dropzone-status uploading';
+        primaryUploadStatus.textContent = `Uploading ${file.name}...`;
+
+        try {
+          const mediaUrl = await uploadMediaFile(file);
+          if (primaryImageInput) primaryImageInput.value = mediaUrl;
+          if (previewImg) previewImg.src = mediaUrl;
+          primaryUploadStatus.className = 'dropzone-status success';
+          primaryUploadStatus.textContent = `✓ Uploaded: ${file.name}`;
+          showToast('Primary photo uploaded successfully!', 'success');
+        } catch (err: any) {
+          primaryUploadStatus.className = 'dropzone-status error';
+          primaryUploadStatus.textContent = `✕ Error: ${err.message}`;
+          showToast(`Upload error: ${err.message}`, 'error');
+        }
+      }
+    }
+
+    // 2. Gallery Images Multi-File Dropzone & Thumbnail Strip
+    const galleryDropzone = document.getElementById('galleryDropzone');
+    const galleryFileInput = document.getElementById('galleryFileInput') as HTMLInputElement;
+    const galleryUploadStatus = document.getElementById('galleryUploadStatus');
+
+    function getGalleryUrls(): string[] {
+      if (!galleryTextarea) return [];
+      return galleryTextarea.value
+        .split('\n')
+        .map(l => l.trim())
+        .filter(Boolean);
+    }
+
+    function setGalleryUrls(urls: string[]) {
+      if (galleryTextarea) {
+        galleryTextarea.value = urls.join('\n');
+      }
+      renderGalleryThumbnails(urls);
+    }
+
+    function renderGalleryThumbnails(urls: string[]) {
+      if (!galleryThumbnailsContainer) return;
+      galleryThumbnailsContainer.innerHTML = '';
+      urls.forEach((url, index) => {
+        const item = document.createElement('div');
+        item.className = 'gallery-thumb-item';
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = `Gallery ${index + 1}`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'gallery-thumb-remove';
+        removeBtn.innerHTML = '&times;';
+        removeBtn.title = 'Remove photo';
+        removeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const currentUrls = getGalleryUrls();
+          currentUrls.splice(index, 1);
+          setGalleryUrls(currentUrls);
+        });
+
+        item.appendChild(img);
+        item.appendChild(removeBtn);
+        galleryThumbnailsContainer.appendChild(item);
+      });
+    }
+
+    // Initial render of existing gallery images
+    renderGalleryThumbnails(getGalleryUrls());
+
+    // Update thumbnails when textarea is edited directly
+    galleryTextarea?.addEventListener('input', () => {
+      renderGalleryThumbnails(getGalleryUrls());
+    });
+
+    if (galleryDropzone && galleryFileInput) {
+      galleryDropzone.addEventListener('click', () => galleryFileInput.click());
+      galleryDropzone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          galleryFileInput.click();
+        }
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        galleryDropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          galleryDropzone.classList.add('drag-over');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        galleryDropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          galleryDropzone.classList.remove('drag-over');
+        });
+      });
+
+      galleryDropzone.addEventListener('drop', async (e) => {
+        const files = e.dataTransfer?.files;
+        if (files && files.length > 0) {
+          await handleGalleryFiles(Array.from(files));
+        }
+      });
+
+      galleryFileInput.addEventListener('change', async () => {
+        if (galleryFileInput.files && galleryFileInput.files.length > 0) {
+          await handleGalleryFiles(Array.from(galleryFileInput.files));
+        }
+      });
+
+      async function handleGalleryFiles(files: File[]) {
+        if (!galleryUploadStatus) return;
+        galleryUploadStatus.style.display = 'block';
+        galleryUploadStatus.className = 'dropzone-status uploading';
+        galleryUploadStatus.textContent = `Uploading ${files.length} photo(s)...`;
+
+        const newUrls: string[] = [];
+        let errors = 0;
+
+        for (const file of files) {
+          try {
+            const url = await uploadMediaFile(file);
+            newUrls.push(url);
+          } catch (e: any) {
+            errors++;
+            console.error('File upload failed for', file.name, e);
+          }
+        }
+
+        const currentUrls = getGalleryUrls();
+        const merged = Array.from(new Set([...currentUrls, ...newUrls]));
+        setGalleryUrls(merged);
+
+        if (errors === 0) {
+          galleryUploadStatus.className = 'dropzone-status success';
+          galleryUploadStatus.textContent = `✓ Successfully added ${newUrls.length} photo(s)!`;
+          showToast(`Added ${newUrls.length} photo(s) to gallery.`, 'success');
+        } else {
+          galleryUploadStatus.className = 'dropzone-status error';
+          galleryUploadStatus.textContent = `Uploaded ${newUrls.length} photo(s), ${errors} failed.`;
+          showToast(`Uploaded ${newUrls.length} photo(s), but ${errors} failed.`, 'error');
+        }
+      }
+    }
+
+    // 3. Form Submission
     async function submitForm(targetStatus: 'draft' | 'published') {
       const titleInput = document.getElementById('propTitle') as HTMLInputElement;
       const priceInput = document.getElementById('propPrice') as HTMLInputElement;

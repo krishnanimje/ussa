@@ -1,8 +1,9 @@
 ---
-import { SITE_SETTINGS } from '../lib/store';
+import { getSiteSettings, SITE_SETTINGS } from '../lib/store';
 
 const currentPath = Astro.url.pathname;
 const isSpanish = currentPath.startsWith('/es');
+const siteSettings = await getSiteSettings();
 ---
 
 <header class="site-header" role="banner">
@@ -11,16 +12,16 @@ const isSpanish = currentPath.startsWith('/es');
     <div class="container top-bar-inner">
       <div class="top-bar-left">
         <span class="top-badge">SAN DIEGO, CA</span>
-        <span class="broker-info">Full Circle Group • DRE #{SITE_SETTINGS.dre_license}</span>
+        <span class="broker-info">{siteSettings.brokerage_name} • DRE #{siteSettings.dre_license}</span>
       </div>
       <div class="top-bar-right">
         <a href="tel:6195550198" class="top-link phone-link" aria-label="Call Edgar Valle at (619) 555-0198">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-          <span>{SITE_SETTINGS.phone}</span>
+          <span>{siteSettings.phone}</span>
         </a>
-        <a href={SITE_SETTINGS.instagram_url} target="_blank" rel="noopener noreferrer" class="top-link" aria-label="Instagram Profile @yourrealtoredgar">
+        <a href={siteSettings.instagram_url} target="_blank" rel="noopener noreferrer" class="top-link" aria-label="Instagram Profile @yourrealtoredgar">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-          <span>@yourrealtoredgar</span>
+          <span>{siteSettings.instagram}</span>
         </a>
         <a href={isSpanish ? '/' : '/es'} class="lang-switch-btn" aria-label={isSpanish ? 'Switch site language to English' : 'Cambiar idioma del sitio a Español'}>
           {isSpanish ? '🇺🇸 In English' : '🇲🇽 Hablamos Español'}
@@ -34,7 +35,7 @@ const isSpanish = currentPath.startsWith('/es');
     <div class="container main-header-inner">
       <!-- Logo & Wordmark -->
       <a href="/" class="brand-logo" aria-label="Edgar Valle Realtor Homepage">
-        <img src="/images/branding/logo.svg" alt="Edgar Valle | Realtor" width="260" height="65" />
+        <img src={siteSettings.logo_url || '/images/branding/logo.svg'} alt="Edgar Valle | Realtor" width="260" height="65" />
       </a>
 
       <!-- Desktop Nav -->
@@ -120,11 +121,11 @@ const isSpanish = currentPath.startsWith('/es');
   }
 
   .top-bar {
-    background-color: var(--color-navy-950);
-    color: #cbd5e1;
+    background-color: #f8fafc;
+    color: #475569;
     font-size: 0.8rem;
     padding: 0.45rem 0;
-    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+    border-bottom: 1px solid #e2e8f0;
   }
 
   .top-bar-inner {
@@ -141,7 +142,7 @@ const isSpanish = currentPath.startsWith('/es');
 
   .top-badge {
     background: rgba(197, 160, 89, 0.15);
-    color: var(--color-gold-400);
+    color: var(--color-gold-700);
     font-size: 0.7rem;
     font-weight: 700;
     padding: 0.15rem 0.5rem;
@@ -150,29 +151,30 @@ const isSpanish = currentPath.startsWith('/es');
   }
 
   .broker-info {
-    color: #94a3b8;
+    color: #64748b;
   }
 
   .top-link {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    color: #e2e8f0;
+    color: #475569;
+    font-weight: 500;
     transition: color var(--transition-fast);
   }
 
   .top-link:hover {
-    color: var(--color-gold-400);
+    color: var(--color-gold-600);
   }
 
   .lang-switch-btn {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+    background: #ffffff;
+    color: #334155;
     padding: 0.2rem 0.6rem;
     border-radius: var(--radius-xs);
     font-weight: 600;
     font-size: 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid #cbd5e1;
     transition: all var(--transition-fast);
   }
 
